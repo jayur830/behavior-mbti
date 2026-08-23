@@ -1,9 +1,10 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { QUESTIONS } from '../data/questions';
 import { QuestionBehaviorLog, FullAnalysisResult } from '../types';
 import { analyzeBehaviorAndMBTI } from '../lib/analyzer';
+import { decodeResultFromUrl } from '../lib/shareResult';
 import { TestIntro } from '../components/TestIntro';
 import { QuestionCard } from '../components/QuestionCard';
 import { ResultView } from '../components/ResultView';
@@ -14,8 +15,29 @@ export default function Home() {
   const [currentQuestionIdx, setCurrentQuestionIdx] = useState<number>(0);
   const [behaviorLogs, setBehaviorLogs] = useState<(QuestionBehaviorLog | null)[]>([]);
   const [analysisResult, setAnalysisResult] = useState<FullAnalysisResult | null>(null);
+  const [isSharedView, setIsSharedView] = useState<boolean>(false);
+
+  // Check URL query param for shared result payload on mount
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const shareCode = params.get('r');
+      if (shareCode) {
+        const decoded = decodeResultFromUrl(shareCode);
+        if (decoded) {
+          setAnalysisResult(decoded);
+          setIsSharedView(true);
+          setStep('result');
+        }
+      }
+    }
+  }, []);
 
   const handleStartTest = () => {
+    if (typeof window !== 'undefined') {
+      window.history.pushState({}, '', window.location.pathname);
+    }
+    setIsSharedView(false);
     setBehaviorLogs([]);
     setCurrentQuestionIdx(0);
     setAnalysisResult(null);
@@ -37,11 +59,13 @@ export default function Home() {
         try {
           const result = analyzeBehaviorAndMBTI(validLogs);
           setAnalysisResult(result);
+          setIsSharedView(false);
           setStep('result');
         } catch (err) {
           console.error('Error analyzing behavioral data:', err);
           const fallbackResult = analyzeBehaviorAndMBTI(validLogs);
           setAnalysisResult(fallbackResult);
+          setIsSharedView(false);
           setStep('result');
         }
       }, 1200);
@@ -59,6 +83,10 @@ export default function Home() {
   };
 
   const handleRestart = () => {
+    if (typeof window !== 'undefined') {
+      window.history.pushState({}, '', window.location.pathname);
+    }
+    setIsSharedView(false);
     setStep('intro');
     setBehaviorLogs([]);
     setCurrentQuestionIdx(0);
@@ -122,7 +150,11 @@ export default function Home() {
         )}
 
         {step === 'result' && analysisResult && (
-          <ResultView result={analysisResult} onRestart={handleRestart} />
+          <ResultView
+            result={analysisResult}
+            isSharedView={isSharedView}
+            onRestart={handleRestart}
+          />
         )}
       </main>
 

@@ -26,12 +26,15 @@ import {
   Keyboard,
 } from 'lucide-react';
 
+import { encodeResultToUrl } from '../lib/shareResult';
+
 interface ResultViewProps {
   result: FullAnalysisResult;
+  isSharedView?: boolean;
   onRestart: () => void;
 }
 
-export const ResultView: React.FC<ResultViewProps> = ({ result, onRestart }) => {
+export const ResultView: React.FC<ResultViewProps> = ({ result, isSharedView = false, onRestart }) => {
   const [selectedDilemmaIdx, setSelectedDilemmaIdx] = useState<number>(0);
   const [copied, setCopied] = useState<boolean>(false);
   const [isExporting, setIsExporting] = useState<boolean>(false);
@@ -49,14 +52,15 @@ export const ResultView: React.FC<ResultViewProps> = ({ result, onRestart }) => 
 
   const handleCopyLink = async () => {
     if (typeof window === 'undefined') return;
-    const url = window.location.href;
+    const shareCode = encodeResultToUrl(result);
+    const shareUrl = `${window.location.origin}${window.location.pathname}?r=${encodeURIComponent(shareCode)}`;
 
     let success = false;
 
     // 1. Modern navigator.clipboard API (HTTPS / Localhost)
     if (navigator?.clipboard && typeof navigator.clipboard.writeText === 'function') {
       try {
-        await navigator.clipboard.writeText(url);
+        await navigator.clipboard.writeText(shareUrl);
         success = true;
       } catch {
         success = false;
@@ -67,7 +71,7 @@ export const ResultView: React.FC<ResultViewProps> = ({ result, onRestart }) => 
     if (!success) {
       try {
         const textArea = document.createElement('textarea');
-        textArea.value = url;
+        textArea.value = shareUrl;
         textArea.style.position = 'fixed';
         textArea.style.left = '-9999px';
         textArea.style.top = '-9999px';
@@ -86,7 +90,7 @@ export const ResultView: React.FC<ResultViewProps> = ({ result, onRestart }) => 
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } else {
-      window.prompt('아래 링크를 복사해주세요:', url);
+      window.prompt('아래 링크를 복사해주세요:', shareUrl);
     }
   };
 
@@ -140,6 +144,23 @@ export const ResultView: React.FC<ResultViewProps> = ({ result, onRestart }) => 
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-8 sm:py-16 space-y-12 text-neutral-100 font-sans">
+      {/* Shared View CTA Banner */}
+      {isSharedView && (
+        <div className="bg-emerald-500/10 border border-emerald-500/20 p-4 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left shadow-lg">
+          <div className="flex items-center gap-2 text-sm text-emerald-300">
+            <Sparkles className="w-4 h-4 text-emerald-400 shrink-0" />
+            <span>공유받은 행동 분석 결과입니다. 당신의 무의식적 MBTI도 측정해보세요!</span>
+          </div>
+          <button
+            type="button"
+            onClick={onRestart}
+            className="px-4 py-2 rounded-full bg-emerald-400 hover:bg-emerald-300 text-neutral-950 font-bold text-xs shadow-md transition-all cursor-pointer touch-manipulation shrink-0"
+          >
+            나도 검사하러 가기 ➔
+          </button>
+        </div>
+      )}
+
       {/* Hidden Export Card for High-Res PNG Download */}
       <div className="overflow-hidden h-0 w-0">
         <div
