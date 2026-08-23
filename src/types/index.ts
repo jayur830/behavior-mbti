@@ -31,7 +31,15 @@ export interface AnswerSelectionEvent {
   value: number; // -3 to 3
   timestamp: number; // ms from question start
   timeSinceLastChange?: number; // ms
+  pressDuration?: number; // ms touch down to up
   inputDevice?: InputDevice;
+}
+
+export interface TouchMetrics {
+  firstTapLatency: number; // ms until first touch
+  averagePressDuration: number; // ms touch press time
+  confirmationDelay: number; // ms between last tap and next click
+  tapCount: number;
 }
 
 export interface QuestionBehaviorLog {
@@ -50,6 +58,7 @@ export interface QuestionBehaviorLog {
   tabBlurCount: number;
   primaryDevice: InputDevice;
   keyStrokeCount: number;
+  touchMetrics?: TouchMetrics;
 }
 
 export interface DimensionAnalysis {
@@ -97,10 +106,10 @@ export interface PersonaGapAnalysis {
 }
 
 export interface BenchmarkStats {
-  dwellTimePercentile: number; // e.g. top 15% fastest
-  changeCountPercentile: number; // e.g. top 8% most decisive
-  globalAverageDwellSec: number; // e.g. 52.4s
-  globalAverageChanges: number; // e.g. 2.1 times
+  dwellTimePercentile: number;
+  changeCountPercentile: number;
+  globalAverageDwellSec: number;
+  globalAverageChanges: number;
   personaDistribution: {
     personaCode: string;
     name: string;
@@ -110,7 +119,7 @@ export interface BenchmarkStats {
     rank: number;
     questionId: number;
     questionTitle: string;
-    revisionRate: number; // %
+    revisionRate: number;
   }[];
 }
 

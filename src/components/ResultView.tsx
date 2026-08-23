@@ -3,6 +3,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { FullAnalysisResult } from '../types';
 import { MouseReplayCanvas } from './MouseReplayCanvas';
+import { TouchTimelinePlayer } from './TouchTimelinePlayer';
 import confetti from 'canvas-confetti';
 import { toPng } from 'html-to-image';
 import {
@@ -35,6 +36,8 @@ export const ResultView: React.FC<ResultViewProps> = ({ result, onRestart }) => 
   const [copied, setCopied] = useState<boolean>(false);
   const [isExporting, setIsExporting] = useState<boolean>(false);
   const cardExportRef = useRef<HTMLDivElement | null>(null);
+
+  const isTouchDevice = result.mouseTrajectoryStats.primaryDevice === 'touch';
 
   useEffect(() => {
     confetti({
@@ -403,7 +406,7 @@ export const ResultView: React.FC<ResultViewProps> = ({ result, onRestart }) => 
         </div>
       </div>
 
-      {/* 5. Top Dilemmas with Telemetry Replay */}
+      {/* 5. Top Dilemmas with Dual Mode (Mobile Touch Timeline vs Desktop Mouse Canvas) */}
       {result.topDilemmas.length > 0 && (
         <div className="bg-neutral-900/60 border border-white/[0.08] rounded-3xl p-6 sm:p-8 shadow-xl">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
@@ -412,7 +415,9 @@ export const ResultView: React.FC<ResultViewProps> = ({ result, onRestart }) => 
                 CRITICAL DILEMMAS TOP 3
               </h2>
               <p className="text-xs text-neutral-400 mt-1 font-light">
-                가장 깊이 있게 사색하고 신중하게 검토했던 문항
+                {isTouchDevice
+                  ? '터치 잠복기(고민 시간)와 프레스 시간이 가장 길었던 심리적 갈등 문항'
+                  : '마우스 방향 전환 횟수와 체류 시간이 가장 길었던 갈등 문항'}
               </p>
             </div>
 
@@ -421,8 +426,9 @@ export const ResultView: React.FC<ResultViewProps> = ({ result, onRestart }) => 
               {result.topDilemmas.map((_, idx) => (
                 <button
                   key={idx}
+                  type="button"
                   onClick={() => setSelectedDilemmaIdx(idx)}
-                  className={`px-3 py-1.5 rounded-xl text-xs font-mono font-medium transition-all cursor-pointer ${
+                  className={`px-3 py-1.5 rounded-xl text-xs font-mono font-medium transition-all cursor-pointer touch-manipulation ${
                     selectedDilemmaIdx === idx
                       ? 'bg-neutral-100 text-neutral-950 shadow-sm'
                       : 'bg-neutral-950 border border-white/[0.06] text-neutral-400 hover:text-white'
@@ -453,11 +459,18 @@ export const ResultView: React.FC<ResultViewProps> = ({ result, onRestart }) => 
                 </div>
               </div>
 
-              {/* Canvas Telemetry Replayer */}
-              <MouseReplayCanvas
-                key={result.topDilemmas[selectedDilemmaIdx].behavior.questionId}
-                behaviorLog={result.topDilemmas[selectedDilemmaIdx].behavior}
-              />
+              {/* Dynamic Replayer based on Device Type */}
+              {isTouchDevice ? (
+                <TouchTimelinePlayer
+                  key={result.topDilemmas[selectedDilemmaIdx].behavior.questionId}
+                  behaviorLog={result.topDilemmas[selectedDilemmaIdx].behavior}
+                />
+              ) : (
+                <MouseReplayCanvas
+                  key={result.topDilemmas[selectedDilemmaIdx].behavior.questionId}
+                  behaviorLog={result.topDilemmas[selectedDilemmaIdx].behavior}
+                />
+              )}
             </div>
           )}
         </div>
@@ -501,25 +514,28 @@ export const ResultView: React.FC<ResultViewProps> = ({ result, onRestart }) => 
       {/* 7. Action Controls: Image Download, Share & Restart */}
       <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-6">
         <button
+          type="button"
           onClick={handleDownloadCard}
           disabled={isExporting}
-          className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-full font-medium text-xs sm:text-sm bg-neutral-900 hover:bg-neutral-800 text-neutral-200 border border-white/[0.1] transition-all cursor-pointer shadow-sm"
+          className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-full font-medium text-xs sm:text-sm bg-neutral-900 hover:bg-neutral-800 text-neutral-200 border border-white/[0.1] transition-all cursor-pointer shadow-sm touch-manipulation"
         >
           <Download className="w-4 h-4 text-emerald-400" />
           <span>{isExporting ? '이미지 생성 중...' : '결과 카드 이미지 저장 (PNG)'}</span>
         </button>
 
         <button
+          type="button"
           onClick={handleCopyLink}
-          className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-full font-medium text-xs sm:text-sm bg-neutral-900 hover:bg-neutral-800 text-neutral-200 border border-white/[0.1] transition-all cursor-pointer"
+          className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-full font-medium text-xs sm:text-sm bg-neutral-900 hover:bg-neutral-800 text-neutral-200 border border-white/[0.1] transition-all cursor-pointer touch-manipulation"
         >
           {copied ? <Check className="w-4 h-4 text-emerald-400" /> : <Share2 className="w-4 h-4" />}
           <span>{copied ? '링크 복사됨' : '결과 링크 복사'}</span>
         </button>
 
         <button
+          type="button"
           onClick={onRestart}
-          className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-full font-semibold text-xs sm:text-sm bg-neutral-100 hover:bg-white text-neutral-950 shadow-md hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer"
+          className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-full font-semibold text-xs sm:text-sm bg-neutral-100 hover:bg-white text-neutral-950 shadow-md hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer touch-manipulation"
         >
           <RotateCcw className="w-4 h-4" />
           <span>다시 검사하기</span>

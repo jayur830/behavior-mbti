@@ -1,7 +1,14 @@
 'use client';
 
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { MousePoint, OptionHoverLog, AnswerSelectionEvent, QuestionBehaviorLog, InputDevice } from '../types';
+import {
+  MousePoint,
+  OptionHoverLog,
+  AnswerSelectionEvent,
+  QuestionBehaviorLog,
+  InputDevice,
+  TouchMetrics,
+} from '../types';
 
 interface UseBehaviorTrackerProps {
   questionId: number;
@@ -24,6 +31,10 @@ export function useBehaviorTracker({ questionId, containerRef, onAutoSubmit }: U
   const primaryDeviceRef = useRef<InputDevice>('mouse');
   const keyStrokeCountRef = useRef<number>(0);
 
+  // Mobile Touch Dynamics
+  const touchStartTimeRef = useRef<number | null>(null);
+  const touchPressDurationsRef = useRef<number[]>([]);
+
   // Reset or initialize on question change
   useEffect(() => {
     startTimeRef.current = Date.now();
@@ -36,6 +47,8 @@ export function useBehaviorTracker({ questionId, containerRef, onAutoSubmit }: U
     firstInteractionTimeRef.current = null;
     tabBlurCountRef.current = 0;
     keyStrokeCountRef.current = 0;
+    touchStartTimeRef.current = null;
+    touchPressDurationsRef.current = [];
     setSelectedVal(null);
   }, [questionId]);
 
@@ -59,7 +72,7 @@ export function useBehaviorTracker({ questionId, containerRef, onAutoSubmit }: U
       if (!container) return;
 
       const now = Date.now();
-      if (now - lastFrameTimeRef.current < 16) return; // ~60fps
+      if (now - lastFrameTimeRef.current < 16) return;
       lastFrameTimeRef.current = now;
 
       const rect = container.getBoundingClientRect();
@@ -107,10 +120,12 @@ export function useBehaviorTracker({ questionId, containerRef, onAutoSubmit }: U
     [containerRef]
   );
 
-  // Mouse trajectory tracking
+  // Mouse trajectory tracking (only when not on mobile touch)
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
-      primaryDeviceRef.current = 'mouse';
+      if (primaryDeviceRef.current !== 'touch') {
+        primaryDeviceRef.current = 'mouse';
+      }
       recordPoint(e.clientX, e.clientY, 'move');
     };
 
@@ -120,21 +135,30 @@ export function useBehaviorTracker({ questionId, containerRef, onAutoSubmit }: U
     };
   }, [recordPoint]);
 
-  // Touch gesture & Touchmove tracking
+  // Touch gesture & Touch Press Duration tracking
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
 
-    const handleTouchMove = (e: TouchEvent) => {
+    const handleTouchStart = (e: TouchEvent) => {
       primaryDeviceRef.current = 'touch';
+      touchStartTimeRef.current = performance.now();
+
       if (e.touches.length > 0) {
         const touch = e.touches[0];
         recordPoint(touch.clientX, touch.clientY, 'touch');
       }
     };
 
-    const handleTouchStart = (e: TouchEvent) => {
-      primaryDeviceRef.current = 'touch';
+    const handleTouchEnd = () => {
+      if (touchStartTimeRef.current !== null) {
+        const pressDuration = Math.round(performance.now() - touchStartTimeRef.current);
+        touchPressDurationsRef.current.push(pressDuration);
+        touchStartTimeRef.current = null;
+      }
+    };
+
+    const handleTouchMove = (e: TouchEvent) => {
       if (e.touches.length > 0) {
         const touch = e.touches[0];
         recordPoint(touch.clientX, touch.clientY, 'touch');
@@ -142,10 +166,12 @@ export function useBehaviorTracker({ questionId, containerRef, onAutoSubmit }: U
     };
 
     container.addEventListener('touchstart', handleTouchStart, { passive: true });
+    container.addEventListener('touchend', handleTouchEnd, { passive: true });
     container.addEventListener('touchmove', handleTouchMove, { passive: true });
 
     return () => {
       container.removeEventListener('touchstart', handleTouchStart);
+      container.removeEventListener('touchend', handleTouchEnd);
       container.removeEventListener('touchmove', handleTouchMove);
     };
   }, [containerRef, recordPoint]);
@@ -158,15 +184,22 @@ export function useBehaviorTracker({ questionId, containerRef, onAutoSubmit }: U
         firstInteractionTimeRef.current = now;
       }
 
-      primaryDeviceRef.current = device;
+      if (device === 'touch' || primaryDeviceRef.current === 'touch') {
+        primaryDeviceRef.current = 'touch';
+      } else {
+        primaryDeviceRef.current = device;
+      }
+
       const prevEvent = selectionHistoryRef.current[selectionHistoryRef.current.length - 1];
       const timeSinceLast = prevEvent ? now - prevEvent.timestamp : now;
+      const lastPress = touchPressDurationsRef.current[touchPressDurationsRef.current.length - 1] || 80;
 
       selectionHistoryRef.current.push({
         value: val,
         timestamp: now,
         timeSinceLastChange: timeSinceLast,
-        inputDevice: device,
+        pressDuration: lastPress,
+        inputDevice: primaryDeviceRef.current,
       });
 
       setSelectedVal(val);
@@ -174,18 +207,16 @@ export function useBehaviorTracker({ questionId, containerRef, onAutoSubmit }: U
     []
   );
 
-  // Keyboard navigation & Hotkeys (1~7 for options, Arrow keys, Enter to submit)
+  // Keyboard navigation
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      // Don't trigger if user is in an input field
       if (['INPUT', 'TEXTAREA'].includes((e.target as HTMLElement)?.tagName)) return;
 
       keyStrokeCountRef.current += 1;
 
-      // Number keys 1~7 mapping to -3 ~ 3
       const keyNum = parseInt(e.key, 10);
       if (keyNum >= 1 && keyNum <= 7) {
-        const mappedVal = keyNum - 4; // 1->-3, 2->-2, 3->-1, 4->0, 5->1, 6->2, 7->3
+        const mappedVal = keyNum - 4;
         handleSelectOption(mappedVal, 'keyboard');
       } else if (e.key === 'ArrowLeft') {
         setSelectedVal((prev) => {
@@ -212,13 +243,15 @@ export function useBehaviorTracker({ questionId, containerRef, onAutoSubmit }: U
     };
   }, [handleSelectOption, onAutoSubmit, selectedVal]);
 
-  // Option Hover Handlers
+  // Option Hover Handlers (Desktop only)
   const handleOptionMouseEnter = useCallback((val: number) => {
+    if (primaryDeviceRef.current === 'touch') return;
     const now = Date.now() - startTimeRef.current;
     currentHoverRef.current = { optionValue: val, enterTime: now };
   }, []);
 
   const handleOptionMouseLeave = useCallback((val: number) => {
+    if (primaryDeviceRef.current === 'touch') return;
     if (currentHoverRef.current && currentHoverRef.current.optionValue === val) {
       const now = Date.now() - startTimeRef.current;
       hoverLogsRef.current.push({
@@ -231,16 +264,45 @@ export function useBehaviorTracker({ questionId, containerRef, onAutoSubmit }: U
     }
   }, []);
 
-  // Generate behavioral log for current question
+  // Finalize behavioral log
   const finalizeLog = useCallback((): QuestionBehaviorLog => {
     const endTime = Date.now();
     const totalDwellTime = endTime - startTimeRef.current;
     const changeCount = Math.max(0, selectionHistoryRef.current.length - 1);
 
+    const firstTapLatency = firstInteractionTimeRef.current ?? totalDwellTime;
+    const lastSelection = selectionHistoryRef.current[selectionHistoryRef.current.length - 1];
+    const confirmationDelay = lastSelection ? totalDwellTime - lastSelection.timestamp : 0;
+
+    const avgPress =
+      touchPressDurationsRef.current.length > 0
+        ? Math.round(
+            touchPressDurationsRef.current.reduce((a, b) => a + b, 0) /
+              touchPressDurationsRef.current.length
+          )
+        : 85;
+
+    const touchMetrics: TouchMetrics = {
+      firstTapLatency,
+      averagePressDuration: avgPress,
+      confirmationDelay,
+      tapCount: selectionHistoryRef.current.length,
+    };
+
+    // Calculate hesitation score
     let hesitationScore = 0;
     hesitationScore += changeCount * 25;
     hesitationScore += Math.min(40, (totalDwellTime / 1000) * 3);
-    hesitationScore += Math.min(25, directionChangesRef.current * 2);
+
+    if (primaryDeviceRef.current === 'touch') {
+      // Touch-specific hesitation weighting
+      if (firstTapLatency > 5000) hesitationScore += 15;
+      if (avgPress > 250) hesitationScore += 10; // held finger long
+      if (confirmationDelay > 3000) hesitationScore += 10;
+    } else {
+      hesitationScore += Math.min(25, directionChangesRef.current * 2);
+    }
+
     if (tabBlurCountRef.current > 0) hesitationScore += 15;
     hesitationScore = Math.min(100, Math.round(hesitationScore));
 
@@ -260,6 +322,7 @@ export function useBehaviorTracker({ questionId, containerRef, onAutoSubmit }: U
       tabBlurCount: tabBlurCountRef.current,
       primaryDevice: primaryDeviceRef.current,
       keyStrokeCount: keyStrokeCountRef.current,
+      touchMetrics,
     };
   }, [questionId, selectedVal]);
 
