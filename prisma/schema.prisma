@@ -1,0 +1,18 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model MbtiResult {
+  id               String   @id // 7-char short ID (e.g. 'k8F2wQ9')
+  mbti             String
+  personaCode      String   @map("persona_code")
+  overallCertainty Int      @map("overall_certainty")
+  resultData       Json     @map("result_data")
+  createdAt        DateTime @default(now()) @map("created_at")
+
+  @@map("mbti_results")
+}
