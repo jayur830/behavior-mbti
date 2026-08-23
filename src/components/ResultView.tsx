@@ -69,31 +69,14 @@ export const ResultView: React.FC<ResultViewProps> = ({
   const handleCopyLink = async () => {
     if (typeof window === 'undefined') return;
     const compressed = encodeResultToCompressedString(result);
-    const fullShareUrl = `${window.location.origin}/preview?data=${compressed}`;
-    let finalUrl = fullShareUrl;
-
-    try {
-      const res = await fetch('/api/shorten', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ url: fullShareUrl }),
-      });
-      if (res.ok) {
-        const json = await res.json();
-        if (json.shortUrl) {
-          finalUrl = json.shortUrl;
-        }
-      }
-    } catch {
-      // Fallback to fullShareUrl
-    }
+    const shortShareUrl = `${window.location.origin}/s/${compressed}`;
 
     let success = false;
 
     // 1. Modern navigator.clipboard API (HTTPS / Localhost)
     if (navigator?.clipboard && typeof navigator.clipboard.writeText === 'function') {
       try {
-        await navigator.clipboard.writeText(finalUrl);
+        await navigator.clipboard.writeText(shortShareUrl);
         success = true;
       } catch {
         success = false;
@@ -104,7 +87,7 @@ export const ResultView: React.FC<ResultViewProps> = ({
     if (!success) {
       try {
         const textArea = document.createElement('textarea');
-        textArea.value = finalUrl;
+        textArea.value = shortShareUrl;
         textArea.style.position = 'fixed';
         textArea.style.left = '-9999px';
         textArea.style.top = '-9999px';
@@ -123,7 +106,7 @@ export const ResultView: React.FC<ResultViewProps> = ({
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } else {
-      window.prompt('아래 링크를 복사해주세요:', finalUrl);
+      window.prompt('아래 링크를 복사해주세요:', shortShareUrl);
     }
   };
 
