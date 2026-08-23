@@ -2,7 +2,7 @@
 
 import React, { useRef, useEffect, useState, useCallback } from 'react';
 import { QuestionBehaviorLog } from '../types';
-import { Play, Pause, RotateCcw, Activity } from 'lucide-react';
+import { Play, Pause, RotateCcw, Crosshair } from 'lucide-react';
 import { getOptionLabel } from '../data/questions';
 
 interface MouseReplayCanvasProps {
@@ -13,7 +13,7 @@ interface MouseReplayCanvasProps {
 
 export const MouseReplayCanvas: React.FC<MouseReplayCanvasProps> = ({
   behaviorLog,
-  width = 600,
+  width = 640,
   height = 320,
 }) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -34,12 +34,12 @@ export const MouseReplayCanvas: React.FC<MouseReplayCanvasProps> = ({
       const ctx = canvas.getContext('2d');
       if (!ctx) return;
 
-      // Clear Canvas with dark sleek background
-      ctx.fillStyle = '#0f172a';
+      // Clear Canvas with sleek jet-black slate background
+      ctx.fillStyle = '#0a0b10';
       ctx.fillRect(0, 0, width, height);
 
-      // Draw subtle grid
-      ctx.strokeStyle = 'rgba(51, 65, 85, 0.4)';
+      // Draw subtle telemetry grid
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.04)';
       ctx.lineWidth = 1;
       const gridSize = 40;
       for (let x = 0; x < width; x += gridSize) {
@@ -55,38 +55,38 @@ export const MouseReplayCanvas: React.FC<MouseReplayCanvasProps> = ({
         ctx.stroke();
       }
 
-      // Draw Option mock zones at the bottom
+      // Draw Option nodes at the bottom
       const optionPositions = [
-        { val: -3, x: 0.12, label: '매우아니다', color: '#ef4444' },
-        { val: -2, x: 0.24, label: '아니다', color: '#f87171' },
-        { val: -1, x: 0.37, label: '약간아니다', color: '#fca5a5' },
-        { val: 0, x: 0.5, label: '보통', color: '#94a3b8' },
-        { val: 1, x: 0.63, label: '약간그렇다', color: '#86efac' },
-        { val: 2, x: 0.76, label: '그렇다', color: '#4ade80' },
-        { val: 3, x: 0.88, label: '매우그렇다', color: '#22c55e' },
+        { val: -3, x: 0.12, label: '매우아니다', color: '#f43f5e' },
+        { val: -2, x: 0.24, label: '아니다', color: '#fb7185' },
+        { val: -1, x: 0.37, label: '약간아니다', color: '#fda4af' },
+        { val: 0, x: 0.5, label: '보통', color: '#71717a' },
+        { val: 1, x: 0.63, label: '약간그렇다', color: '#6ee7b7' },
+        { val: 2, x: 0.76, label: '그렇다', color: '#34d399' },
+        { val: 3, x: 0.88, label: '매우그렇다', color: '#10b981' },
       ];
 
-      const optionY = height * 0.72;
+      const optionY = height * 0.74;
       optionPositions.forEach((opt) => {
         const cx = opt.x * width;
         ctx.beginPath();
-        ctx.arc(cx, optionY, 14, 0, Math.PI * 2);
-        ctx.fillStyle = 'rgba(30, 41, 59, 0.8)';
-        ctx.strokeStyle = opt.color;
-        ctx.lineWidth = 2;
+        ctx.arc(cx, optionY, 12, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.03)';
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.12)';
+        ctx.lineWidth = 1.5;
         ctx.fill();
         ctx.stroke();
 
-        ctx.fillStyle = '#64748b';
-        ctx.font = '10px sans-serif';
+        ctx.fillStyle = '#71717a';
+        ctx.font = '10px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
         ctx.textAlign = 'center';
-        ctx.fillText(opt.label, cx, optionY + 28);
+        ctx.fillText(opt.label, cx, optionY + 26);
       });
 
       // Filter points up to current playback time
       const visiblePoints = trajectory.filter((pt) => pt.timestamp <= currentTime);
 
-      // Draw trajectory path with gradient glow
+      // Draw trajectory path
       if (visiblePoints.length > 1) {
         ctx.beginPath();
         ctx.moveTo(visiblePoints[0].x * width, visiblePoints[0].y * height);
@@ -96,65 +96,54 @@ export const MouseReplayCanvas: React.FC<MouseReplayCanvasProps> = ({
           ctx.lineTo(pt.x * width, pt.y * height);
         }
 
-        ctx.strokeStyle = 'rgba(99, 102, 241, 0.7)';
-        ctx.lineWidth = 3;
+        ctx.strokeStyle = '#38bdf8';
+        ctx.lineWidth = 2;
         ctx.lineCap = 'round';
         ctx.lineJoin = 'round';
-        ctx.stroke();
-
-        // Glowing outer shadow
-        ctx.strokeStyle = 'rgba(168, 85, 247, 0.3)';
-        ctx.lineWidth = 7;
         ctx.stroke();
       }
 
       // Draw clicks up to current time
       const pastClicks = clicks.filter((c) => c.timestamp <= currentTime);
       pastClicks.forEach((c, idx) => {
-        // Find matching opt position
         const opt = optionPositions.find((o) => o.val === c.value);
         if (opt) {
           const cx = opt.x * width;
-          // Pulse animation based on click age
           const clickAge = currentTime - c.timestamp;
-          const pulseRadius = Math.min(30, 14 + (clickAge / 50) % 20);
+          const pulseRadius = Math.min(26, 12 + (clickAge / 60) % 16);
 
           ctx.beginPath();
           ctx.arc(cx, optionY, pulseRadius, 0, Math.PI * 2);
-          ctx.strokeStyle = idx === pastClicks.length - 1 ? '#eab308' : 'rgba(234, 179, 8, 0.4)';
-          ctx.lineWidth = 2;
+          ctx.strokeStyle = 'rgba(245, 158, 11, 0.5)';
+          ctx.lineWidth = 1.5;
           ctx.stroke();
 
           // Click badge
           ctx.beginPath();
           ctx.arc(cx, optionY, 8, 0, Math.PI * 2);
-          ctx.fillStyle = '#eab308';
+          ctx.fillStyle = '#f59e0b';
           ctx.fill();
 
-          ctx.fillStyle = '#0f172a';
+          ctx.fillStyle = '#090a0f';
           ctx.font = 'bold 9px sans-serif';
           ctx.fillText(`${idx + 1}`, cx, optionY + 3);
         }
       });
 
-      // Draw active cursor head
+      // Draw active cursor pointer
       if (visiblePoints.length > 0) {
         const lastPt = visiblePoints[visiblePoints.length - 1];
         const cx = lastPt.x * width;
         const cy = lastPt.y * height;
 
-        // Glowing cursor head
         ctx.beginPath();
-        ctx.arc(cx, cy, 7, 0, Math.PI * 2);
-        ctx.fillStyle = '#38bdf8';
-        ctx.shadowColor = '#38bdf8';
-        ctx.shadowBlur = 10;
+        ctx.arc(cx, cy, 5, 0, Math.PI * 2);
+        ctx.fillStyle = '#ffffff';
         ctx.fill();
-        ctx.shadowBlur = 0; // reset
 
         ctx.beginPath();
-        ctx.arc(cx, cy, 14, 0, Math.PI * 2);
-        ctx.strokeStyle = 'rgba(56, 189, 248, 0.5)';
+        ctx.arc(cx, cy, 11, 0, Math.PI * 2);
+        ctx.strokeStyle = 'rgba(56, 189, 248, 0.6)';
         ctx.lineWidth = 1.5;
         ctx.stroke();
       }
@@ -216,18 +205,20 @@ export const MouseReplayCanvas: React.FC<MouseReplayCanvasProps> = ({
   };
 
   return (
-    <div className="flex flex-col items-center bg-slate-900/90 border border-slate-700/60 rounded-2xl p-4 shadow-xl text-slate-100 max-w-full">
+    <div className="flex flex-col items-center bg-neutral-950 border border-white/[0.08] rounded-2xl p-4 shadow-xl text-neutral-100 max-w-full">
       <div className="flex items-center justify-between w-full mb-3 px-1">
         <div className="flex items-center gap-2">
-          <Activity className="w-4 h-4 text-indigo-400 animate-pulse" />
-          <span className="text-sm font-semibold text-slate-200">실제 마우스 궤적 및 고민 리플레이</span>
+          <Crosshair className="w-3.5 h-3.5 text-neutral-400" />
+          <span className="text-xs font-mono text-neutral-300 uppercase tracking-wide">
+            Telemetry Cursor Replay
+          </span>
         </div>
-        <div className="text-xs text-slate-400 font-mono">
+        <div className="text-xs text-neutral-500 font-mono">
           {(playbackProgress * (duration / 1000)).toFixed(1)}s / {(duration / 1000).toFixed(1)}s
         </div>
       </div>
 
-      <div className="relative rounded-xl overflow-hidden border border-slate-700/70 shadow-inner bg-slate-950 w-full flex justify-center">
+      <div className="relative rounded-xl overflow-hidden border border-white/[0.06] bg-[#07080c] w-full flex justify-center">
         <canvas
           ref={canvasRef}
           width={width}
@@ -236,42 +227,42 @@ export const MouseReplayCanvas: React.FC<MouseReplayCanvasProps> = ({
         />
       </div>
 
-      {/* Progress Bar */}
-      <div className="w-full bg-slate-800 h-1.5 rounded-full mt-3 overflow-hidden cursor-pointer">
+      {/* Scrubber */}
+      <div className="w-full bg-neutral-800 h-1 rounded-full mt-3 overflow-hidden cursor-pointer">
         <div
-          className="bg-gradient-to-r from-indigo-500 via-purple-500 to-sky-400 h-full transition-all duration-75"
+          className="bg-neutral-300 h-full transition-all duration-75"
           style={{ width: `${playbackProgress * 100}%` }}
         />
       </div>
 
       {/* Controls and Click Stats */}
-      <div className="flex items-center justify-between w-full mt-3 text-xs text-slate-400">
+      <div className="flex items-center justify-between w-full mt-3 text-xs font-mono text-neutral-400">
         <div className="flex items-center gap-2">
           <button
             onClick={handleTogglePlay}
-            className="p-1.5 rounded-lg bg-indigo-600/80 hover:bg-indigo-600 text-white transition-colors flex items-center gap-1 px-2.5 font-medium"
+            className="p-1.5 rounded-lg bg-white/[0.08] hover:bg-white/[0.14] text-white transition-colors flex items-center gap-1.5 px-3 font-sans text-xs"
           >
             {isPlaying ? (
               <>
-                <Pause className="w-3.5 h-3.5" /> 일시정지
+                <Pause className="w-3 h-3" /> 정지
               </>
             ) : (
               <>
-                <Play className="w-3.5 h-3.5" /> 재생
+                <Play className="w-3 h-3" /> 재생
               </>
             )}
           </button>
           <button
             onClick={handleRestart}
-            className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 transition-colors flex items-center gap-1 px-2"
+            className="p-1.5 rounded-lg bg-transparent hover:bg-white/[0.06] text-neutral-400 hover:text-white transition-colors flex items-center gap-1 px-2 font-sans text-xs"
           >
-            <RotateCcw className="w-3.5 h-3.5" /> 다시보기
+            <RotateCcw className="w-3 h-3" /> 다시보기
           </button>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-4 text-[11px]">
           <span>
-            선택 변경: <strong className="text-amber-400">{behaviorLog.changeCount}회</strong>
+            선택 번복: <strong className="text-amber-400">{behaviorLog.changeCount}회</strong>
           </span>
           <span>
             최종 결정:{' '}

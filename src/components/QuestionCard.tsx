@@ -4,7 +4,7 @@ import React, { useRef } from 'react';
 import { Question, QuestionBehaviorLog } from '../types';
 import { LIKERT_OPTIONS } from '../data/questions';
 import { useBehaviorTracker } from '../hooks/useBehaviorTracker';
-import { ArrowRight, Activity, HelpCircle, CheckCircle2 } from 'lucide-react';
+import { ArrowRight, Check, Activity } from 'lucide-react';
 
 interface QuestionCardProps {
   question: Question;
@@ -40,54 +40,53 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
   const getCategoryLabel = (cat: Question['category']) => {
     switch (cat) {
       case 'social':
-        return '대인 관계 및 에너지';
+        return '사회적 상호작용 및 에너지';
       case 'cognition':
-        return '인식 및 사고 방식';
+        return '인식 및 정보 수용';
       case 'decision':
-        return '판단 및 의사 결정';
+        return '의사 결정 및 판단';
       case 'lifestyle':
-        return '생활 양식 및 계획성';
+        return '생활 양식 및 통제';
     }
   };
 
   return (
     <div
       ref={containerRef}
-      className="relative w-full max-w-2xl mx-auto bg-slate-900/80 border border-slate-800 backdrop-blur-xl rounded-3xl p-6 sm:p-8 shadow-2xl transition-all duration-300 text-slate-100 flex flex-col justify-between min-h-[460px]"
+      className="relative w-full max-w-2xl mx-auto bg-neutral-900/90 border border-white/[0.08] backdrop-blur-xl rounded-3xl p-6 sm:p-10 shadow-2xl transition-all duration-300 text-neutral-100 flex flex-col justify-between min-h-[480px]"
     >
-      {/* Top Header: Progress & Tracking Indicator */}
+      {/* Top Header: Progress & Telemetry */}
       <div>
-        <div className="flex items-center justify-between text-xs text-slate-400 mb-2">
-          <span className="font-semibold text-indigo-400 uppercase tracking-wider">
+        <div className="flex items-center justify-between text-xs font-mono text-neutral-400 mb-3">
+          <span className="text-neutral-300 font-medium tracking-wide uppercase">
             {getCategoryLabel(question.category)}
           </span>
-          <div className="flex items-center gap-2">
-            <span className="flex items-center gap-1.5 text-xs text-emerald-400/90 font-mono bg-emerald-950/40 px-2 py-0.5 rounded-full border border-emerald-800/40">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
-              행동 로그 기록 중
+          <div className="flex items-center gap-2.5">
+            <span className="flex items-center gap-1.5 text-[11px] text-emerald-400/90 bg-emerald-500/10 px-2.5 py-0.5 rounded-full border border-emerald-500/20">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+              TELEMETRY LOGGING
             </span>
-            <span className="font-mono text-slate-300 font-bold">
-              {currentIndex + 1} / {totalQuestions}
+            <span className="text-neutral-200 font-semibold">
+              {String(currentIndex + 1).padStart(2, '0')} / {String(totalQuestions).padStart(2, '0')}
             </span>
           </div>
         </div>
 
-        {/* Progress Bar */}
-        <div className="w-full bg-slate-800 h-2 rounded-full mb-6 overflow-hidden">
+        {/* Minimal Progress Bar */}
+        <div className="w-full bg-neutral-800/80 h-1 rounded-full mb-8 overflow-hidden">
           <div
-            className="h-full bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 transition-all duration-300 rounded-full"
+            className="h-full bg-neutral-200 transition-all duration-300 rounded-full"
             style={{ width: `${progressPercent}%` }}
           />
         </div>
 
-        {/* Question Title */}
-        <div className="mb-8 text-center sm:text-left">
-          <h2 className="text-xl sm:text-2xl font-bold text-white leading-relaxed mb-2">
+        {/* Question Title & Description */}
+        <div className="mb-10 text-center sm:text-left">
+          <h2 className="text-xl sm:text-2xl font-bold text-white leading-relaxed mb-3">
             {question.title}
           </h2>
           {question.description && (
-            <p className="text-sm text-slate-400 flex items-center gap-1.5 justify-center sm:justify-start">
-              <HelpCircle className="w-4 h-4 text-slate-500 shrink-0" />
+            <p className="text-xs sm:text-sm text-neutral-400 leading-relaxed">
               {question.description}
             </p>
           )}
@@ -95,16 +94,25 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
       </div>
 
       {/* Likert Scale Choices */}
-      <div className="my-6">
-        <div className="flex justify-between items-center text-xs sm:text-sm font-semibold mb-4 px-2">
-          <span className="text-rose-400">비동의 (아니다)</span>
-          <span className="text-slate-500">중립</span>
-          <span className="text-emerald-400">동의 (그렇다)</span>
+      <div className="my-4">
+        <div className="flex justify-between items-center text-xs font-medium text-neutral-400 mb-4 px-3">
+          <span className="text-rose-400 font-semibold">비동의</span>
+          <span className="text-neutral-500 text-[11px]">중립</span>
+          <span className="text-emerald-400 font-semibold">동의</span>
         </div>
 
-        <div className="flex items-center justify-between gap-1 sm:gap-2 px-1 py-4 bg-slate-950/50 rounded-2xl border border-slate-800/60">
+        <div className="flex items-center justify-between gap-1 sm:gap-2 px-2 sm:px-4 py-5 bg-neutral-950/60 rounded-2xl border border-white/[0.06]">
           {LIKERT_OPTIONS.map((opt) => {
             const isSelected = selectedVal === opt.value;
+            const sizeClass =
+              Math.abs(opt.value) === 3
+                ? 'w-11 h-11'
+                : Math.abs(opt.value) === 2
+                ? 'w-9 h-9'
+                : opt.value === 0
+                ? 'w-7 h-7'
+                : 'w-8 h-8';
+
             return (
               <div
                 key={opt.value}
@@ -116,22 +124,20 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
                   type="button"
                   onClick={() => handleSelectOption(opt.value)}
                   className={`
-                    relative rounded-full transition-all duration-200 cursor-pointer flex items-center justify-center
-                    ${isSelected ? 'scale-110 shadow-lg ring-4 ring-offset-2 ring-offset-slate-900' : 'hover:scale-105 opacity-70 hover:opacity-100'}
+                    relative rounded-full transition-all duration-150 cursor-pointer flex items-center justify-center
+                    ${sizeClass}
+                    ${
+                      isSelected
+                        ? 'bg-neutral-100 text-neutral-950 shadow-[0_0_15px_rgba(255,255,255,0.3)] ring-2 ring-white scale-105'
+                        : 'bg-neutral-900 border border-white/[0.15] hover:border-white/[0.4] text-transparent hover:scale-105'
+                    }
                   `}
-                  style={{
-                    width: opt.value === -3 || opt.value === 3 ? '42px' : opt.value === -2 || opt.value === 2 ? '36px' : opt.value === 0 ? '28px' : '32px',
-                    height: opt.value === -3 || opt.value === 3 ? '42px' : opt.value === -2 || opt.value === 2 ? '36px' : opt.value === 0 ? '28px' : '32px',
-                    backgroundColor: isSelected ? opt.color : 'transparent',
-                    border: `2.5px solid ${opt.color}`,
-                    borderColor: opt.color,
-                  }}
                 >
-                  {isSelected && <CheckCircle2 className="w-4 h-4 text-slate-950 stroke-[3]" />}
+                  {isSelected && <Check className="w-4 h-4 stroke-[3]" />}
                 </button>
                 <span
                   className={`text-[10px] sm:text-xs text-center transition-colors hidden sm:block ${
-                    isSelected ? 'text-white font-bold' : 'text-slate-500 group-hover:text-slate-300'
+                    isSelected ? 'text-neutral-100 font-semibold' : 'text-neutral-500 group-hover:text-neutral-400'
                   }`}
                 >
                   {opt.label}
@@ -143,13 +149,15 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
       </div>
 
       {/* Bottom Action Footer */}
-      <div className="flex items-center justify-between pt-4 border-t border-slate-800/80">
-        <div className="text-xs text-slate-400">
-          {changeCount > 0 && (
-            <span className="text-amber-400 font-medium flex items-center gap-1">
+      <div className="flex items-center justify-between pt-6 border-t border-white/[0.06] mt-4">
+        <div className="text-xs text-neutral-400">
+          {changeCount > 0 ? (
+            <span className="text-amber-400 font-mono flex items-center gap-1.5">
               <Activity className="w-3.5 h-3.5" />
-              선택지 {changeCount}번 수정됨 (망설임 감지)
+              선택 번복 {changeCount}회 감지됨
             </span>
+          ) : (
+            <span className="text-neutral-500 text-[11px]">솔직한 첫 반응에 집중해보세요</span>
           )}
         </div>
 
@@ -157,15 +165,15 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
           onClick={handleNextClick}
           disabled={selectedVal === null}
           className={`
-            inline-flex items-center gap-2 px-6 py-3 rounded-xl font-bold text-sm transition-all duration-200 cursor-pointer
+            inline-flex items-center gap-2 px-6 py-3 rounded-full font-medium text-xs sm:text-sm transition-all duration-200 cursor-pointer
             ${
               selectedVal !== null
-                ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg shadow-indigo-600/30 hover:scale-105 active:scale-95'
-                : 'bg-slate-800 text-slate-500 cursor-not-allowed opacity-60'
+                ? 'bg-neutral-100 hover:bg-white text-neutral-950 shadow-md hover:scale-[1.02] active:scale-[0.98]'
+                : 'bg-neutral-800 text-neutral-500 cursor-not-allowed opacity-50'
             }
           `}
         >
-          <span>{currentIndex === totalQuestions - 1 ? '결과 분석하기' : '다음 문항'}</span>
+          <span>{currentIndex === totalQuestions - 1 ? '결과 분석하기' : '다음'}</span>
           <ArrowRight className="w-4 h-4" />
         </button>
       </div>

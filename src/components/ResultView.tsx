@@ -5,7 +5,6 @@ import { FullAnalysisResult } from '../types';
 import { MouseReplayCanvas } from './MouseReplayCanvas';
 import confetti from 'canvas-confetti';
 import {
-  Sparkles,
   Zap,
   Brain,
   Compass,
@@ -15,10 +14,9 @@ import {
   Check,
   Activity,
   ArrowRightLeft,
-  Flame,
   MousePointer,
   Clock,
-  HelpCircle,
+  Sparkles,
 } from 'lucide-react';
 
 interface ResultViewProps {
@@ -31,10 +29,9 @@ export const ResultView: React.FC<ResultViewProps> = ({ result, onRestart }) => 
   const [copied, setCopied] = useState<boolean>(false);
 
   useEffect(() => {
-    // Fire festive confetti
     confetti({
-      particleCount: 80,
-      spread: 70,
+      particleCount: 50,
+      spread: 60,
       origin: { y: 0.6 },
     });
   }, []);
@@ -50,111 +47,106 @@ export const ResultView: React.FC<ResultViewProps> = ({ result, onRestart }) => 
   const getPersonaIcon = (iconName: string) => {
     switch (iconName) {
       case 'Zap':
-        return <Zap className="w-8 h-8 text-amber-400" />;
+        return <Zap className="w-6 h-6 text-amber-400" />;
       case 'Brain':
-        return <Brain className="w-8 h-8 text-purple-400" />;
+        return <Brain className="w-6 h-6 text-sky-400" />;
       case 'Compass':
-        return <Compass className="w-8 h-8 text-rose-400" />;
+        return <Compass className="w-6 h-6 text-rose-400" />;
       case 'Sparkles':
-        return <Sparkles className="w-8 h-8 text-sky-400" />;
+        return <Sparkles className="w-6 h-6 text-emerald-400" />;
       case 'Target':
       default:
-        return <Target className="w-8 h-8 text-emerald-400" />;
+        return <Target className="w-6 h-6 text-neutral-300" />;
     }
   };
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-8 sm:py-12 space-y-10 text-slate-100">
-      {/* 1. Top Hero: MBTI & Behavioral Diagnosis */}
-      <div className="relative overflow-hidden bg-gradient-to-br from-slate-900 via-indigo-950/50 to-slate-900 border border-indigo-500/30 rounded-3xl p-6 sm:p-10 shadow-2xl text-center flex flex-col items-center">
-        <div className="absolute top-0 right-0 -mr-16 -mt-16 w-64 h-64 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute bottom-0 left-0 -ml-16 -mb-16 w-64 h-64 bg-purple-500/10 rounded-full blur-3xl pointer-events-none" />
-
-        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-indigo-500/20 border border-indigo-500/30 text-indigo-300 text-xs sm:text-sm font-semibold mb-4">
-          <Sparkles className="w-4 h-4" />
-          <span>행동 데이터 기반 정밀 심리 진단 결과</span>
+    <div className="max-w-4xl mx-auto px-4 py-8 sm:py-16 space-y-12 text-neutral-100 font-sans">
+      {/* 1. Top Dossier Hero */}
+      <div className="relative overflow-hidden bg-neutral-900/80 border border-white/[0.08] rounded-3xl p-6 sm:p-12 shadow-2xl flex flex-col items-center text-center">
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/[0.04] border border-white/[0.08] text-neutral-400 text-xs font-mono mb-6">
+          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+          DIAGNOSIS REPORT
         </div>
 
-        <h1 className="text-4xl sm:text-6xl font-black tracking-tight text-white mb-2">
-          <span className="bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 via-purple-300 to-pink-400">
-            {result.mbti}
-          </span>
+        <h1 className="text-5xl sm:text-7xl font-black tracking-tight text-white mb-2 font-mono">
+          {result.mbti}
         </h1>
-        <div className="text-xl sm:text-2xl font-bold text-slate-200 mb-4">{result.mbtiTitle}</div>
-        <p className="text-sm sm:text-base text-slate-400 max-w-xl mb-6 leading-relaxed">
+        <div className="text-xl sm:text-2xl font-bold text-neutral-200 mb-4">{result.mbtiTitle}</div>
+        <p className="text-sm sm:text-base text-neutral-400 max-w-lg mb-8 leading-relaxed font-light">
           {result.mbtiDescription}
         </p>
 
-        {/* Global Stats Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 w-full max-w-2xl bg-slate-950/60 p-4 rounded-2xl border border-slate-800/80">
+        {/* Global Key Metrics Grid */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 w-full max-w-2xl bg-neutral-950/60 p-4 rounded-2xl border border-white/[0.06]">
           <div className="flex flex-col items-center p-2">
-            <span className="text-xs text-slate-500 mb-1 flex items-center gap-1">
-              <Zap className="w-3.5 h-3.5 text-amber-400" />
+            <span className="text-[11px] font-mono text-neutral-500 mb-1 flex items-center gap-1">
+              <Zap className="w-3 h-3 text-amber-400" />
               종합 확신도
             </span>
-            <span className="text-lg sm:text-xl font-bold text-amber-400">
+            <span className="text-lg sm:text-xl font-bold text-neutral-100 font-mono">
               {result.overallCertainty}%
             </span>
           </div>
 
           <div className="flex flex-col items-center p-2">
-            <span className="text-xs text-slate-500 mb-1 flex items-center gap-1">
-              <Clock className="w-3.5 h-3.5 text-sky-400" />
-              총 검사 시간
+            <span className="text-[11px] font-mono text-neutral-500 mb-1 flex items-center gap-1">
+              <Clock className="w-3 h-3 text-sky-400" />
+              총 소요 시간
             </span>
-            <span className="text-lg sm:text-xl font-bold text-sky-400">
-              {(result.totalTestDuration / 1000).toFixed(1)}초
+            <span className="text-lg sm:text-xl font-bold text-neutral-100 font-mono">
+              {(result.totalTestDuration / 1000).toFixed(1)}s
             </span>
           </div>
 
           <div className="flex flex-col items-center p-2">
-            <span className="text-xs text-slate-500 mb-1 flex items-center gap-1">
-              <ArrowRightLeft className="w-3.5 h-3.5 text-rose-400" />
-              선택 번복 횟수
+            <span className="text-[11px] font-mono text-neutral-500 mb-1 flex items-center gap-1">
+              <ArrowRightLeft className="w-3 h-3 text-rose-400" />
+              답변 번복
             </span>
-            <span className="text-lg sm:text-xl font-bold text-rose-400">
+            <span className="text-lg sm:text-xl font-bold text-neutral-100 font-mono">
               {result.totalAnswerChanges}회
             </span>
           </div>
 
           <div className="flex flex-col items-center p-2">
-            <span className="text-xs text-slate-500 mb-1 flex items-center gap-1">
-              <MousePointer className="w-3.5 h-3.5 text-emerald-400" />
+            <span className="text-[11px] font-mono text-neutral-500 mb-1 flex items-center gap-1">
+              <MousePointer className="w-3 h-3 text-emerald-400" />
               방황 지수
             </span>
-            <span className="text-lg sm:text-xl font-bold text-emerald-400">
+            <span className="text-lg sm:text-xl font-bold text-neutral-100 font-mono">
               {result.mouseTrajectoryStats.indecisivenessIndex}/100
             </span>
           </div>
         </div>
       </div>
 
-      {/* 2. Behavior Persona Card */}
-      <div className="bg-slate-900/80 border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-xl">
-        <div className="flex items-center gap-2 text-xs font-semibold text-purple-400 uppercase tracking-wider mb-3">
-          <Activity className="w-4 h-4" />
-          <span>마우스 움직임 행동 분석 프로필</span>
+      {/* 2. Behavior Profile Card */}
+      <div className="bg-neutral-900/60 border border-white/[0.08] rounded-3xl p-6 sm:p-8 shadow-xl">
+        <div className="flex items-center gap-2 text-xs font-mono text-neutral-400 uppercase tracking-wide mb-4">
+          <Activity className="w-3.5 h-3.5" />
+          <span>Behavior Dynamics Profile</span>
         </div>
 
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-5">
-          <div className="w-16 h-16 rounded-2xl bg-purple-500/10 border border-purple-500/30 flex items-center justify-center shrink-0">
+          <div className="w-14 h-14 rounded-2xl bg-white/[0.04] border border-white/[0.08] flex items-center justify-center shrink-0">
             {getPersonaIcon(result.behaviorPersona.iconName)}
           </div>
           <div>
-            <h3 className="text-xl sm:text-2xl font-bold text-white mb-1">
+            <h3 className="text-lg sm:text-xl font-bold text-white mb-1">
               {result.behaviorPersona.title}
             </h3>
-            <p className="text-sm font-medium text-purple-300 mb-2">
+            <p className="text-xs sm:text-sm font-medium text-neutral-300 mb-2">
               {result.behaviorPersona.subtitle}
             </p>
-            <p className="text-xs sm:text-sm text-slate-400 leading-relaxed mb-3">
+            <p className="text-xs sm:text-sm text-neutral-400 leading-relaxed mb-4 font-light">
               {result.behaviorPersona.description}
             </p>
             <div className="flex flex-wrap gap-2">
               {result.behaviorPersona.tags.map((tag) => (
                 <span
                   key={tag}
-                  className="px-2.5 py-1 rounded-lg bg-purple-950/60 border border-purple-800/40 text-purple-300 text-xs font-medium"
+                  className="px-2.5 py-1 rounded-lg bg-neutral-950 border border-white/[0.06] text-neutral-400 text-xs font-mono"
                 >
                   {tag}
                 </span>
@@ -164,47 +156,59 @@ export const ResultView: React.FC<ResultViewProps> = ({ result, onRestart }) => 
         </div>
       </div>
 
-      {/* 3. 4 MBTI Dimensions with Certainty & Behavior Insight */}
-      <div className="bg-slate-900/80 border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-xl">
-        <h2 className="text-xl font-bold text-white mb-6 flex items-center gap-2">
-          <Flame className="w-5 h-5 text-amber-400" />
-          <span>4대 성향 축 및 행동 기반 확신도 분석</span>
-        </h2>
+      {/* 3. 4 MBTI Dimensions with Clean Precision Ratios */}
+      <div className="bg-neutral-900/60 border border-white/[0.08] rounded-3xl p-6 sm:p-8 shadow-xl">
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-lg font-bold text-white font-mono tracking-tight">
+            4-AXIS PREFERENCE & CERTAINTY
+          </h2>
+          <span className="text-xs text-neutral-500 font-mono">단호함 vs 망설임 지표</span>
+        </div>
 
-        <div className="space-y-6">
+        <div className="space-y-4">
           {Object.entries(result.dimensions).map(([key, dim]) => {
             return (
               <div
                 key={key}
-                className="bg-slate-950/60 border border-slate-800/80 rounded-2xl p-4 sm:p-5"
+                className="bg-neutral-950/70 border border-white/[0.06] rounded-2xl p-4 sm:p-5"
               >
-                <div className="flex justify-between items-center mb-2">
-                  <span className="text-sm font-bold text-slate-200">
-                    {dim.leftType} 성향 ({dim.leftScore}%)
+                <div className="flex justify-between items-center mb-2.5 text-xs font-mono">
+                  <span
+                    className={`font-semibold ${
+                      dim.winner === dim.leftType ? 'text-white' : 'text-neutral-500'
+                    }`}
+                  >
+                    {dim.leftType} ({dim.leftScore}%)
                   </span>
-                  <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-indigo-500/10 text-indigo-300 border border-indigo-500/20">
+                  <span className="text-[11px] px-2 py-0.5 rounded-full bg-white/[0.05] text-neutral-300 border border-white/[0.08]">
                     확신도 {dim.certaintyScore}%
                   </span>
-                  <span className="text-sm font-bold text-slate-200">
-                    {dim.rightType} 성향 ({dim.rightScore}%)
+                  <span
+                    className={`font-semibold ${
+                      dim.winner === dim.rightType ? 'text-white' : 'text-neutral-500'
+                    }`}
+                  >
+                    {dim.rightType} ({dim.rightScore}%)
                   </span>
                 </div>
 
                 {/* Score Ratio Bar */}
-                <div className="w-full bg-slate-800 h-3 rounded-full overflow-hidden flex mb-3">
+                <div className="w-full bg-neutral-800 h-2 rounded-full overflow-hidden flex mb-3">
                   <div
-                    className="h-full bg-gradient-to-r from-indigo-500 to-purple-500 transition-all duration-500"
+                    className="h-full bg-neutral-200 transition-all duration-500"
                     style={{ width: `${dim.leftScore}%` }}
                   />
                   <div
-                    className="h-full bg-gradient-to-r from-pink-500 to-rose-500 transition-all duration-500"
+                    className="h-full bg-neutral-600 transition-all duration-500"
                     style={{ width: `${dim.rightScore}%` }}
                   />
                 </div>
 
                 {/* Behavioral Note */}
-                <div className="flex items-start gap-2 text-xs text-slate-400 bg-slate-900/60 p-2.5 rounded-xl border border-slate-800/40">
-                  <Activity className="w-3.5 h-3.5 text-indigo-400 shrink-0 mt-0.5" />
+                <div className="text-xs text-neutral-400 font-light flex items-start gap-2 bg-neutral-900/60 p-2.5 rounded-xl border border-white/[0.04]">
+                  <span className="text-neutral-500 font-mono text-[10px] uppercase shrink-0 mt-0.5">
+                    NOTE
+                  </span>
                   <span>{dim.behaviorInsight}</span>
                 </div>
               </div>
@@ -213,17 +217,16 @@ export const ResultView: React.FC<ResultViewProps> = ({ result, onRestart }) => 
         </div>
       </div>
 
-      {/* 4. Top Dilemmas with Real Interactive Replay */}
+      {/* 4. Top Dilemmas with Telemetry Replay */}
       {result.topDilemmas.length > 0 && (
-        <div className="bg-slate-900/80 border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-xl">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-6">
+        <div className="bg-neutral-900/60 border border-white/[0.08] rounded-3xl p-6 sm:p-8 shadow-xl">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
             <div>
-              <h2 className="text-xl font-bold text-white flex items-center gap-2">
-                <Brain className="w-5 h-5 text-indigo-400" />
-                <span>가장 치열하게 고뇌했던 문항 TOP 3</span>
+              <h2 className="text-lg font-bold text-white font-mono tracking-tight">
+                CRITICAL DILEMMAS TOP 3
               </h2>
-              <p className="text-xs text-slate-400 mt-1">
-                체류 시간, 마우스 지그재그 방향 전환, 선택지 수정을 기반으로 추출된 심리적 갈등 문항
+              <p className="text-xs text-neutral-400 mt-1 font-light">
+                마우스 방향 전환 횟수와 체류 시간이 가장 길었던 갈등 문항
               </p>
             </div>
 
@@ -233,10 +236,10 @@ export const ResultView: React.FC<ResultViewProps> = ({ result, onRestart }) => 
                 <button
                   key={idx}
                   onClick={() => setSelectedDilemmaIdx(idx)}
-                  className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                  className={`px-3 py-1.5 rounded-xl text-xs font-mono font-medium transition-all cursor-pointer ${
                     selectedDilemmaIdx === idx
-                      ? 'bg-indigo-600 text-white shadow-md'
-                      : 'bg-slate-800 text-slate-400 hover:text-slate-200'
+                      ? 'bg-neutral-100 text-neutral-950 shadow-sm'
+                      : 'bg-neutral-950 border border-white/[0.06] text-neutral-400 hover:text-white'
                   }`}
                 >
                   TOP {idx + 1}
@@ -245,26 +248,26 @@ export const ResultView: React.FC<ResultViewProps> = ({ result, onRestart }) => 
             </div>
           </div>
 
-          {/* Active Dilemma View */}
+          {/* Active Dilemma Card */}
           {result.topDilemmas[selectedDilemmaIdx] && (
             <div className="space-y-4">
-              <div className="bg-slate-950/80 border border-slate-800 p-4 rounded-2xl">
-                <div className="text-xs font-semibold text-indigo-400 mb-1">
-                  질문 #{result.topDilemmas[selectedDilemmaIdx].question.id}
+              <div className="bg-neutral-950/80 border border-white/[0.06] p-4 rounded-2xl">
+                <div className="text-xs font-mono text-neutral-500 mb-1">
+                  QUESTION #{result.topDilemmas[selectedDilemmaIdx].question.id}
                 </div>
-                <h4 className="text-base font-bold text-white mb-2">
+                <h4 className="text-sm sm:text-base font-bold text-white mb-2 leading-relaxed">
                   {result.topDilemmas[selectedDilemmaIdx].question.title}
                 </h4>
-                <div className="flex flex-wrap items-center gap-3 text-xs text-slate-400 mb-2">
-                  <span className="text-amber-400 font-medium">
+                <div className="flex flex-wrap items-center gap-2 text-xs text-neutral-400 font-light">
+                  <span className="text-amber-400 font-mono">
                     {result.topDilemmas[selectedDilemmaIdx].changeHistorySummary}
                   </span>
-                  <span>•</span>
+                  <span>·</span>
                   <span>{result.topDilemmas[selectedDilemmaIdx].insight}</span>
                 </div>
               </div>
 
-              {/* Canvas Replayer */}
+              {/* Canvas Telemetry Replayer */}
               <MouseReplayCanvas
                 key={result.topDilemmas[selectedDilemmaIdx].behavior.questionId}
                 behaviorLog={result.topDilemmas[selectedDilemmaIdx].behavior}
@@ -274,34 +277,33 @@ export const ResultView: React.FC<ResultViewProps> = ({ result, onRestart }) => 
         </div>
       )}
 
-      {/* 5. Persona Gap Analysis (본능 vs 사회적 가면) */}
+      {/* 5. Persona Gap Analysis */}
       {result.personaGap.detected && (
-        <div className="bg-slate-900/80 border border-rose-500/20 rounded-3xl p-6 sm:p-8 shadow-xl">
-          <h2 className="text-xl font-bold text-white mb-2 flex items-center gap-2">
-            <ArrowRightLeft className="w-5 h-5 text-rose-400" />
-            <span>사회적 페르소나 vs 본능적 충동 분석</span>
+        <div className="bg-neutral-900/60 border border-white/[0.08] rounded-3xl p-6 sm:p-8 shadow-xl">
+          <h2 className="text-lg font-bold text-white font-mono tracking-tight mb-2">
+            INSTINCT VS PERSONA GAP
           </h2>
-          <p className="text-xs text-slate-400 mb-6">{result.personaGap.summary}</p>
+          <p className="text-xs text-neutral-400 mb-6 font-light">{result.personaGap.summary}</p>
 
           <div className="space-y-4">
             {result.personaGap.items.map((item, idx) => (
               <div
                 key={idx}
-                className="bg-slate-950/60 border border-slate-800/80 rounded-2xl p-4 sm:p-5"
+                className="bg-neutral-950/70 border border-white/[0.06] rounded-2xl p-4 sm:p-5"
               >
-                <h4 className="text-sm font-semibold text-slate-200 mb-2">
+                <h4 className="text-sm font-semibold text-neutral-200 mb-3">
                   {item.question.title}
                 </h4>
-                <div className="flex items-center gap-2 text-xs mb-3">
-                  <span className="px-2 py-1 rounded-lg bg-slate-800 text-slate-300 font-mono">
+                <div className="flex items-center gap-2 text-xs mb-3 font-mono">
+                  <span className="px-2.5 py-1 rounded-lg bg-neutral-900 border border-white/[0.08] text-neutral-400">
                     첫 본능: {item.initialChoiceText}
                   </span>
-                  <span className="text-rose-400 font-bold">➔</span>
-                  <span className="px-2 py-1 rounded-lg bg-rose-500/20 text-rose-300 border border-rose-500/30 font-mono">
+                  <span className="text-neutral-500">➔</span>
+                  <span className="px-2.5 py-1 rounded-lg bg-white/[0.06] border border-white/[0.12] text-neutral-100 font-semibold">
                     최종 수정: {item.finalChoiceText}
                   </span>
                 </div>
-                <p className="text-xs text-slate-400 leading-relaxed bg-slate-900/60 p-3 rounded-xl border border-slate-800/40">
+                <p className="text-xs text-neutral-400 leading-relaxed font-light bg-neutral-900/50 p-3 rounded-xl border border-white/[0.04]">
                   💡 {item.psychologicalInterpretation}
                 </p>
               </div>
@@ -310,22 +312,22 @@ export const ResultView: React.FC<ResultViewProps> = ({ result, onRestart }) => 
         </div>
       )}
 
-      {/* 6. Bottom Actions */}
-      <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
+      {/* 6. Action Controls */}
+      <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-6">
         <button
           onClick={handleCopyLink}
-          className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-2xl font-bold text-sm bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition-all cursor-pointer"
+          className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-full font-medium text-xs sm:text-sm bg-neutral-900 hover:bg-neutral-800 text-neutral-200 border border-white/[0.1] transition-all cursor-pointer"
         >
           {copied ? <Check className="w-4 h-4 text-emerald-400" /> : <Share2 className="w-4 h-4" />}
-          <span>{copied ? '결과 링크 복사 완료!' : '결과 공유하기'}</span>
+          <span>{copied ? '링크 복사됨' : '결과 링크 복사'}</span>
         </button>
 
         <button
           onClick={onRestart}
-          className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-2xl font-bold text-sm bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white shadow-lg shadow-indigo-600/30 transition-all cursor-pointer"
+          className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-full font-semibold text-xs sm:text-sm bg-neutral-100 hover:bg-white text-neutral-950 shadow-md hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer"
         >
           <RotateCcw className="w-4 h-4" />
-          <span>테스트 다시하기</span>
+          <span>다시 검사하기</span>
         </button>
       </div>
     </div>

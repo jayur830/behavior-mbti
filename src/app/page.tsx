@@ -7,7 +7,7 @@ import { analyzeBehaviorAndMBTI } from '../lib/analyzer';
 import { TestIntro } from '../components/TestIntro';
 import { QuestionCard } from '../components/QuestionCard';
 import { ResultView } from '../components/ResultView';
-import { BrainCircuit, Activity, Sparkles } from 'lucide-react';
+import { Compass, Activity } from 'lucide-react';
 
 export default function Home() {
   const [step, setStep] = useState<'intro' | 'test' | 'analyzing' | 'result'>('intro');
@@ -29,13 +29,12 @@ export default function Home() {
     if (currentQuestionIdx + 1 < QUESTIONS.length) {
       setCurrentQuestionIdx((prev) => prev + 1);
     } else {
-      // Finished all questions -> show analyzing transition
       setStep('analyzing');
       setTimeout(() => {
         const result = analyzeBehaviorAndMBTI(updatedLogs);
         setAnalysisResult(result);
         setStep('result');
-      }, 1800);
+      }, 1600);
     }
   };
 
@@ -47,29 +46,23 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col justify-between selection:bg-indigo-500 selection:text-white relative overflow-hidden">
-      {/* Background ambient lighting */}
-      <div className="fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-96 bg-gradient-to-b from-indigo-900/20 via-purple-900/10 to-transparent blur-3xl pointer-events-none -z-10" />
-
+    <div className="min-h-screen bg-[#090a0f] text-neutral-100 flex flex-col justify-between selection:bg-neutral-200 selection:text-neutral-900 bg-grid-pattern relative">
       {/* Navigation Header */}
-      <header className="w-full border-b border-slate-800/60 backdrop-blur-md sticky top-0 z-40 bg-slate-950/70">
-        <div className="max-w-5xl mx-auto px-4 h-16 flex items-center justify-between">
-          <div
+      <header className="w-full border-b border-white/[0.06] backdrop-blur-md sticky top-0 z-40 bg-[#090a0f]/80">
+        <div className="max-w-4xl mx-auto px-4 h-16 flex items-center justify-between">
+          <button
             onClick={handleRestart}
-            className="flex items-center gap-2.5 font-extrabold text-lg sm:text-xl tracking-tight cursor-pointer"
+            className="flex items-center gap-2.5 font-mono text-sm tracking-widest text-neutral-200 hover:text-white transition-colors cursor-pointer"
           >
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-indigo-600 to-purple-600 flex items-center justify-center text-white shadow-md shadow-indigo-500/20">
-              <BrainCircuit className="w-5 h-5" />
+            <div className="w-7 h-7 rounded-lg bg-white/[0.08] border border-white/[0.1] flex items-center justify-center text-neutral-100">
+              <Compass className="w-4 h-4 text-emerald-400" />
             </div>
-            <span className="bg-clip-text text-transparent bg-gradient-to-r from-white via-slate-200 to-slate-400">
-              BEHAVIOR MBTI
-            </span>
-          </div>
+            <span className="font-bold">BEHAVIOR<span className="text-neutral-500">.MBTI</span></span>
+          </button>
 
-          <div className="flex items-center gap-2 text-xs font-medium text-slate-400">
-            <span className="inline-block w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-            <span className="hidden sm:inline">Micro-interaction Tracking Engine Active</span>
-            <span className="sm:hidden">Engine Active</span>
+          <div className="flex items-center gap-2 text-xs font-mono text-neutral-400">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+            <span className="hidden sm:inline">TELEMETRY ONLINE</span>
           </div>
         </div>
       </header>
@@ -89,17 +82,15 @@ export default function Home() {
         )}
 
         {step === 'analyzing' && (
-          <div className="flex flex-col items-center justify-center text-center p-8 max-w-md animate-fade-in">
-            <div className="relative w-20 h-20 mb-6">
-              <div className="absolute inset-0 rounded-full border-4 border-indigo-500/20 border-t-indigo-500 animate-spin" />
-              <div className="absolute inset-2 rounded-full border-4 border-purple-500/20 border-b-purple-500 animate-spin-reverse" />
-              <div className="absolute inset-0 flex items-center justify-center">
-                <Activity className="w-8 h-8 text-indigo-400 animate-pulse" />
-              </div>
+          <div className="flex flex-col items-center justify-center text-center p-8 max-w-sm">
+            <div className="w-12 h-12 rounded-full border border-white/[0.1] bg-neutral-900 flex items-center justify-center mb-6 shadow-inner">
+              <Activity className="w-5 h-5 text-emerald-400 animate-pulse" />
             </div>
-            <h3 className="text-xl font-bold text-white mb-2">마우스 행동 데이터 종합 분석 중</h3>
-            <p className="text-xs text-slate-400 leading-relaxed">
-              마우스 궤적 흔적, 옵션 체류 시간, 답변 수정 패턴, 망설임 지수를 역추적하여 진짜 성향을 계산하고 있습니다...
+            <h3 className="text-base font-bold text-white mb-1.5 font-mono">
+              ANALYZING TELEMETRY...
+            </h3>
+            <p className="text-xs text-neutral-400 font-light leading-relaxed">
+              마우스 궤적, 문항별 체류 시간, 선택 번복 이력을 종합하여 무의식적 성향을 분석하고 있습니다.
             </p>
           </div>
         )}
@@ -109,13 +100,12 @@ export default function Home() {
         )}
       </main>
 
-      {/* Global Footer */}
-      <footer className="w-full border-t border-slate-800/60 py-6 text-center text-xs text-slate-500">
-        <div className="max-w-5xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
-          <span>© 2026 Behavior MBTI Lab. All rights reserved.</span>
-          <span className="flex items-center gap-1 text-slate-400">
-            <Sparkles className="w-3.5 h-3.5 text-indigo-400" />
-            Micro-interaction Psycho-Analysis
+      {/* Minimal Footer */}
+      <footer className="w-full border-t border-white/[0.04] py-6 text-center text-xs text-neutral-500 font-mono">
+        <div className="max-w-4xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
+          <span>© 2026 BEHAVIOR MBTI RESEARCH</span>
+          <span className="text-neutral-400 text-[11px]">
+            MICRO-INTERACTION BEHAVIORAL PSYCHOMETRICS
           </span>
         </div>
       </footer>
