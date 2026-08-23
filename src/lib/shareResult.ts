@@ -1,5 +1,5 @@
 import LZString from 'lz-string';
-import { FullAnalysisResult, DimensionAnalysis, QuestionBehaviorLog } from '../types';
+import { FullAnalysisResult, DimensionAnalysis, QuestionBehaviorLog, MousePoint, AnswerSelectionEvent } from '../types';
 import { MBTI_PROFILES, BEHAVIOR_PERSONAS } from '../data/mbtiDescriptions';
 import { calculateUserBenchmark } from '../data/benchmarkStats';
 import { QUESTIONS } from '../data/questions';
@@ -20,6 +20,8 @@ export interface CompactSharePayload {
     dwell: number;
     val: number;
     c: number;
+    pts?: [number, number, number, number][]; // [x*1000, y*1000, timestamp, speed*1000]
+    taps?: [number, number][]; // [value, timestamp]
   }[];
 }
 
@@ -35,12 +37,33 @@ export function encodeResultToCompressedString(result: FullAnalysisResult): stri
     c: result.totalAnswerChanges,
     i: result.mouseTrajectoryStats.indecisivenessIndex,
     dev: result.mouseTrajectoryStats.primaryDevice,
-    dil: result.topDilemmas.map((d) => ({
-      qid: d.question.id,
-      dwell: d.hesitationTime,
-      val: d.behavior.finalValue ?? 0,
-      c: d.behavior.changeCount,
-    })),
+    dil: result.topDilemmas.map((d) => {
+      // Sample trajectory to keep URL concise while preserving smooth replay
+      const rawPts = d.behavior.mouseTrajectory || [];
+      const step = rawPts.length > 50 ? Math.ceil(rawPts.length / 50) : 1;
+      const sampledPts = rawPts
+        .filter((_, idx) => idx % step === 0 || idx === rawPts.length - 1)
+        .map((p): [number, number, number, number] => [
+          Math.round(p.x * 1000),
+          Math.round(p.y * 1000),
+          p.timestamp,
+          Math.round((p.speed || 0) * 1000),
+        ]);
+
+      const taps = (d.behavior.selectionHistory || []).map((s): [number, number] => [
+        s.value,
+        s.timestamp,
+      ]);
+
+      return {
+        qid: d.question.id,
+        dwell: d.hesitationTime,
+        val: d.behavior.finalValue ?? 0,
+        c: d.behavior.changeCount,
+        pts: sampledPts,
+        taps,
+      };
+    }),
   };
 
   try {
@@ -120,30 +143,48 @@ export function decodeResultFromCompressedString(compressed: string): FullAnalys
 
     const benchmark = calculateUserBenchmark(payload.t, payload.c);
 
-    // Reconstruct dilemmas
+    // Reconstruct dilemmas with true trajectories
     const topDilemmas = (payload.dil || []).map((item) => {
       const q = QUESTIONS.find((question) => question.id === item.qid) || QUESTIONS[0];
+
+      const mouseTrajectory: MousePoint[] = (item.pts && item.pts.length > 0)
+        ? item.pts.map((p) => ({
+            x: p[0] / 1000,
+            y: p[1] / 1000,
+            timestamp: p[2],
+            speed: p[3] / 1000,
+            type: 'move',
+          }))
+        : [
+            { x: 0.5, y: 0.8, timestamp: 0, speed: 0 },
+            { x: 0.5, y: 0.5, timestamp: Math.round(item.dwell * 0.5), speed: 0.1 },
+          ];
+
+      const selectionHistory: AnswerSelectionEvent[] = (item.taps && item.taps.length > 0)
+        ? item.taps.map((t) => ({
+            value: t[0],
+            timestamp: t[1],
+          }))
+        : [{ value: item.val, timestamp: Math.round(item.dwell * 0.7) }];
+
       const mockBehavior: QuestionBehaviorLog = {
         questionId: q.id,
         startTime: Date.now() - item.dwell,
         endTime: Date.now(),
         totalDwellTime: item.dwell,
-        firstInteractionTime: Math.round(item.dwell * 0.5),
+        firstInteractionTime: selectionHistory[0]?.timestamp ?? Math.round(item.dwell * 0.5),
         finalValue: item.val,
-        selectionHistory: [{ value: item.val, timestamp: Math.round(item.dwell * 0.5) }],
+        selectionHistory,
         changeCount: item.c,
         hoverLogs: [],
-        mouseTrajectory: [
-          { x: 0.2, y: 0.3, timestamp: 100 },
-          { x: 0.5, y: 0.7, timestamp: Math.round(item.dwell * 0.5) },
-        ],
+        mouseTrajectory,
         directionChanges: item.c * 3,
         hesitationScore: Math.min(100, item.c * 25 + 20),
         tabBlurCount: 0,
         primaryDevice: payload.dev || 'mouse',
         keyStrokeCount: 0,
         touchMetrics: {
-          firstTapLatency: Math.round(item.dwell * 0.6),
+          firstTapLatency: selectionHistory[0]?.timestamp ?? Math.round(item.dwell * 0.6),
           averagePressDuration: 90,
           confirmationDelay: Math.round(item.dwell * 0.3),
           tapCount: item.c + 1,

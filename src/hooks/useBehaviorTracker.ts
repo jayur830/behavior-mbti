@@ -37,14 +37,15 @@ export function useBehaviorTracker({
   const accumulatedDwellTimeRef = useRef<number>(existingLog?.totalDwellTime || 0);
   const tabBlurCountRef = useRef<number>(existingLog?.tabBlurCount || 0);
   const lastFrameTimeRef = useRef<number>(0);
-  const primaryDeviceRef = useRef<InputDevice>(existingLog?.primaryDevice || 'mouse');
   const keyStrokeCountRef = useRef<number>(existingLog?.keyStrokeCount || 0);
 
-  // Mobile Touch Dynamics
+  // Interaction Counters
+  const mouseMoveCountRef = useRef<number>(0);
+  const touchCountRef = useRef<number>(0);
   const touchStartTimeRef = useRef<number | null>(null);
   const touchPressDurationsRef = useRef<number[]>([]);
 
-  // Reset or initialize on question change
+  // Reset on question change
   useEffect(() => {
     startTimeRef.current = Date.now();
     selectionHistoryRef.current = existingLog?.selectionHistory ? [...existingLog.selectionHistory] : [];
@@ -57,6 +58,8 @@ export function useBehaviorTracker({
     accumulatedDwellTimeRef.current = existingLog?.totalDwellTime || 0;
     tabBlurCountRef.current = existingLog?.tabBlurCount || 0;
     keyStrokeCountRef.current = existingLog?.keyStrokeCount || 0;
+    mouseMoveCountRef.current = 0;
+    touchCountRef.current = 0;
     touchStartTimeRef.current = null;
     touchPressDurationsRef.current = [];
     setSelectedVal(initialValue !== undefined ? initialValue : (existingLog?.finalValue ?? null));
@@ -133,9 +136,7 @@ export function useBehaviorTracker({
   // Mouse trajectory tracking
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
-      if (primaryDeviceRef.current !== 'touch') {
-        primaryDeviceRef.current = 'mouse';
-      }
+      mouseMoveCountRef.current += 1;
       recordPoint(e.clientX, e.clientY, 'move');
     };
 
@@ -151,7 +152,7 @@ export function useBehaviorTracker({
     if (!container) return;
 
     const handleTouchStart = (e: TouchEvent) => {
-      primaryDeviceRef.current = 'touch';
+      touchCountRef.current += 1;
       touchStartTimeRef.current = performance.now();
 
       if (e.touches.length > 0) {
@@ -194,12 +195,6 @@ export function useBehaviorTracker({
         firstInteractionTimeRef.current = now;
       }
 
-      if (device === 'touch' || primaryDeviceRef.current === 'touch') {
-        primaryDeviceRef.current = 'touch';
-      } else {
-        primaryDeviceRef.current = device;
-      }
-
       const prevEvent = selectionHistoryRef.current[selectionHistoryRef.current.length - 1];
       const timeSinceLast = prevEvent ? now - prevEvent.timestamp : now;
       const lastPress = touchPressDurationsRef.current[touchPressDurationsRef.current.length - 1] || 80;
@@ -209,7 +204,7 @@ export function useBehaviorTracker({
         timestamp: now,
         timeSinceLastChange: timeSinceLast,
         pressDuration: lastPress,
-        inputDevice: primaryDeviceRef.current,
+        inputDevice: device,
       });
 
       setSelectedVal(val);
@@ -253,15 +248,13 @@ export function useBehaviorTracker({
     };
   }, [handleSelectOption, onAutoSubmit, selectedVal]);
 
-  // Option Hover Handlers (Desktop only)
+  // Option Hover Handlers
   const handleOptionMouseEnter = useCallback((val: number) => {
-    if (primaryDeviceRef.current === 'touch') return;
     const now = Date.now() - startTimeRef.current;
     currentHoverRef.current = { optionValue: val, enterTime: now };
   }, []);
 
   const handleOptionMouseLeave = useCallback((val: number) => {
-    if (primaryDeviceRef.current === 'touch') return;
     if (currentHoverRef.current && currentHoverRef.current.optionValue === val) {
       const now = Date.now() - startTimeRef.current;
       hoverLogsRef.current.push({
@@ -299,12 +292,22 @@ export function useBehaviorTracker({
       tapCount: selectionHistoryRef.current.length,
     };
 
+    // Determine device accurately
+    let detectedDevice: InputDevice = 'mouse';
+    if (mouseMoveCountRef.current >= 3 || mouseTrajectoryRef.current.length > 3) {
+      detectedDevice = 'mouse';
+    } else if (keyStrokeCountRef.current > 0 && touchCountRef.current === 0) {
+      detectedDevice = 'keyboard';
+    } else if (touchCountRef.current > 0 && mouseMoveCountRef.current < 3) {
+      detectedDevice = 'touch';
+    }
+
     // Calculate hesitation score
     let hesitationScore = 0;
     hesitationScore += changeCount * 25;
     hesitationScore += Math.min(40, (totalDwellTime / 1000) * 3);
 
-    if (primaryDeviceRef.current === 'touch') {
+    if (detectedDevice === 'touch') {
       if (firstTapLatency > 5000) hesitationScore += 15;
       if (avgPress > 250) hesitationScore += 10;
       if (confirmationDelay > 3000) hesitationScore += 10;
@@ -329,11 +332,21 @@ export function useBehaviorTracker({
       directionChanges: directionChangesRef.current,
       hesitationScore,
       tabBlurCount: tabBlurCountRef.current,
-      primaryDevice: primaryDeviceRef.current,
+      primaryDevice: detectedDevice,
       keyStrokeCount: keyStrokeCountRef.current,
       touchMetrics,
     };
   }, [questionId, selectedVal]);
+
+  // Current active device
+  let currentDevice: InputDevice = 'mouse';
+  if (mouseMoveCountRef.current >= 3 || mouseTrajectoryRef.current.length > 3) {
+    currentDevice = 'mouse';
+  } else if (keyStrokeCountRef.current > 0 && touchCountRef.current === 0) {
+    currentDevice = 'keyboard';
+  } else if (touchCountRef.current > 0 && mouseMoveCountRef.current < 3) {
+    currentDevice = 'touch';
+  }
 
   return {
     selectedVal,
@@ -342,6 +355,6 @@ export function useBehaviorTracker({
     handleOptionMouseLeave,
     finalizeLog,
     changeCount: Math.max(0, selectionHistoryRef.current.length - 1),
-    primaryDevice: primaryDeviceRef.current,
+    primaryDevice: currentDevice,
   };
 }

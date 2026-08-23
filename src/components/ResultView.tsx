@@ -42,6 +42,9 @@ export const ResultView: React.FC<ResultViewProps> = ({ result, isSharedView = f
   const cardExportRef = useRef<HTMLDivElement | null>(null);
 
   const isTouchDevice = result.mouseTrajectoryStats.primaryDevice === 'touch';
+  const [replayerMode, setReplayerMode] = useState<'canvas' | 'timeline'>(
+    isTouchDevice ? 'timeline' : 'canvas'
+  );
 
   useEffect(() => {
     confetti({
@@ -516,8 +519,39 @@ export const ResultView: React.FC<ResultViewProps> = ({ result, isSharedView = f
                 </div>
               </div>
 
-              {/* Dynamic Replayer based on Device Type */}
-              {isTouchDevice ? (
+              {/* Replayer View Mode Switcher */}
+              <div className="flex items-center justify-between">
+                <div className="text-xs font-mono text-neutral-400">
+                  {replayerMode === 'canvas' ? '마우스 이동 궤적 및 속도 시뮬레이션' : '시간대별 잠복기 및 터치 지연 시퀀스'}
+                </div>
+                <div className="flex bg-neutral-950 p-1 rounded-xl border border-white/[0.06] text-xs font-mono">
+                  <button
+                    type="button"
+                    onClick={() => setReplayerMode('canvas')}
+                    className={`px-3 py-1 rounded-lg transition-all cursor-pointer ${
+                      replayerMode === 'canvas'
+                        ? 'bg-neutral-800 text-white font-semibold'
+                        : 'text-neutral-500 hover:text-neutral-300'
+                    }`}
+                  >
+                    마우스 궤적
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setReplayerMode('timeline')}
+                    className={`px-3 py-1 rounded-lg transition-all cursor-pointer ${
+                      replayerMode === 'timeline'
+                        ? 'bg-neutral-800 text-white font-semibold'
+                        : 'text-neutral-500 hover:text-neutral-300'
+                    }`}
+                  >
+                    타임라인
+                  </button>
+                </div>
+              </div>
+
+              {/* Dynamic Replayer */}
+              {replayerMode === 'timeline' ? (
                 <TouchTimelinePlayer
                   key={result.topDilemmas[selectedDilemmaIdx].behavior.questionId}
                   behaviorLog={result.topDilemmas[selectedDilemmaIdx].behavior}
