@@ -68,26 +68,50 @@ export const ResultView: React.FC<ResultViewProps> = ({
 
   const handleCopyLink = async () => {
     if (typeof window === 'undefined') return;
-    const compressed = encodeResultToCompressedString(result);
-    const shortShareUrl = `${window.location.origin}/s/${compressed}`;
+
+    let targetUrl = '';
+
+    // 1. Try generating ultra-short 7-character Supabase ID (/s/k8F2wQ9)
+    try {
+      const res = await fetch('/api/results', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ result }),
+      });
+
+      if (res.ok) {
+        const json = await res.json();
+        if (json.shortUrl) {
+          targetUrl = `${window.location.origin}${json.shortUrl}`;
+        }
+      }
+    } catch {
+      // Fallback to stateless hash
+    }
+
+    // 2. Fallback to stateless encrypted hash if DB is not yet connected
+    if (!targetUrl) {
+      const compressed = encodeResultToCompressedString(result);
+      targetUrl = `${window.location.origin}/s/${compressed}`;
+    }
 
     let success = false;
 
-    // 1. Modern navigator.clipboard API (HTTPS / Localhost)
+    // 3. Modern navigator.clipboard API
     if (navigator?.clipboard && typeof navigator.clipboard.writeText === 'function') {
       try {
-        await navigator.clipboard.writeText(shortShareUrl);
+        await navigator.clipboard.writeText(targetUrl);
         success = true;
       } catch {
         success = false;
       }
     }
 
-    // 2. Legacy fallback using invisible textarea for HTTP / local Wi-Fi IP
+    // 4. Legacy fallback using invisible textarea
     if (!success) {
       try {
         const textArea = document.createElement('textarea');
-        textArea.value = shortShareUrl;
+        textArea.value = targetUrl;
         textArea.style.position = 'fixed';
         textArea.style.left = '-9999px';
         textArea.style.top = '-9999px';
@@ -106,7 +130,7 @@ export const ResultView: React.FC<ResultViewProps> = ({
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } else {
-      window.prompt('아래 링크를 복사해주세요:', shortShareUrl);
+      window.prompt('아래 링크를 복사해주세요:', targetUrl);
     }
   };
 

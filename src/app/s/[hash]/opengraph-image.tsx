@@ -1,5 +1,7 @@
 import { ImageResponse } from 'next/og';
 import { decodeResultFromCompressedString } from '../../../lib/shareResult';
+import { getResultFromSupabase } from '../../../lib/supabase';
+import { FullAnalysisResult } from '../../../types';
 
 export const size = {
   width: 1200,
@@ -8,6 +10,15 @@ export const size = {
 
 export const contentType = 'image/png';
 export const alt = 'Behavior MBTI | 공유 진단서';
+
+async function resolveResult(hash: string): Promise<FullAnalysisResult | null> {
+  if (!hash) return null;
+  if (hash.length <= 12) {
+    const fromDb = await getResultFromSupabase(hash);
+    if (fromDb) return fromDb;
+  }
+  return decodeResultFromCompressedString(hash);
+}
 
 export default async function Image({
   params,
@@ -25,7 +36,7 @@ export default async function Image({
 
   if (hash) {
     try {
-      const decoded = decodeResultFromCompressedString(hash);
+      const decoded = await resolveResult(hash);
       if (decoded) {
         mbti = decoded.mbti;
         title = decoded.mbtiTitle;

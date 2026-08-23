@@ -1,5 +1,7 @@
 import { Metadata } from 'next';
 import { decodeResultFromCompressedString } from '../../../lib/shareResult';
+import { getResultFromSupabase } from '../../../lib/supabase';
+import { FullAnalysisResult } from '../../../types';
 import { ResultView } from '../../../components/ResultView';
 import { Compass, ArrowRight, Activity } from 'lucide-react';
 import Link from 'next/link';
@@ -8,9 +10,22 @@ interface Props {
   params: Promise<{ hash: string }>;
 }
 
+async function resolveResult(hash: string): Promise<FullAnalysisResult | null> {
+  if (!hash) return null;
+
+  // 1. If it's a short 5~10 char ID, try fetching from Supabase DB first
+  if (hash.length <= 12) {
+    const fromDb = await getResultFromSupabase(hash);
+    if (fromDb) return fromDb;
+  }
+
+  // 2. Fallback to stateless encrypted hash decoding
+  return decodeResultFromCompressedString(hash);
+}
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { hash } = await params;
-  const decoded = decodeResultFromCompressedString(hash);
+  const decoded = await resolveResult(hash);
 
   if (!decoded) {
     return {
@@ -43,7 +58,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function ShortLinkPage({ params }: Props) {
   const { hash } = await params;
-  const decoded = decodeResultFromCompressedString(hash);
+  const decoded = await resolveResult(hash);
 
   if (!decoded) {
     return (
@@ -71,7 +86,7 @@ export default async function ShortLinkPage({ params }: Props) {
             </div>
             <h2 className="text-xl font-bold text-white mb-2">진단서 데이터를 찾을 수 없습니다</h2>
             <p className="text-xs text-neutral-400 mb-8 leading-relaxed">
-              임의로 조작되었거나 손상된 결과 링크입니다. 지금 바로 나만의 행동 분석 MBTI 검사를 시작해보세요!
+              만료되었거나 유효하지 않은 결과 링크입니다. 지금 바로 나만의 행동 분석 MBTI 검사를 시작해보세요!
             </p>
             <Link
               href="/test"
