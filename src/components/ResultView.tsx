@@ -20,8 +20,6 @@ import {
   Sparkles,
   Download,
   BarChart3,
-  Flame,
-  Award,
   Smartphone,
   Mouse,
   Keyboard,
@@ -138,13 +136,13 @@ export const ResultView: React.FC<ResultViewProps> = ({ result, onRestart }) => 
               </span>
             </div>
             <div className="p-1">
-              <span className="text-[10px] font-mono text-neutral-500 block">선택 번복</span>
+              <span className="text-[10px] font-mono text-neutral-500 block">선택 조정</span>
               <span className="text-base font-bold text-rose-400 font-mono">
                 {result.totalAnswerChanges}회
               </span>
             </div>
             <div className="p-1">
-              <span className="text-[10px] font-mono text-neutral-500 block">단호함 순위</span>
+              <span className="text-[10px] font-mono text-neutral-500 block">일관성 순위</span>
               <span className="text-base font-bold text-emerald-400 font-mono">
                 상위 {result.benchmark.changeCountPercentile}%
               </span>
@@ -209,7 +207,7 @@ export const ResultView: React.FC<ResultViewProps> = ({ result, onRestart }) => 
           <div className="flex flex-col items-center p-2">
             <span className="text-[11px] font-mono text-neutral-500 mb-1 flex items-center gap-1">
               <ArrowRightLeft className="w-3 h-3 text-rose-400" />
-              답변 번복
+              선택 조정(재숙고)
             </span>
             <span className="text-lg sm:text-xl font-bold text-neutral-100 font-mono">
               {result.totalAnswerChanges}회
@@ -255,24 +253,24 @@ export const ResultView: React.FC<ResultViewProps> = ({ result, onRestart }) => 
               </div>
             </div>
             <p className="text-[11px] text-neutral-400 mt-3 font-light">
-              전체 응답자 대비 평균보다 훨씬 빠르게 직관적으로 결정을 완료했습니다.
+              전체 응답자 대비 평균보다 신속하고 직관적으로 결정을 완료했습니다.
             </p>
           </div>
 
           <div className="bg-neutral-950/70 border border-white/[0.06] p-4 rounded-2xl flex flex-col justify-between">
             <div>
-              <span className="text-xs text-neutral-400 block mb-1">단호함 & 확신도 랭킹</span>
+              <span className="text-xs text-neutral-400 block mb-1">자기 인식 일관성 랭킹</span>
               <div className="flex items-baseline gap-2">
                 <span className="text-2xl sm:text-3xl font-black font-mono text-emerald-400">
                   상위 {result.benchmark.changeCountPercentile}%
                 </span>
                 <span className="text-xs text-neutral-500">
-                  (평균 {result.benchmark.globalAverageChanges}회 번복 대비 {result.totalAnswerChanges}회)
+                  (평균 {result.benchmark.globalAverageChanges}회 재숙고 대비 {result.totalAnswerChanges}회)
                 </span>
               </div>
             </div>
             <p className="text-[11px] text-neutral-400 mt-3 font-light">
-              선택지를 번복하지 않고 자신의 가치관에 확신을 가지고 답변했습니다.
+              자신의 생각과 가치관을 명확하게 파악하여 일관성 있게 답변했습니다.
             </p>
           </div>
         </div>
@@ -350,7 +348,7 @@ export const ResultView: React.FC<ResultViewProps> = ({ result, onRestart }) => 
           <h2 className="text-lg font-bold text-white font-mono tracking-tight">
             4-AXIS PREFERENCE & CERTAINTY
           </h2>
-          <span className="text-xs text-neutral-500 font-mono">단호함 vs 망설임 지표</span>
+          <span className="text-xs text-neutral-500 font-mono">성향 선호도 및 확신 지표</span>
         </div>
 
         <div className="space-y-4">
@@ -414,7 +412,7 @@ export const ResultView: React.FC<ResultViewProps> = ({ result, onRestart }) => 
                 CRITICAL DILEMMAS TOP 3
               </h2>
               <p className="text-xs text-neutral-400 mt-1 font-light">
-                마우스 방향 전환 횟수와 체류 시간이 가장 길었던 갈등 문항
+                가장 깊이 있게 사색하고 신중하게 검토했던 문항
               </p>
             </div>
 
@@ -484,11 +482,11 @@ export const ResultView: React.FC<ResultViewProps> = ({ result, onRestart }) => 
                 </h4>
                 <div className="flex items-center gap-2 text-xs mb-3 font-mono">
                   <span className="px-2.5 py-1 rounded-lg bg-neutral-900 border border-white/[0.08] text-neutral-400">
-                    첫 본능: {item.initialChoiceText}
+                    첫 직감: {item.initialChoiceText}
                   </span>
                   <span className="text-neutral-500">➔</span>
                   <span className="px-2.5 py-1 rounded-lg bg-white/[0.06] border border-white/[0.12] text-neutral-100 font-semibold">
-                    최종 수정: {item.finalChoiceText}
+                    최종 선택: {item.finalChoiceText}
                   </span>
                 </div>
                 <p className="text-xs text-neutral-400 leading-relaxed font-light bg-neutral-900/50 p-3 rounded-xl border border-white/[0.04]">

@@ -4,7 +4,7 @@ import React, { useRef, useCallback } from 'react';
 import { Question, QuestionBehaviorLog } from '../types';
 import { LIKERT_OPTIONS } from '../data/questions';
 import { useBehaviorTracker } from '../hooks/useBehaviorTracker';
-import { ArrowRight, Check, Activity, Smartphone, Mouse, Keyboard } from 'lucide-react';
+import { ArrowRight, Check, Smartphone, Mouse, Keyboard } from 'lucide-react';
 
 interface QuestionCardProps {
   question: Question;
@@ -27,7 +27,6 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
     handleOptionMouseEnter,
     handleOptionMouseLeave,
     finalizeLog,
-    changeCount,
     primaryDevice,
   } = useBehaviorTracker({
     questionId: question.id,
@@ -176,17 +175,13 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
       {/* Bottom Action Footer & Keyboard Hint */}
       <div className="flex items-center justify-between pt-6 border-t border-white/[0.06] mt-4">
         <div className="text-xs text-neutral-400">
-          {changeCount > 0 ? (
-            <span className="text-amber-400 font-mono flex items-center gap-1.5">
-              <Activity className="w-3.5 h-3.5" />
-              선택 번복 {changeCount}회 감지됨
-            </span>
-          ) : (
-            <span className="text-neutral-500 font-mono text-[11px] hidden sm:inline">
-              단축키: <kbd className="px-1 py-0.5 rounded bg-white/[0.06] text-neutral-400">1~7</kbd> 선택,{' '}
-              <kbd className="px-1 py-0.5 rounded bg-white/[0.06] text-neutral-400">Enter</kbd> 다음
-            </span>
-          )}
+          <span className="text-neutral-500 font-mono text-[11px] hidden sm:inline">
+            단축키: <kbd className="px-1.5 py-0.5 rounded bg-white/[0.06] text-neutral-400">1~7</kbd> 선택,{' '}
+            <kbd className="px-1.5 py-0.5 rounded bg-white/[0.06] text-neutral-400">Enter</kbd> 다음
+          </span>
+          <span className="text-neutral-500 text-[11px] sm:hidden">
+            편안하게 느껴지는 답을 골라보세요
+          </span>
         </div>
 
         <button

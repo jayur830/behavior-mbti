@@ -262,7 +262,7 @@ export const MouseReplayCanvas: React.FC<MouseReplayCanvasProps> = ({
 
         <div className="flex items-center gap-4 text-[11px]">
           <span>
-            선택 번복: <strong className="text-amber-400">{behaviorLog.changeCount}회</strong>
+            선택 변경: <strong className="text-amber-400">{behaviorLog.changeCount}회</strong>
           </span>
           <span>
             최종 결정:{' '}

@@ -29,7 +29,6 @@ export default function Home() {
     if (currentQuestionIdx + 1 < QUESTIONS.length) {
       setCurrentQuestionIdx((prev) => prev + 1);
     } else {
-      // Last question finished
       setStep('analyzing');
       setTimeout(() => {
         try {
@@ -38,7 +37,6 @@ export default function Home() {
           setStep('result');
         } catch (err) {
           console.error('Error analyzing behavioral data:', err);
-          // Fallback calculation in case of unforeseen exception
           const fallbackResult = analyzeBehaviorAndMBTI(updatedLogs);
           setAnalysisResult(fallbackResult);
           setStep('result');
@@ -100,7 +98,7 @@ export default function Home() {
               ANALYZING TELEMETRY...
             </h3>
             <p className="text-xs text-neutral-400 font-light leading-relaxed">
-              마우스 궤적, 문항별 체류 시간, 선택 번복 이력을 종합하여 무의식적 성향을 분석하고 있습니다.
+              마우스 궤적, 문항별 체류 시간, 세부 상호작용 데이터를 종합하여 무의식적 성향을 분석하고 있습니다.
             </p>
           </div>
         )}

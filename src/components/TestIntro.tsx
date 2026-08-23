@@ -50,7 +50,7 @@ export const TestIntro: React.FC<TestIntroProps> = ({ onStart }) => {
             </div>
             <h3 className="text-sm font-semibold text-neutral-100 mb-1.5">02. 본능 vs 페르소나 갭</h3>
             <p className="text-xs text-neutral-400 leading-relaxed font-light">
-              첫 직감으로 누른 선택지와 고민 후 번복한 최종 답의 차이를 추적해 사회적 가면과 실제 성향의 차이를 분석합니다.
+              첫 직감으로 누른 선택지와 신중한 고민 후 조정한 최종 답의 차이를 추적해 사회적 가면과 실제 성향의 차이를 분석합니다.
             </p>
           </div>
         </div>
