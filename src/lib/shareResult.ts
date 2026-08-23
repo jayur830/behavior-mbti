@@ -46,7 +46,7 @@ export function encodeResultToCompressedString(result: FullAnalysisResult): stri
     sn: [result.dimensions.SN.leftScore, result.dimensions.SN.rightScore, result.dimensions.SN.certaintyScore],
     tf: [result.dimensions.TF.leftScore, result.dimensions.TF.rightScore, result.dimensions.TF.certaintyScore],
     jp: [result.dimensions.JP.leftScore, result.dimensions.JP.rightScore, result.dimensions.JP.certaintyScore],
-    p: result.behaviorPersona.code,
+    p: result.behaviorPersona?.code || 'THE_DECISIVE',
     t: result.totalTestDuration,
     c: result.totalAnswerChanges,
     i: result.mouseTrajectoryStats.indecisivenessIndex,

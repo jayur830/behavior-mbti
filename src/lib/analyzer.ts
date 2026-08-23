@@ -213,15 +213,19 @@ export function analyzeBehaviorAndMBTI(
   let persona = BEHAVIOR_PERSONAS.THE_DECISIVE;
 
   if (totalAnswerChanges >= 3) {
-    persona = BEHAVIOR_PERSONAS.THE_WANDERER;
+    persona = BEHAVIOR_PERSONAS.THE_VACILLATOR;
   } else if (avgDwellPerQuestion > 7000) {
-    persona = BEHAVIOR_PERSONAS.THE_DELIBERATE;
+    persona = BEHAVIOR_PERSONAS.THE_DELIBERATOR;
   } else if (avgDwellPerQuestion < 3200 && totalAnswerChanges === 0) {
     persona = BEHAVIOR_PERSONAS.THE_DECISIVE;
   } else if (hesitatedOptionsCount >= 3) {
     persona = BEHAVIOR_PERSONAS.THE_EXPLORER;
   } else {
     persona = BEHAVIOR_PERSONAS.THE_STEALTH;
+  }
+
+  if (!persona) {
+    persona = BEHAVIOR_PERSONAS.THE_DECISIVE;
   }
 
   // 7. Dilemma Details for All 12 Questions
