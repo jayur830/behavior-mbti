@@ -51,17 +51,21 @@ export function encodeResultToCompressedString(result: FullAnalysisResult): stri
     c: result.totalAnswerChanges,
     i: result.mouseTrajectoryStats.indecisivenessIndex,
     dev: result.mouseTrajectoryStats.primaryDevice,
-    dil: questionsToEncode.map((d) => {
+    dil: questionsToEncode.map((d, dIdx) => {
       const rawPts = d.behavior.mouseTrajectory || [];
-      const step = rawPts.length > 30 ? Math.ceil(rawPts.length / 30) : 1;
-      const sampledPts = rawPts
-        .filter((_, idx) => idx % step === 0 || idx === rawPts.length - 1)
-        .map((p): [number, number, number, number] => [
-          Math.round(p.x * 1000),
-          Math.round(p.y * 1000),
-          p.timestamp,
-          Math.round((p.speed || 0) * 1000),
-        ]);
+      // Save detailed points for top dilemmas or questions with changes/longer dwell
+      const shouldSaveFullPts = dIdx < 10 || d.behavior.changeCount > 0 || d.hesitationTime > 4500;
+      const step = rawPts.length > 25 ? Math.ceil(rawPts.length / 25) : 1;
+      const sampledPts = shouldSaveFullPts && rawPts.length > 0
+        ? rawPts
+            .filter((_, idx) => idx % step === 0 || idx === rawPts.length - 1)
+            .map((p): [number, number, number, number] => [
+              Math.round(p.x * 1000),
+              Math.round(p.y * 1000),
+              p.timestamp,
+              Math.round((p.speed || 0) * 1000),
+            ])
+        : undefined;
 
       const taps = (d.behavior.selectionHistory || []).map((s): [number, number] => [
         s.value,

@@ -16,9 +16,9 @@ export default function TestPage() {
   const [behaviorLogs, setBehaviorLogs] = useState<(QuestionBehaviorLog | null)[]>([]);
   const [isAnalyzing, setIsAnalyzing] = useState<boolean>(false);
 
-  // Initialize with randomly sampled questions from the 60-item pool
+  // Initialize with randomly sampled 40 questions (10 per dimension) from the 200-item pool
   useEffect(() => {
-    const sampled = getRandomQuestions(3); // 3 questions * 4 dimensions = 12 balanced questions
+    const sampled = getRandomQuestions(10); // 10 questions * 4 dimensions = 40 balanced questions
     setQuestions(sampled);
     setBehaviorLogs([]);
     setCurrentQuestionIdx(0);

@@ -522,10 +522,10 @@ export const ResultView: React.FC<ResultViewProps> = ({
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
             <div>
               <h2 className="text-lg font-bold text-white font-mono tracking-tight">
-                QUESTION TELEMETRY REPLAYER (12 ITEMS)
+                QUESTION TELEMETRY REPLAYER ({questionsList.length} ITEMS)
               </h2>
               <p className="text-xs text-neutral-400 mt-1 font-light">
-                모든 문항별 마우스 이동 궤적, 선택지 호버 이력, 체류 시간을 직접 확인해보세요.
+                검사한 {questionsList.length}개 전체 문항별 마우스 이동 궤적, 선택지 호버 이력, 체류 시간을 직접 확인해보세요.
               </p>
             </div>
 
@@ -556,8 +556,8 @@ export const ResultView: React.FC<ResultViewProps> = ({
             </div>
           </div>
 
-          {/* 12-Question Grid Selector Pills */}
-          <div className="flex flex-wrap gap-1.5 mb-6 p-2 bg-neutral-950/80 rounded-2xl border border-white/[0.06]">
+          {/* 40-Question Responsive Grid Selector Pills */}
+          <div className="flex flex-wrap gap-1.5 mb-6 p-3 bg-neutral-950/80 rounded-2xl border border-white/[0.06] max-h-[175px] overflow-y-auto">
             {questionsList.map((qDetail, idx) => {
               const isSelected = selectedQuestionIdx === idx;
               const hasChanges = qDetail.behavior.changeCount > 0;
@@ -566,15 +566,15 @@ export const ResultView: React.FC<ResultViewProps> = ({
                   key={qDetail.question.id}
                   type="button"
                   onClick={() => setSelectedQuestionIdx(idx)}
-                  className={`flex-1 min-w-[52px] py-2 px-2.5 rounded-xl text-xs font-mono font-medium transition-all cursor-pointer touch-manipulation flex flex-col items-center justify-center relative ${
+                  className={`w-[42px] h-[34px] sm:w-[48px] sm:h-[38px] rounded-xl text-xs font-mono font-medium transition-all cursor-pointer touch-manipulation flex flex-col items-center justify-center relative shrink-0 ${
                     isSelected
                       ? 'bg-neutral-100 text-neutral-950 shadow-md scale-105 z-10'
                       : 'bg-neutral-900/90 border border-white/[0.04] text-neutral-400 hover:text-white hover:border-white/[0.15]'
                   }`}
                 >
-                  <span className="text-[11px] font-bold">Q{idx + 1}</span>
+                  <span className="text-[10px] sm:text-[11px] font-bold">Q{idx + 1}</span>
                   {hasChanges && (
-                    <span className="w-1.5 h-1.5 rounded-full bg-rose-400 absolute top-1.5 right-1.5" />
+                    <span className="w-1.5 h-1.5 rounded-full bg-rose-400 absolute top-1 right-1" />
                   )}
                 </button>
               );
