@@ -4,6 +4,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
+  schemas  = ["persona", "public"]
 }
 
 model MbtiResult {
@@ -15,4 +16,5 @@ model MbtiResult {
   createdAt        DateTime @default(now()) @map("created_at")
 
   @@map("mbti_results")
+  @@schema("persona")
 }
