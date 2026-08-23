@@ -13,23 +13,32 @@ import {
 interface UseBehaviorTrackerProps {
   questionId: number;
   containerRef: React.RefObject<HTMLDivElement | null>;
+  initialValue?: number | null;
+  existingLog?: QuestionBehaviorLog | null;
   onAutoSubmit?: () => void;
 }
 
-export function useBehaviorTracker({ questionId, containerRef, onAutoSubmit }: UseBehaviorTrackerProps) {
-  const [selectedVal, setSelectedVal] = useState<number | null>(null);
+export function useBehaviorTracker({
+  questionId,
+  containerRef,
+  initialValue = null,
+  existingLog = null,
+  onAutoSubmit,
+}: UseBehaviorTrackerProps) {
+  const [selectedVal, setSelectedVal] = useState<number | null>(initialValue);
   const startTimeRef = useRef<number>(Date.now());
-  const selectionHistoryRef = useRef<AnswerSelectionEvent[]>([]);
-  const hoverLogsRef = useRef<OptionHoverLog[]>([]);
+  const selectionHistoryRef = useRef<AnswerSelectionEvent[]>(existingLog?.selectionHistory ? [...existingLog.selectionHistory] : []);
+  const hoverLogsRef = useRef<OptionHoverLog[]>(existingLog?.hoverLogs ? [...existingLog.hoverLogs] : []);
   const currentHoverRef = useRef<{ optionValue: number; enterTime: number } | null>(null);
-  const mouseTrajectoryRef = useRef<MousePoint[]>([]);
+  const mouseTrajectoryRef = useRef<MousePoint[]>(existingLog?.mouseTrajectory ? [...existingLog.mouseTrajectory] : []);
   const lastPointRef = useRef<{ x: number; y: number; t: number; dx: number; dy: number } | null>(null);
-  const directionChangesRef = useRef<number>(0);
-  const firstInteractionTimeRef = useRef<number | null>(null);
-  const tabBlurCountRef = useRef<number>(0);
+  const directionChangesRef = useRef<number>(existingLog?.directionChanges || 0);
+  const firstInteractionTimeRef = useRef<number | null>(existingLog?.firstInteractionTime || null);
+  const accumulatedDwellTimeRef = useRef<number>(existingLog?.totalDwellTime || 0);
+  const tabBlurCountRef = useRef<number>(existingLog?.tabBlurCount || 0);
   const lastFrameTimeRef = useRef<number>(0);
-  const primaryDeviceRef = useRef<InputDevice>('mouse');
-  const keyStrokeCountRef = useRef<number>(0);
+  const primaryDeviceRef = useRef<InputDevice>(existingLog?.primaryDevice || 'mouse');
+  const keyStrokeCountRef = useRef<number>(existingLog?.keyStrokeCount || 0);
 
   // Mobile Touch Dynamics
   const touchStartTimeRef = useRef<number | null>(null);
@@ -38,19 +47,20 @@ export function useBehaviorTracker({ questionId, containerRef, onAutoSubmit }: U
   // Reset or initialize on question change
   useEffect(() => {
     startTimeRef.current = Date.now();
-    selectionHistoryRef.current = [];
-    hoverLogsRef.current = [];
+    selectionHistoryRef.current = existingLog?.selectionHistory ? [...existingLog.selectionHistory] : [];
+    hoverLogsRef.current = existingLog?.hoverLogs ? [...existingLog.hoverLogs] : [];
     currentHoverRef.current = null;
-    mouseTrajectoryRef.current = [];
+    mouseTrajectoryRef.current = existingLog?.mouseTrajectory ? [...existingLog.mouseTrajectory] : [];
     lastPointRef.current = null;
-    directionChangesRef.current = 0;
-    firstInteractionTimeRef.current = null;
-    tabBlurCountRef.current = 0;
-    keyStrokeCountRef.current = 0;
+    directionChangesRef.current = existingLog?.directionChanges || 0;
+    firstInteractionTimeRef.current = existingLog?.firstInteractionTime || null;
+    accumulatedDwellTimeRef.current = existingLog?.totalDwellTime || 0;
+    tabBlurCountRef.current = existingLog?.tabBlurCount || 0;
+    keyStrokeCountRef.current = existingLog?.keyStrokeCount || 0;
     touchStartTimeRef.current = null;
     touchPressDurationsRef.current = [];
-    setSelectedVal(null);
-  }, [questionId]);
+    setSelectedVal(initialValue !== undefined ? initialValue : (existingLog?.finalValue ?? null));
+  }, [questionId, initialValue, existingLog]);
 
   // Tab blur detection
   useEffect(() => {
@@ -120,7 +130,7 @@ export function useBehaviorTracker({ questionId, containerRef, onAutoSubmit }: U
     [containerRef]
   );
 
-  // Mouse trajectory tracking (only when not on mobile touch)
+  // Mouse trajectory tracking
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
       if (primaryDeviceRef.current !== 'touch') {
@@ -266,13 +276,13 @@ export function useBehaviorTracker({ questionId, containerRef, onAutoSubmit }: U
 
   // Finalize behavioral log
   const finalizeLog = useCallback((): QuestionBehaviorLog => {
-    const endTime = Date.now();
-    const totalDwellTime = endTime - startTimeRef.current;
+    const currentSessionDwell = Date.now() - startTimeRef.current;
+    const totalDwellTime = accumulatedDwellTimeRef.current + currentSessionDwell;
     const changeCount = Math.max(0, selectionHistoryRef.current.length - 1);
 
     const firstTapLatency = firstInteractionTimeRef.current ?? totalDwellTime;
     const lastSelection = selectionHistoryRef.current[selectionHistoryRef.current.length - 1];
-    const confirmationDelay = lastSelection ? totalDwellTime - lastSelection.timestamp : 0;
+    const confirmationDelay = lastSelection ? currentSessionDwell - lastSelection.timestamp : 0;
 
     const avgPress =
       touchPressDurationsRef.current.length > 0
@@ -285,7 +295,7 @@ export function useBehaviorTracker({ questionId, containerRef, onAutoSubmit }: U
     const touchMetrics: TouchMetrics = {
       firstTapLatency,
       averagePressDuration: avgPress,
-      confirmationDelay,
+      confirmationDelay: Math.max(0, confirmationDelay),
       tapCount: selectionHistoryRef.current.length,
     };
 
@@ -295,9 +305,8 @@ export function useBehaviorTracker({ questionId, containerRef, onAutoSubmit }: U
     hesitationScore += Math.min(40, (totalDwellTime / 1000) * 3);
 
     if (primaryDeviceRef.current === 'touch') {
-      // Touch-specific hesitation weighting
       if (firstTapLatency > 5000) hesitationScore += 15;
-      if (avgPress > 250) hesitationScore += 10; // held finger long
+      if (avgPress > 250) hesitationScore += 10;
       if (confirmationDelay > 3000) hesitationScore += 10;
     } else {
       hesitationScore += Math.min(25, directionChangesRef.current * 2);
@@ -309,7 +318,7 @@ export function useBehaviorTracker({ questionId, containerRef, onAutoSubmit }: U
     return {
       questionId,
       startTime: startTimeRef.current,
-      endTime,
+      endTime: Date.now(),
       totalDwellTime,
       firstInteractionTime: firstInteractionTimeRef.current,
       finalValue: selectedVal,

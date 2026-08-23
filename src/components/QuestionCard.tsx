@@ -4,20 +4,26 @@ import React, { useRef, useCallback } from 'react';
 import { Question, QuestionBehaviorLog } from '../types';
 import { LIKERT_OPTIONS } from '../data/questions';
 import { useBehaviorTracker } from '../hooks/useBehaviorTracker';
-import { ArrowRight, Check, Smartphone, Mouse, Keyboard } from 'lucide-react';
+import { ArrowRight, ArrowLeft, Check, Smartphone, Mouse, Keyboard } from 'lucide-react';
 
 interface QuestionCardProps {
   question: Question;
   currentIndex: number;
   totalQuestions: number;
+  initialValue?: number | null;
+  existingLog?: QuestionBehaviorLog | null;
   onNext: (log: QuestionBehaviorLog) => void;
+  onPrev?: (log: QuestionBehaviorLog) => void;
 }
 
 export const QuestionCard: React.FC<QuestionCardProps> = ({
   question,
   currentIndex,
   totalQuestions,
+  initialValue = null,
+  existingLog = null,
   onNext,
+  onPrev,
 }) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
 
@@ -31,6 +37,8 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
   } = useBehaviorTracker({
     questionId: question.id,
     containerRef,
+    initialValue,
+    existingLog,
     onAutoSubmit: () => {
       const log = finalizeLog();
       onNext(log);
@@ -44,6 +52,13 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
     const log = finalizeLog();
     onNext(log);
   }, [selectedVal, finalizeLog, onNext]);
+
+  const onGoBack = useCallback(() => {
+    const log = finalizeLog();
+    if (onPrev) {
+      onPrev(log);
+    }
+  }, [finalizeLog, onPrev]);
 
   const getCategoryLabel = (cat: Question['category']) => {
     switch (cat) {
@@ -172,18 +187,28 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
         </div>
       </div>
 
-      {/* Bottom Action Footer & Keyboard Hint */}
+      {/* Bottom Action Footer: Previous & Next Buttons */}
       <div className="flex items-center justify-between pt-6 border-t border-white/[0.06] mt-4">
-        <div className="text-xs text-neutral-400">
-          <span className="text-neutral-500 font-mono text-[11px] hidden sm:inline">
-            단축키: <kbd className="px-1.5 py-0.5 rounded bg-white/[0.06] text-neutral-400">1~7</kbd> 선택,{' '}
-            <kbd className="px-1.5 py-0.5 rounded bg-white/[0.06] text-neutral-400">Enter</kbd> 다음
-          </span>
-          <span className="text-neutral-500 text-[11px] sm:hidden">
-            편안하게 느껴지는 답을 골라보세요
-          </span>
+        {/* Left Side: Prev Button or Hint */}
+        <div className="flex items-center gap-2">
+          {currentIndex > 0 ? (
+            <button
+              type="button"
+              onClick={onGoBack}
+              className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-full font-medium text-xs text-neutral-400 hover:text-white bg-neutral-950 hover:bg-neutral-800 border border-white/[0.08] transition-all cursor-pointer touch-manipulation"
+            >
+              <ArrowLeft className="w-3.5 h-3.5" />
+              <span>이전 문항</span>
+            </button>
+          ) : (
+            <span className="text-neutral-500 font-mono text-[11px] hidden sm:inline">
+              단축키: <kbd className="px-1.5 py-0.5 rounded bg-white/[0.06] text-neutral-400">1~7</kbd> 선택,{' '}
+              <kbd className="px-1.5 py-0.5 rounded bg-white/[0.06] text-neutral-400">Enter</kbd> 다음
+            </span>
+          )}
         </div>
 
+        {/* Right Side: Next Button */}
         <button
           type="button"
           onClick={onSubmit}

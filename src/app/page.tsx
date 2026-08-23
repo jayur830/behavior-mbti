@@ -12,7 +12,7 @@ import { Compass, Activity } from 'lucide-react';
 export default function Home() {
   const [step, setStep] = useState<'intro' | 'test' | 'analyzing' | 'result'>('intro');
   const [currentQuestionIdx, setCurrentQuestionIdx] = useState<number>(0);
-  const [behaviorLogs, setBehaviorLogs] = useState<QuestionBehaviorLog[]>([]);
+  const [behaviorLogs, setBehaviorLogs] = useState<(QuestionBehaviorLog | null)[]>([]);
   const [analysisResult, setAnalysisResult] = useState<FullAnalysisResult | null>(null);
 
   const handleStartTest = () => {
@@ -23,25 +23,38 @@ export default function Home() {
   };
 
   const handleQuestionNext = (log: QuestionBehaviorLog) => {
-    const updatedLogs = [...behaviorLogs, log];
-    setBehaviorLogs(updatedLogs);
+    const updated = [...behaviorLogs];
+    updated[currentQuestionIdx] = log;
+    setBehaviorLogs(updated);
 
     if (currentQuestionIdx + 1 < QUESTIONS.length) {
       setCurrentQuestionIdx((prev) => prev + 1);
     } else {
+      // Completed all questions
       setStep('analyzing');
+      const validLogs = updated.filter((l): l is QuestionBehaviorLog => l !== null);
       setTimeout(() => {
         try {
-          const result = analyzeBehaviorAndMBTI(updatedLogs);
+          const result = analyzeBehaviorAndMBTI(validLogs);
           setAnalysisResult(result);
           setStep('result');
         } catch (err) {
           console.error('Error analyzing behavioral data:', err);
-          const fallbackResult = analyzeBehaviorAndMBTI(updatedLogs);
+          const fallbackResult = analyzeBehaviorAndMBTI(validLogs);
           setAnalysisResult(fallbackResult);
           setStep('result');
         }
       }, 1200);
+    }
+  };
+
+  const handleQuestionPrev = (log: QuestionBehaviorLog) => {
+    const updated = [...behaviorLogs];
+    updated[currentQuestionIdx] = log;
+    setBehaviorLogs(updated);
+
+    if (currentQuestionIdx > 0) {
+      setCurrentQuestionIdx((prev) => prev - 1);
     }
   };
 
@@ -51,6 +64,8 @@ export default function Home() {
     setCurrentQuestionIdx(0);
     setAnalysisResult(null);
   };
+
+  const currentLog = behaviorLogs[currentQuestionIdx];
 
   return (
     <div className="min-h-screen bg-[#090a0f] text-neutral-100 flex flex-col justify-between selection:bg-neutral-200 selection:text-neutral-900 bg-grid-pattern relative">
@@ -85,7 +100,10 @@ export default function Home() {
             question={QUESTIONS[currentQuestionIdx]}
             currentIndex={currentQuestionIdx}
             totalQuestions={QUESTIONS.length}
+            initialValue={currentLog?.finalValue ?? null}
+            existingLog={currentLog}
             onNext={handleQuestionNext}
+            onPrev={handleQuestionPrev}
           />
         )}
 
