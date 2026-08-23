@@ -1,0 +1,227 @@
+import { ImageResponse } from 'next/og';
+import { NextRequest } from 'next/server';
+import { decodeResultFromCompressedString } from '../../../lib/shareResult';
+
+
+export async function GET(req: NextRequest) {
+  try {
+    const { searchParams } = new URL(req.url);
+    const data = searchParams.get('data');
+
+    let mbti = 'MBTI';
+    let title = '행동 심리 텔레메트리 진단서';
+    let persona = '초고속 직진 결단파';
+    let certainty = '85%';
+    let speed = '상위 15%';
+    let isDecoded = false;
+
+    if (data) {
+      try {
+        const decoded = decodeResultFromCompressedString(data);
+        if (decoded) {
+          mbti = decoded.mbti;
+          title = decoded.mbtiTitle;
+          persona = decoded.behaviorPersona.title;
+          certainty = `${decoded.overallCertainty}%`;
+          speed = `상위 ${decoded.benchmark.dwellTimePercentile}%`;
+          isDecoded = true;
+        }
+      } catch (err) {
+        console.error('OG decode error:', err);
+      }
+    }
+
+    return new ImageResponse(
+      (
+        <div
+          style={{
+            height: '100%',
+            width: '100%',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'space-between',
+            backgroundColor: '#07080c',
+            backgroundImage:
+              'radial-gradient(circle at 50% 0%, rgba(16, 185, 129, 0.2) 0%, transparent 60%), radial-gradient(circle at 100% 100%, rgba(56, 189, 248, 0.15) 0%, transparent 50%)',
+            padding: '48px 56px',
+            color: '#ffffff',
+            fontFamily: 'sans-serif',
+          }}
+        >
+          {/* Header */}
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              width: '100%',
+              borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
+              paddingBottom: '20px',
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <div
+                style={{
+                  width: '36px',
+                  height: '36px',
+                  borderRadius: '10px',
+                  backgroundColor: 'rgba(16, 185, 129, 0.2)',
+                  border: '1px solid rgba(16, 185, 129, 0.4)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: '#34d399',
+                  fontSize: '20px',
+                  fontWeight: 'bold',
+                }}
+              >
+                ◈
+              </div>
+              <span style={{ fontSize: '24px', fontWeight: 800, letterSpacing: '2px' }}>
+                BEHAVIOR<span style={{ color: '#34d399' }}>.MBTI</span>
+              </span>
+            </div>
+            <div
+              style={{
+                fontSize: '14px',
+                padding: '6px 16px',
+                borderRadius: '999px',
+                backgroundColor: 'rgba(255, 255, 255, 0.08)',
+                border: '1px solid rgba(255, 255, 255, 0.12)',
+                color: '#a1a1aa',
+                fontWeight: 600,
+                letterSpacing: '1px',
+              }}
+            >
+              MICRO-INTERACTION PSYCHOMETRICS
+            </div>
+          </div>
+
+          {/* Body */}
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              width: '100%',
+              margin: 'auto 0',
+            }}
+          >
+            {/* Left Main Hero */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', maxWidth: '650px' }}>
+              <div
+                style={{
+                  fontSize: '14px',
+                  color: '#34d399',
+                  fontWeight: 700,
+                  letterSpacing: '1.5px',
+                  textTransform: 'uppercase',
+                }}
+              >
+                {isDecoded ? '무의식 행동 진단 결과' : '200개 문항 기반 실시간 텔레메트리 검사'}
+              </div>
+              <div
+                style={{
+                  fontSize: '84px',
+                  fontWeight: 900,
+                  letterSpacing: '-2px',
+                  color: '#ffffff',
+                  lineHeight: '1',
+                }}
+              >
+                {mbti}
+              </div>
+              <div
+                style={{
+                  fontSize: '28px',
+                  fontWeight: 700,
+                  color: '#e4e4e7',
+                  marginTop: '4px',
+                }}
+              >
+                {title}
+              </div>
+            </div>
+
+            {/* Right Persona & Stats Card */}
+            <div
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '16px',
+                backgroundColor: 'rgba(255, 255, 255, 0.04)',
+                border: '1px solid rgba(255, 255, 255, 0.1)',
+                borderRadius: '24px',
+                padding: '24px 28px',
+                width: '420px',
+              }}
+            >
+              <div>
+                <div style={{ fontSize: '12px', color: '#71717a', fontWeight: 600, marginBottom: '4px' }}>
+                  행동 프로필
+                </div>
+                <div style={{ fontSize: '18px', fontWeight: 800, color: '#38bdf8' }}>
+                  {persona}
+                </div>
+              </div>
+
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  borderTop: '1px solid rgba(255, 255, 255, 0.06)',
+                  paddingTop: '14px',
+                }}
+              >
+                <div style={{ display: 'flex', flexDirection: 'column' }}>
+                  <span style={{ fontSize: '12px', color: '#71717a' }}>종합 확신도</span>
+                  <span style={{ fontSize: '20px', fontWeight: 800, color: '#fbbf24' }}>
+                    {certainty}
+                  </span>
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column' }}>
+                  <span style={{ fontSize: '12px', color: '#71717a' }}>고민 속도</span>
+                  <span style={{ fontSize: '20px', fontWeight: 800, color: '#34d399' }}>
+                    {speed}
+                  </span>
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column' }}>
+                  <span style={{ fontSize: '12px', color: '#71717a' }}>문항 수</span>
+                  <span style={{ fontSize: '20px', fontWeight: 800, color: '#f43f5e' }}>
+                    40문항
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Footer */}
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              width: '100%',
+              borderTop: '1px solid rgba(255, 255, 255, 0.08)',
+              paddingTop: '16px',
+              fontSize: '14px',
+              color: '#71717a',
+            }}
+          >
+            <span>마우스 궤적 및 고민 시간 기반 무의식 MBTI 분석</span>
+            <span style={{ color: '#a1a1aa', fontWeight: 600 }}>mbti.opentoyapp.kr</span>
+          </div>
+        </div>
+      ),
+      {
+        width: 1200,
+        height: 630,
+      }
+    );
+  } catch (e: unknown) {
+    const errorMsg = e instanceof Error ? e.message : 'Unknown error';
+    return new Response(`Failed to generate OG image: ${errorMsg}`, {
+      status: 500,
+    });
+  }
+}
