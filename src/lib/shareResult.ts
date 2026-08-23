@@ -1,3 +1,4 @@
+import LZString from 'lz-string';
 import { FullAnalysisResult, DimensionAnalysis, QuestionBehaviorLog } from '../types';
 import { MBTI_PROFILES, BEHAVIOR_PERSONAS } from '../data/mbtiDescriptions';
 import { calculateUserBenchmark } from '../data/benchmarkStats';
@@ -22,7 +23,7 @@ export interface CompactSharePayload {
   }[];
 }
 
-export function encodeResultToUrl(result: FullAnalysisResult): string {
+export function encodeResultToCompressedString(result: FullAnalysisResult): string {
   const payload: CompactSharePayload = {
     m: result.mbti,
     ei: [result.dimensions.EI.leftScore, result.dimensions.EI.rightScore, result.dimensions.EI.certaintyScore],
@@ -44,18 +45,28 @@ export function encodeResultToUrl(result: FullAnalysisResult): string {
 
   try {
     const jsonStr = JSON.stringify(payload);
-    // Base64 encode URL safe
-    const base64 = btoa(encodeURIComponent(jsonStr));
-    return base64;
+    return LZString.compressToEncodedURIComponent(jsonStr);
   } catch (err) {
-    console.error('Failed to encode result', err);
+    console.error('Failed to compress result', err);
     return '';
   }
 }
 
-export function decodeResultFromUrl(code: string): FullAnalysisResult | null {
+export function decodeResultFromCompressedString(compressed: string): FullAnalysisResult | null {
   try {
-    const jsonStr = decodeURIComponent(atob(code));
+    let jsonStr: string | null = LZString.decompressFromEncodedURIComponent(compressed);
+
+    // Backward compatibility for base64
+    if (!jsonStr) {
+      try {
+        jsonStr = decodeURIComponent(atob(compressed));
+      } catch {
+        jsonStr = null;
+      }
+    }
+
+    if (!jsonStr) return null;
+
     const payload: CompactSharePayload = JSON.parse(jsonStr);
 
     const mbtiProfile = MBTI_PROFILES[payload.m] || {
@@ -164,7 +175,10 @@ export function decodeResultFromUrl(code: string): FullAnalysisResult | null {
       personaGap: {
         detected: payload.c >= 2,
         count: payload.c >= 2 ? 1 : 0,
-        summary: payload.c >= 2 ? '상황에 따라 유연하게 생각하며 답변을 심사숙고했습니다.' : '자신의 성향을 일관되게 인식하고 있습니다.',
+        summary:
+          payload.c >= 2
+            ? '상황에 따라 유연하게 생각하며 답변을 심사숙고했습니다.'
+            : '자신의 성향을 일관되게 인식하고 있습니다.',
         items: [],
       },
       mouseTrajectoryStats: {
@@ -177,7 +191,7 @@ export function decodeResultFromUrl(code: string): FullAnalysisResult | null {
       benchmark,
     };
   } catch (err) {
-    console.error('Failed to decode share payload', err);
+    console.error('Failed to decode compressed share payload', err);
     return null;
   }
 }

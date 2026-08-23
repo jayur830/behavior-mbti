@@ -1,115 +1,30 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { QUESTIONS } from '../data/questions';
-import { QuestionBehaviorLog, FullAnalysisResult } from '../types';
-import { analyzeBehaviorAndMBTI } from '../lib/analyzer';
-import { decodeResultFromUrl } from '../lib/shareResult';
+import React from 'react';
+import { useRouter } from 'next/navigation';
 import { TestIntro } from '../components/TestIntro';
-import { QuestionCard } from '../components/QuestionCard';
-import { ResultView } from '../components/ResultView';
-import { Compass, Activity } from 'lucide-react';
+import { Compass } from 'lucide-react';
 
-export default function Home() {
-  const [step, setStep] = useState<'intro' | 'test' | 'analyzing' | 'result'>('intro');
-  const [currentQuestionIdx, setCurrentQuestionIdx] = useState<number>(0);
-  const [behaviorLogs, setBehaviorLogs] = useState<(QuestionBehaviorLog | null)[]>([]);
-  const [analysisResult, setAnalysisResult] = useState<FullAnalysisResult | null>(null);
-  const [isSharedView, setIsSharedView] = useState<boolean>(false);
+export default function HomePage() {
+  const router = useRouter();
 
-  // Check URL query param for shared result payload on mount
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const params = new URLSearchParams(window.location.search);
-      const shareCode = params.get('r');
-      if (shareCode) {
-        const decoded = decodeResultFromUrl(shareCode);
-        if (decoded) {
-          setAnalysisResult(decoded);
-          setIsSharedView(true);
-          setStep('result');
-        }
-      }
-    }
-  }, []);
-
-  const handleStartTest = () => {
-    if (typeof window !== 'undefined') {
-      window.history.pushState({}, '', window.location.pathname);
-    }
-    setIsSharedView(false);
-    setBehaviorLogs([]);
-    setCurrentQuestionIdx(0);
-    setAnalysisResult(null);
-    setStep('test');
+  const handleStart = () => {
+    router.push('/test');
   };
-
-  const handleQuestionNext = (log: QuestionBehaviorLog) => {
-    const updated = [...behaviorLogs];
-    updated[currentQuestionIdx] = log;
-    setBehaviorLogs(updated);
-
-    if (currentQuestionIdx + 1 < QUESTIONS.length) {
-      setCurrentQuestionIdx((prev) => prev + 1);
-    } else {
-      // Completed all questions
-      setStep('analyzing');
-      const validLogs = updated.filter((l): l is QuestionBehaviorLog => l !== null);
-      setTimeout(() => {
-        try {
-          const result = analyzeBehaviorAndMBTI(validLogs);
-          setAnalysisResult(result);
-          setIsSharedView(false);
-          setStep('result');
-        } catch (err) {
-          console.error('Error analyzing behavioral data:', err);
-          const fallbackResult = analyzeBehaviorAndMBTI(validLogs);
-          setAnalysisResult(fallbackResult);
-          setIsSharedView(false);
-          setStep('result');
-        }
-      }, 1200);
-    }
-  };
-
-  const handleQuestionPrev = (log: QuestionBehaviorLog) => {
-    const updated = [...behaviorLogs];
-    updated[currentQuestionIdx] = log;
-    setBehaviorLogs(updated);
-
-    if (currentQuestionIdx > 0) {
-      setCurrentQuestionIdx((prev) => prev - 1);
-    }
-  };
-
-  const handleRestart = () => {
-    if (typeof window !== 'undefined') {
-      window.history.pushState({}, '', window.location.pathname);
-    }
-    setIsSharedView(false);
-    setStep('intro');
-    setBehaviorLogs([]);
-    setCurrentQuestionIdx(0);
-    setAnalysisResult(null);
-  };
-
-  const currentLog = behaviorLogs[currentQuestionIdx];
 
   return (
     <div className="min-h-screen bg-[#090a0f] text-neutral-100 flex flex-col justify-between selection:bg-neutral-200 selection:text-neutral-900 bg-grid-pattern relative">
       {/* Navigation Header */}
       <header className="w-full border-b border-white/[0.06] backdrop-blur-md sticky top-0 z-40 bg-[#090a0f]/80">
         <div className="max-w-4xl mx-auto px-4 h-16 flex items-center justify-between">
-          <button
-            type="button"
-            onClick={handleRestart}
-            className="flex items-center gap-2.5 font-mono text-sm tracking-widest text-neutral-200 hover:text-white transition-colors cursor-pointer touch-manipulation"
-          >
+          <div className="flex items-center gap-2.5 font-mono text-sm tracking-widest text-neutral-200">
             <div className="w-7 h-7 rounded-lg bg-white/[0.08] border border-white/[0.1] flex items-center justify-center text-neutral-100">
               <Compass className="w-4 h-4 text-emerald-400" />
             </div>
-            <span className="font-bold">BEHAVIOR<span className="text-neutral-500">.MBTI</span></span>
-          </button>
+            <span className="font-bold">
+              BEHAVIOR<span className="text-neutral-500">.MBTI</span>
+            </span>
+          </div>
 
           <div className="flex items-center gap-2 text-xs font-mono text-neutral-400">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
@@ -120,42 +35,7 @@ export default function Home() {
 
       {/* Main Content Area */}
       <main className="flex-1 flex flex-col justify-center items-center px-4 py-8">
-        {step === 'intro' && <TestIntro onStart={handleStartTest} />}
-
-        {step === 'test' && (
-          <QuestionCard
-            key={QUESTIONS[currentQuestionIdx].id}
-            question={QUESTIONS[currentQuestionIdx]}
-            currentIndex={currentQuestionIdx}
-            totalQuestions={QUESTIONS.length}
-            initialValue={currentLog?.finalValue ?? null}
-            existingLog={currentLog}
-            onNext={handleQuestionNext}
-            onPrev={handleQuestionPrev}
-          />
-        )}
-
-        {step === 'analyzing' && (
-          <div className="flex flex-col items-center justify-center text-center p-8 max-w-sm animate-fade-in">
-            <div className="w-12 h-12 rounded-full border border-white/[0.1] bg-neutral-900 flex items-center justify-center mb-6 shadow-inner">
-              <Activity className="w-5 h-5 text-emerald-400 animate-pulse" />
-            </div>
-            <h3 className="text-base font-bold text-white mb-1.5 font-mono">
-              ANALYZING TELEMETRY...
-            </h3>
-            <p className="text-xs text-neutral-400 font-light leading-relaxed">
-              마우스 궤적, 문항별 체류 시간, 세부 상호작용 데이터를 종합하여 무의식적 성향을 분석하고 있습니다.
-            </p>
-          </div>
-        )}
-
-        {step === 'result' && analysisResult && (
-          <ResultView
-            result={analysisResult}
-            isSharedView={isSharedView}
-            onRestart={handleRestart}
-          />
-        )}
+        <TestIntro onStart={handleStart} />
       </main>
 
       {/* Minimal Footer */}

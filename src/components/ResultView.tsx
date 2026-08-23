@@ -26,7 +26,7 @@ import {
   Keyboard,
 } from 'lucide-react';
 
-import { encodeResultToUrl } from '../lib/shareResult';
+import { encodeResultToCompressedString } from '../lib/shareResult';
 
 interface ResultViewProps {
   result: FullAnalysisResult;
@@ -52,8 +52,11 @@ export const ResultView: React.FC<ResultViewProps> = ({ result, isSharedView = f
 
   const handleCopyLink = async () => {
     if (typeof window === 'undefined') return;
-    const shareCode = encodeResultToUrl(result);
-    const shareUrl = `${window.location.origin}${window.location.pathname}?r=${encodeURIComponent(shareCode)}`;
+    let shareUrl = window.location.href;
+    if (!shareUrl.includes('data=') && !shareUrl.includes('r=')) {
+      const compressed = encodeResultToCompressedString(result);
+      shareUrl = `${window.location.origin}/result?data=${compressed}`;
+    }
 
     let success = false;
 
