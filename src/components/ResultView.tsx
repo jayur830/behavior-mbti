@@ -47,11 +47,46 @@ export const ResultView: React.FC<ResultViewProps> = ({ result, onRestart }) => 
     });
   }, []);
 
-  const handleCopyLink = () => {
-    if (typeof window !== 'undefined') {
-      navigator.clipboard.writeText(window.location.href);
+  const handleCopyLink = async () => {
+    if (typeof window === 'undefined') return;
+    const url = window.location.href;
+
+    let success = false;
+
+    // 1. Modern navigator.clipboard API (HTTPS / Localhost)
+    if (navigator?.clipboard && typeof navigator.clipboard.writeText === 'function') {
+      try {
+        await navigator.clipboard.writeText(url);
+        success = true;
+      } catch {
+        success = false;
+      }
+    }
+
+    // 2. Legacy fallback using invisible textarea for HTTP / local Wi-Fi IP
+    if (!success) {
+      try {
+        const textArea = document.createElement('textarea');
+        textArea.value = url;
+        textArea.style.position = 'fixed';
+        textArea.style.left = '-9999px';
+        textArea.style.top = '-9999px';
+        textArea.setAttribute('readonly', '');
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        success = document.execCommand('copy');
+        document.body.removeChild(textArea);
+      } catch {
+        success = false;
+      }
+    }
+
+    if (success) {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
+    } else {
+      window.prompt('아래 링크를 복사해주세요:', url);
     }
   };
 
