@@ -21,6 +21,7 @@ import {
   Sparkles,
   Download,
   BarChart3,
+  Eye,
   Smartphone,
   Mouse,
   Keyboard,
@@ -35,8 +36,12 @@ interface ResultViewProps {
   onRestart: () => void;
 }
 
-export const ResultView: React.FC<ResultViewProps> = ({ result, isSharedView = false, onRestart }) => {
-  const [selectedDilemmaIdx, setSelectedDilemmaIdx] = useState<number>(0);
+export const ResultView: React.FC<ResultViewProps> = ({
+  result,
+  isSharedView = false,
+  onRestart,
+}) => {
+  const [selectedQuestionIdx, setSelectedQuestionIdx] = useState<number>(0);
   const [copied, setCopied] = useState<boolean>(false);
   const [isExporting, setIsExporting] = useState<boolean>(false);
   const cardExportRef = useRef<HTMLDivElement | null>(null);
@@ -45,6 +50,11 @@ export const ResultView: React.FC<ResultViewProps> = ({ result, isSharedView = f
   const [replayerMode, setReplayerMode] = useState<'canvas' | 'timeline'>(
     isTouchDevice ? 'timeline' : 'canvas'
   );
+
+  const questionsList =
+    result.allQuestionDetails && result.allQuestionDetails.length > 0
+      ? result.allQuestionDetails
+      : result.topDilemmas;
 
   useEffect(() => {
     confetti({
@@ -269,11 +279,11 @@ export const ResultView: React.FC<ResultViewProps> = ({ result, isSharedView = f
 
           <div className="flex flex-col items-center p-2">
             <span className="text-[11px] font-mono text-neutral-500 mb-1 flex items-center gap-1">
-              <ArrowRightLeft className="w-3 h-3 text-rose-400" />
-              선택 조정(재숙고)
+              <Eye className="w-3 h-3 text-rose-400" />
+              선택지 호버 탐색
             </span>
             <span className="text-lg sm:text-xl font-bold text-neutral-100 font-mono">
-              {result.totalAnswerChanges}회
+              {result.hoverAnalysis.totalHoverCount}회
             </span>
           </div>
 
@@ -370,7 +380,47 @@ export const ResultView: React.FC<ResultViewProps> = ({ result, isSharedView = f
         </div>
       </div>
 
-      {/* 3. Behavior Profile Card */}
+      {/* 3. Micro-Hover Attention & Gaze Analysis */}
+      <div className="bg-neutral-900/60 border border-white/[0.08] rounded-3xl p-6 sm:p-8 shadow-xl">
+        <div className="flex items-center gap-2 text-xs font-mono text-neutral-400 uppercase tracking-wide mb-4">
+          <Eye className="w-3.5 h-3.5 text-amber-400" />
+          <span>Micro-Hover Attention Analysis</span>
+        </div>
+
+        <div className="bg-neutral-950/70 border border-white/[0.06] p-5 rounded-2xl mb-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
+            <h3 className="text-sm font-bold text-white">
+              선택지 호버 체류 및 시선 망설임 지표
+            </h3>
+            <span className="text-xs font-mono text-amber-400">
+              총 {result.hoverAnalysis.totalHoverCount}회 탐색 ({(result.hoverAnalysis.totalHoverDurationMs / 1000).toFixed(1)}초 체류)
+            </span>
+          </div>
+          <p className="text-xs text-neutral-400 font-light leading-relaxed">
+            {result.hoverAnalysis.hoverInsight}
+          </p>
+        </div>
+
+        {/* Conflicted Hovers if present */}
+        {result.hoverAnalysis.conflictedHoverItems.length > 0 && (
+          <div className="space-y-3">
+            <span className="text-xs font-mono text-neutral-500 uppercase block">
+              시선이 머물렀던 잠재적 갈등 선택지
+            </span>
+            {result.hoverAnalysis.conflictedHoverItems.map((item, idx) => (
+              <div
+                key={idx}
+                className="bg-neutral-950/50 border border-white/[0.04] p-3.5 rounded-xl flex flex-col gap-1 text-xs"
+              >
+                <div className="text-neutral-300 font-medium">{item.questionTitle}</div>
+                <div className="text-neutral-400 font-light leading-relaxed">{item.interpretation}</div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* 4. Behavior Profile Card */}
       <div className="bg-neutral-900/60 border border-white/[0.08] rounded-3xl p-6 sm:p-8 shadow-xl">
         <div className="flex items-center gap-2 text-xs font-mono text-neutral-400 uppercase tracking-wide mb-4">
           <Activity className="w-3.5 h-3.5" />
@@ -405,7 +455,7 @@ export const ResultView: React.FC<ResultViewProps> = ({ result, isSharedView = f
         </div>
       </div>
 
-      {/* 4. 4 MBTI Dimensions with Clean Precision Ratios */}
+      {/* 5. 4 MBTI Dimensions */}
       <div className="bg-neutral-900/60 border border-white/[0.08] rounded-3xl p-6 sm:p-8 shadow-xl">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-lg font-bold text-white font-mono tracking-tight">
@@ -466,100 +516,105 @@ export const ResultView: React.FC<ResultViewProps> = ({ result, isSharedView = f
         </div>
       </div>
 
-      {/* 5. Top Dilemmas with Dual Mode (Mobile Touch Timeline vs Desktop Mouse Canvas) */}
-      {result.topDilemmas.length > 0 && (
+      {/* 6. All 12 Questions Full Telemetry & Trajectory Replayer */}
+      {questionsList.length > 0 && (
         <div className="bg-neutral-900/60 border border-white/[0.08] rounded-3xl p-6 sm:p-8 shadow-xl">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
             <div>
               <h2 className="text-lg font-bold text-white font-mono tracking-tight">
-                CRITICAL DILEMMAS TOP 3
+                QUESTION TELEMETRY REPLAYER (12 ITEMS)
               </h2>
               <p className="text-xs text-neutral-400 mt-1 font-light">
-                {isTouchDevice
-                  ? '터치 잠복기(고민 시간)와 프레스 시간이 가장 길었던 심리적 갈등 문항'
-                  : '마우스 방향 전환 횟수와 체류 시간이 가장 길었던 갈등 문항'}
+                모든 문항별 마우스 이동 궤적, 선택지 호버 이력, 체류 시간을 직접 확인해보세요.
               </p>
             </div>
 
-            {/* Dilemma Selector Tabs */}
-            <div className="flex gap-2">
-              {result.topDilemmas.map((_, idx) => (
-                <button
-                  key={idx}
-                  type="button"
-                  onClick={() => setSelectedDilemmaIdx(idx)}
-                  className={`px-3 py-1.5 rounded-xl text-xs font-mono font-medium transition-all cursor-pointer touch-manipulation ${
-                    selectedDilemmaIdx === idx
-                      ? 'bg-neutral-100 text-neutral-950 shadow-sm'
-                      : 'bg-neutral-950 border border-white/[0.06] text-neutral-400 hover:text-white'
-                  }`}
-                >
-                  TOP {idx + 1}
-                </button>
-              ))}
+            {/* Replayer View Mode Switcher */}
+            <div className="flex bg-neutral-950 p-1 rounded-xl border border-white/[0.06] text-xs font-mono self-start sm:self-auto">
+              <button
+                type="button"
+                onClick={() => setReplayerMode('canvas')}
+                className={`px-3 py-1 rounded-lg transition-all cursor-pointer ${
+                  replayerMode === 'canvas'
+                    ? 'bg-neutral-800 text-white font-semibold shadow-sm'
+                    : 'text-neutral-500 hover:text-neutral-300'
+                }`}
+              >
+                마우스 궤적
+              </button>
+              <button
+                type="button"
+                onClick={() => setReplayerMode('timeline')}
+                className={`px-3 py-1 rounded-lg transition-all cursor-pointer ${
+                  replayerMode === 'timeline'
+                    ? 'bg-neutral-800 text-white font-semibold shadow-sm'
+                    : 'text-neutral-500 hover:text-neutral-300'
+                }`}
+              >
+                타임라인
+              </button>
             </div>
           </div>
 
-          {/* Active Dilemma Card */}
-          {result.topDilemmas[selectedDilemmaIdx] && (
+          {/* 12-Question Grid Selector Pills */}
+          <div className="flex flex-wrap gap-1.5 mb-6 p-2 bg-neutral-950/80 rounded-2xl border border-white/[0.06]">
+            {questionsList.map((qDetail, idx) => {
+              const isSelected = selectedQuestionIdx === idx;
+              const hasChanges = qDetail.behavior.changeCount > 0;
+              return (
+                <button
+                  key={qDetail.question.id}
+                  type="button"
+                  onClick={() => setSelectedQuestionIdx(idx)}
+                  className={`flex-1 min-w-[52px] py-2 px-2.5 rounded-xl text-xs font-mono font-medium transition-all cursor-pointer touch-manipulation flex flex-col items-center justify-center relative ${
+                    isSelected
+                      ? 'bg-neutral-100 text-neutral-950 shadow-md scale-105 z-10'
+                      : 'bg-neutral-900/90 border border-white/[0.04] text-neutral-400 hover:text-white hover:border-white/[0.15]'
+                  }`}
+                >
+                  <span className="text-[11px] font-bold">Q{idx + 1}</span>
+                  {hasChanges && (
+                    <span className="w-1.5 h-1.5 rounded-full bg-rose-400 absolute top-1.5 right-1.5" />
+                  )}
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Active Question Telemetry Card */}
+          {questionsList[selectedQuestionIdx] && (
             <div className="space-y-4">
               <div className="bg-neutral-950/80 border border-white/[0.06] p-4 rounded-2xl">
-                <div className="text-xs font-mono text-neutral-500 mb-1">
-                  QUESTION #{result.topDilemmas[selectedDilemmaIdx].question.id}
+                <div className="flex items-center justify-between text-xs font-mono text-neutral-500 mb-1">
+                  <span>QUESTION #{questionsList[selectedQuestionIdx].question.id}</span>
+                  <span className="text-neutral-400">
+                    체류: {(questionsList[selectedQuestionIdx].hesitationTime / 1000).toFixed(1)}초
+                  </span>
                 </div>
                 <h4 className="text-sm sm:text-base font-bold text-white mb-2 leading-relaxed">
-                  {result.topDilemmas[selectedDilemmaIdx].question.title}
+                  {questionsList[selectedQuestionIdx].question.title}
                 </h4>
                 <div className="flex flex-wrap items-center gap-2 text-xs text-neutral-400 font-light">
                   <span className="text-amber-400 font-mono">
-                    {result.topDilemmas[selectedDilemmaIdx].changeHistorySummary}
+                    {questionsList[selectedQuestionIdx].changeHistorySummary}
                   </span>
                   <span>·</span>
-                  <span>{result.topDilemmas[selectedDilemmaIdx].insight}</span>
-                </div>
-              </div>
-
-              {/* Replayer View Mode Switcher */}
-              <div className="flex items-center justify-between">
-                <div className="text-xs font-mono text-neutral-400">
-                  {replayerMode === 'canvas' ? '마우스 이동 궤적 및 속도 시뮬레이션' : '시간대별 잠복기 및 터치 지연 시퀀스'}
-                </div>
-                <div className="flex bg-neutral-950 p-1 rounded-xl border border-white/[0.06] text-xs font-mono">
-                  <button
-                    type="button"
-                    onClick={() => setReplayerMode('canvas')}
-                    className={`px-3 py-1 rounded-lg transition-all cursor-pointer ${
-                      replayerMode === 'canvas'
-                        ? 'bg-neutral-800 text-white font-semibold'
-                        : 'text-neutral-500 hover:text-neutral-300'
-                    }`}
-                  >
-                    마우스 궤적
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setReplayerMode('timeline')}
-                    className={`px-3 py-1 rounded-lg transition-all cursor-pointer ${
-                      replayerMode === 'timeline'
-                        ? 'bg-neutral-800 text-white font-semibold'
-                        : 'text-neutral-500 hover:text-neutral-300'
-                    }`}
-                  >
-                    타임라인
-                  </button>
+                  <span className="text-emerald-400 font-mono">
+                    {questionsList[selectedQuestionIdx].hoverSummary}
+                  </span>
                 </div>
               </div>
 
               {/* Dynamic Replayer */}
               {replayerMode === 'timeline' ? (
                 <TouchTimelinePlayer
-                  key={result.topDilemmas[selectedDilemmaIdx].behavior.questionId}
-                  behaviorLog={result.topDilemmas[selectedDilemmaIdx].behavior}
+                  key={questionsList[selectedQuestionIdx].behavior.questionId}
+                  behaviorLog={questionsList[selectedQuestionIdx].behavior}
                 />
               ) : (
                 <MouseReplayCanvas
-                  key={result.topDilemmas[selectedDilemmaIdx].behavior.questionId}
-                  behaviorLog={result.topDilemmas[selectedDilemmaIdx].behavior}
+                  key={questionsList[selectedQuestionIdx].behavior.questionId}
+                  behaviorLog={questionsList[selectedQuestionIdx].behavior}
                 />
               )}
             </div>
@@ -567,7 +622,7 @@ export const ResultView: React.FC<ResultViewProps> = ({ result, isSharedView = f
         </div>
       )}
 
-      {/* 6. Persona Gap Analysis */}
+      {/* 7. Persona Gap Analysis */}
       {result.personaGap.detected && (
         <div className="bg-neutral-900/60 border border-white/[0.08] rounded-3xl p-6 sm:p-8 shadow-xl">
           <h2 className="text-lg font-bold text-white font-mono tracking-tight mb-2">
@@ -602,7 +657,7 @@ export const ResultView: React.FC<ResultViewProps> = ({ result, isSharedView = f
         </div>
       )}
 
-      {/* 7. Action Controls: Image Download, Share & Restart */}
+      {/* 8. Action Controls: Image Download, Share & Restart */}
       {isSharedView ? (
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-6">
           <button

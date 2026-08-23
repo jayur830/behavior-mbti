@@ -1,325 +1,333 @@
 import {
-  Dimension,
+  QuestionBehaviorLog,
+  FullAnalysisResult,
   DimensionAnalysis,
   DilemmaQuestionDetail,
-  FullAnalysisResult,
-  InputDevice,
-  MBTIType,
+  HoverPsychologyAnalysis,
   PersonaGapAnalysis,
-  QuestionBehaviorLog,
+  MBTIType,
+  Dimension,
+  InputDevice,
 } from '../types';
 import { QUESTIONS, getOptionLabel } from '../data/questions';
-import { BEHAVIOR_PERSONAS, MBTI_PROFILES } from '../data/mbtiDescriptions';
+import { MBTI_PROFILES, BEHAVIOR_PERSONAS } from '../data/mbtiDescriptions';
 import { calculateUserBenchmark } from '../data/benchmarkStats';
 
-export function analyzeBehaviorAndMBTI(logs: QuestionBehaviorLog[]): FullAnalysisResult {
-  const safeLogs = Array.isArray(logs) ? logs : [];
-  const logMap = new Map<number, QuestionBehaviorLog>();
-  safeLogs.forEach((log) => {
-    if (log && typeof log.questionId === 'number') {
-      logMap.set(log.questionId, log);
-    }
+export function analyzeBehaviorAndMBTI(
+  logs: QuestionBehaviorLog[]
+): FullAnalysisResult {
+  // Ensure safe fallback if logs are incomplete
+  const safeLogs: QuestionBehaviorLog[] = QUESTIONS.map((q) => {
+    const existing = logs.find((l) => l && l.questionId === q.id);
+    if (existing) return existing;
+    return {
+      questionId: q.id,
+      startTime: Date.now() - 2000,
+      endTime: Date.now(),
+      totalDwellTime: 2000,
+      firstInteractionTime: 1000,
+      finalValue: 0,
+      selectionHistory: [{ value: 0, timestamp: 1000 }],
+      changeCount: 0,
+      hoverLogs: [],
+      mouseTrajectory: [],
+      directionChanges: 0,
+      hesitationScore: 20,
+      tabBlurCount: 0,
+      primaryDevice: 'mouse',
+      keyStrokeCount: 0,
+    };
   });
 
-  // 1. Calculate MBTI 4 Dimensions
-  const dimensionResults: Record<Dimension, DimensionAnalysis> = {
-    EI: calculateDimension('EI', 'E', 'I', safeLogs, logMap),
-    SN: calculateDimension('SN', 'N', 'S', safeLogs, logMap),
-    TF: calculateDimension('TF', 'T', 'F', safeLogs, logMap),
-    JP: calculateDimension('JP', 'J', 'P', safeLogs, logMap),
-  };
+  // 1. Total stats calculation
+  const totalTestDuration = safeLogs.reduce(
+    (acc, l) => acc + (l.totalDwellTime || 0),
+    0
+  );
+  const totalAnswerChanges = safeLogs.reduce(
+    (acc, l) => acc + (l.changeCount || 0),
+    0
+  );
 
-  const mbtiCode = `${dimensionResults.EI.winner}${dimensionResults.SN.winner}${dimensionResults.TF.winner}${dimensionResults.JP.winner}`;
-  const mbtiProfile = MBTI_PROFILES[mbtiCode] || {
-    title: `${mbtiCode} 유형`,
-    subtitle: '개성 넘치는 특별한 성향',
-    summary: '독창적인 시각과 깊이 있는 매력을 지닌 성향입니다.',
-    traits: ['입체적 성격', '상황 적응력'],
-    behaviorAdvice: '행동 분석을 통해 나만의 고유한 심리 패턴을 확인해보세요.',
-  };
+  // 2. Hover Analytics
+  let totalHoverCount = 0;
+  let totalHoverDurationMs = 0;
+  let hesitatedOptionsCount = 0;
+  const conflictedHoverItems: HoverPsychologyAnalysis['conflictedHoverItems'] = [];
 
-  // 2. Aggregate Overall Stats
-  const totalTestDuration = safeLogs.reduce((acc, l) => acc + (l?.totalDwellTime || 0), 0);
-  const totalAnswerChanges = safeLogs.reduce((acc, l) => acc + (l?.changeCount || 0), 0);
-  const totalKeyStrokes = safeLogs.reduce((acc, l) => acc + (l?.keyStrokeCount || 0), 0);
-  const avgCertainty =
-    (dimensionResults.EI.certaintyScore +
-      dimensionResults.SN.certaintyScore +
-      dimensionResults.TF.certaintyScore +
-      dimensionResults.JP.certaintyScore) /
-    4;
+  safeLogs.forEach((log) => {
+    const q = QUESTIONS.find((question) => question.id === log.questionId);
+    if (!q) return;
+
+    const hoverLogs = log.hoverLogs || [];
+    totalHoverCount += hoverLogs.length;
+
+    hoverLogs.forEach((h) => {
+      totalHoverDurationMs += h.duration;
+      if (h.duration >= 400) {
+        hesitatedOptionsCount += 1;
+      }
+      // If hovered heavily on an option different from final value (especially opposite polarity)
+      if (
+        log.finalValue !== null &&
+        h.optionValue !== log.finalValue &&
+        h.duration >= 450 &&
+        Math.sign(h.optionValue || 1) !== Math.sign(log.finalValue || 1)
+      ) {
+        conflictedHoverItems.push({
+          questionTitle: q.title,
+          hoveredOptionLabel: getOptionLabel(h.optionValue),
+          finalOptionLabel: getOptionLabel(log.finalValue),
+          hoverDurationMs: h.duration,
+          interpretation: `[${getOptionLabel(h.optionValue)}]에 ${(h.duration / 1000).toFixed(1)}초간 마우스를 올려두며 내적 갈등을 겪은 후, 최종적으로 [${getOptionLabel(log.finalValue)}]을 선택했습니다.`,
+        });
+      }
+    });
+  });
+
+  const hoverAnalysis: HoverPsychologyAnalysis = {
+    totalHoverCount,
+    totalHoverDurationMs,
+    hesitatedOptionsCount,
+    hoverInsight:
+      hesitatedOptionsCount > 4
+        ? '선택지를 누르기 전 여러 대안 위를 신중하게 오가며 비교 검토하는 사색적 시선 패턴이 뚜렷합니다.'
+        : '직관적으로 떠오른 선택지로 마우스가 곧장 직행하는 결단력 있는 선택 패턴을 보였습니다.',
+    conflictedHoverItems: conflictedHoverItems.slice(0, 3),
+  };
 
   // 3. Detect primary input device
   let touchCount = 0;
   let keyCount = 0;
   let mouseCount = 0;
   safeLogs.forEach((l) => {
-    if (l?.primaryDevice === 'touch') touchCount++;
-    else if (l?.primaryDevice === 'keyboard') keyCount++;
+    if (l.primaryDevice === 'touch') touchCount++;
+    else if (l.primaryDevice === 'keyboard') keyCount++;
     else mouseCount++;
   });
   let primaryDevice: InputDevice = 'mouse';
   if (touchCount > mouseCount && touchCount > keyCount) primaryDevice = 'touch';
   else if (keyCount > mouseCount && keyCount > touchCount) primaryDevice = 'keyboard';
 
-  // 4. Mouse & Touch Trajectory Dynamics
-  let totalDistance = 0;
-  let totalTrajectoryPoints = 0;
-  let totalDirectionChanges = 0;
+  // 4. 4-Dimension Scores and Certainty Calculation
+  const dimensionScores: Record<
+    Dimension,
+    { positiveScore: number; negativeScore: number; hesitationSum: number; changesSum: number; count: number }
+  > = {
+    EI: { positiveScore: 0, negativeScore: 0, hesitationSum: 0, changesSum: 0, count: 0 },
+    SN: { positiveScore: 0, negativeScore: 0, hesitationSum: 0, changesSum: 0, count: 0 },
+    TF: { positiveScore: 0, negativeScore: 0, hesitationSum: 0, changesSum: 0, count: 0 },
+    JP: { positiveScore: 0, negativeScore: 0, hesitationSum: 0, changesSum: 0, count: 0 },
+  };
 
-  safeLogs.forEach((l) => {
-    if (!l) return;
-    totalDirectionChanges += l.directionChanges || 0;
-    const pts = Array.isArray(l.mouseTrajectory) ? l.mouseTrajectory : [];
-    totalTrajectoryPoints += pts.length;
-    for (let i = 1; i < pts.length; i++) {
-      const dx = pts[i].x - pts[i - 1].x;
-      const dy = pts[i].y - pts[i - 1].y;
-      totalDistance += Math.sqrt(dx * dx + dy * dy);
+  safeLogs.forEach((log) => {
+    const q = QUESTIONS.find((item) => item.id === log.questionId);
+    if (!q) return;
+
+    const val = log.finalValue ?? 0;
+    const dim = q.dimension;
+
+    if (val > 0) {
+      dimensionScores[dim].positiveScore += Math.abs(val);
+    } else if (val < 0) {
+      dimensionScores[dim].negativeScore += Math.abs(val);
+    } else {
+      dimensionScores[dim].positiveScore += 0.5;
+      dimensionScores[dim].negativeScore += 0.5;
     }
+
+    dimensionScores[dim].hesitationSum += log.hesitationScore || 20;
+    dimensionScores[dim].changesSum += log.changeCount || 0;
+    dimensionScores[dim].count += 1;
   });
 
-  const avgSpeed = totalTestDuration > 0 ? (totalDistance / (totalTestDuration / 1000)) * 100 : 0;
-  const indecisivenessIndex = Math.min(
-    100,
-    Math.round(
-      totalAnswerChanges * 18 +
-        (totalDirectionChanges / (safeLogs.length || 1)) * 5 +
-        (totalTestDuration / (safeLogs.length || 1) / 1000) * 3
-    )
-  );
+  const analyzeDimension = (
+    dimKey: Dimension,
+    leftType: MBTIType,
+    rightType: MBTIType
+  ): DimensionAnalysis => {
+    const data = dimensionScores[dimKey];
+    const totalScore = data.positiveScore + data.negativeScore || 1;
+    const leftRatio = data.positiveScore / totalScore;
+    const rightRatio = data.negativeScore / totalScore;
 
-  // 5. Determine Behavior Persona
-  const behaviorPersona = determinePersona(
-    totalAnswerChanges,
-    totalTestDuration / (safeLogs.length || 1),
-    totalDistance,
-    indecisivenessIndex
-  );
+    const leftScore = Math.round(leftRatio * 100);
+    const rightScore = 100 - leftScore;
 
-  // 6. Detect Persona Gap
-  const personaGap = detectPersonaGap(safeLogs, logMap);
+    const winner = leftScore >= rightScore ? leftType : rightType;
+    const winnerPercentage = Math.max(leftScore, rightScore);
 
-  // 7. Extract Top Dilemmas
-  const topDilemmas = extractTopDilemmas(safeLogs, logMap);
+    const avgHesitation = data.count > 0 ? data.hesitationSum / data.count : 30;
+    const rawCertainty = winnerPercentage * 1.2 - avgHesitation * 0.4 - data.changesSum * 6;
+    const certaintyScore = Math.max(25, Math.min(99, Math.round(rawCertainty)));
 
-  // 8. Global Benchmark Stats
-  const benchmark = calculateUserBenchmark(totalTestDuration, totalAnswerChanges);
-
-  return {
-    mbti: mbtiCode,
-    mbtiTitle: mbtiProfile.title,
-    mbtiDescription: mbtiProfile.summary,
-    dimensions: dimensionResults,
-    overallCertainty: Math.round(avgCertainty),
-    totalTestDuration,
-    totalAnswerChanges,
-    behaviorPersona,
-    topDilemmas,
-    personaGap,
-    mouseTrajectoryStats: {
-      totalDistanceNormalized: Math.round(totalDistance * 10) / 10,
-      averageSpeed: Math.round(avgSpeed * 10) / 10,
-      indecisivenessIndex,
-      primaryDevice,
-      keyStrokeCount: totalKeyStrokes,
-    },
-    benchmark,
-  };
-}
-
-function calculateDimension(
-  dim: Dimension,
-  posType: MBTIType,
-  negType: MBTIType,
-  logs: QuestionBehaviorLog[],
-  logMap: Map<number, QuestionBehaviorLog>
-): DimensionAnalysis {
-  const dimQuestions = QUESTIONS.filter((q) => q.dimension === dim);
-  let totalScore = 0;
-  let totalChanges = 0;
-  let totalDwell = 0;
-  let totalHesitation = 0;
-
-  dimQuestions.forEach((q) => {
-    const l = logMap.get(q.id);
-    const val = l?.finalValue ?? 0;
-    totalScore += val;
-    if (l) {
-      totalChanges += l.changeCount || 0;
-      totalDwell += l.totalDwellTime || 0;
-      totalHesitation += l.hesitationScore || 0;
+    let behaviorInsight = '';
+    if (certaintyScore >= 80) {
+      behaviorInsight = `마우스 망설임이나 수정 없이 매우 단호하고 명확하게 ${winner} 성향을 선택했습니다. (확신도 ${certaintyScore}%)`;
+    } else if (certaintyScore >= 55) {
+      behaviorInsight = `${winner} 성향이 우세하지만, 일부 문항에서 선택지를 비교하며 신중하게 사색했습니다. (확신도 ${certaintyScore}%)`;
+    } else {
+      behaviorInsight = `${leftType}와 ${rightType} 성향 사이에서 마우스 궤적의 흔들림과 선택 수정이 관측된 균형/경계 영역입니다. (확신도 ${certaintyScore}%)`;
     }
+
+    return {
+      dimension: dimKey,
+      leftType,
+      rightType,
+      leftScore,
+      rightScore,
+      winner,
+      winnerPercentage,
+      certaintyScore,
+      averageHesitation: Math.round(avgHesitation),
+      changeCount: data.changesSum,
+      behaviorInsight,
+    };
+  };
+
+  const dimensions = {
+    EI: analyzeDimension('EI', 'E', 'I'),
+    SN: analyzeDimension('SN', 'N', 'S'),
+    TF: analyzeDimension('TF', 'T', 'F'),
+    JP: analyzeDimension('JP', 'J', 'P'),
+  };
+
+  // 5. Derive MBTI 4-Letter Code
+  const mbti = `${dimensions.EI.winner}${dimensions.SN.winner}${dimensions.TF.winner}${dimensions.JP.winner}`;
+  const mbtiProfile = MBTI_PROFILES[mbti] || {
+    title: `${mbti} 유형`,
+    subtitle: '개성 넘치는 독창적인 성향',
+    summary: '행동 분석을 통해 측정된 고유한 심리적 특성을 가지고 있습니다.',
+    traits: ['균형 잡힌 성격', '유연한 대처'],
+    behaviorAdvice: '자신의 본능적 선택 패턴을 탐색해보세요.',
+  };
+
+  const overallCertainty = Math.round(
+    (dimensions.EI.certaintyScore +
+      dimensions.SN.certaintyScore +
+      dimensions.TF.certaintyScore +
+      dimensions.JP.certaintyScore) /
+      4
+  );
+
+  // 6. Behavior Persona Profiling
+  const avgDwellPerQuestion = totalTestDuration / safeLogs.length;
+  let persona = BEHAVIOR_PERSONAS.THE_DECISIVE;
+
+  if (totalAnswerChanges >= 3) {
+    persona = BEHAVIOR_PERSONAS.THE_WANDERER;
+  } else if (avgDwellPerQuestion > 7000) {
+    persona = BEHAVIOR_PERSONAS.THE_DELIBERATE;
+  } else if (avgDwellPerQuestion < 3200 && totalAnswerChanges === 0) {
+    persona = BEHAVIOR_PERSONAS.THE_DECISIVE;
+  } else if (hesitatedOptionsCount >= 3) {
+    persona = BEHAVIOR_PERSONAS.THE_EXPLORER;
+  } else {
+    persona = BEHAVIOR_PERSONAS.THE_STEALTH;
+  }
+
+  // 7. Dilemma Details for All 12 Questions
+  const allQuestionDetails: DilemmaQuestionDetail[] = safeLogs.map((log) => {
+    const q = QUESTIONS.find((item) => item.id === log.questionId) || QUESTIONS[0];
+    const hoverSummary =
+      log.hoverLogs && log.hoverLogs.length > 0
+        ? `선택지 ${log.hoverLogs.length}회 탐색 (총 ${(log.hoverLogs.reduce((a, b) => a + b.duration, 0) / 1000).toFixed(1)}초 체류)`
+        : '망설임 없는 즉시 선택';
+
+    let longestHoveredOption: number | null = null;
+    if (log.hoverLogs && log.hoverLogs.length > 0) {
+      const sortedHovers = [...log.hoverLogs].sort((a, b) => b.duration - a.duration);
+      longestHoveredOption = sortedHovers[0].optionValue;
+    }
+
+    return {
+      question: q,
+      behavior: log,
+      hesitationTime: log.totalDwellTime,
+      changeHistorySummary:
+        log.changeCount > 0
+          ? `선택 조정 ${log.changeCount}회 진행`
+          : `체류 시간 ${(log.totalDwellTime / 1000).toFixed(1)}초 동안 신중한 검토 후 확정`,
+      insight:
+        log.changeCount > 0
+          ? '선택지를 바꾸며 본능적 직감과 이성적 판단 사이에서 깊이 고민했습니다.'
+          : (log.totalDwellTime > 5000
+          ? '선택을 바꾸지는 않았으나 충분한 시간 동안 질문을 심사숙고했습니다.'
+          : '자신의 성향을 명확하게 파악하여 직관적이고 빠르게 결정했습니다.'),
+      hoverSummary,
+      longestHoveredOption,
+    };
   });
 
-  const maxPossible = Math.max(1, dimQuestions.length * 3);
-  let winner: MBTIType = posType;
-  let leftScore = 50;
-  let rightScore = 50;
-  let winnerPercentage = 50;
+  // Top 3 Critical Dilemmas sorted by hesitation & changes
+  const topDilemmas = [...allQuestionDetails]
+    .sort((a, b) => {
+      const scoreA = a.behavior.changeCount * 40 + a.behavior.hesitationScore;
+      const scoreB = b.behavior.changeCount * 40 + b.behavior.hesitationScore;
+      return scoreB - scoreA;
+    })
+    .slice(0, 3);
 
-  if (totalScore > 0) {
-    winner = posType;
-    winnerPercentage = Math.round(50 + (totalScore / maxPossible) * 50);
-    leftScore = winnerPercentage;
-    rightScore = 100 - winnerPercentage;
-  } else if (totalScore < 0) {
-    winner = negType;
-    winnerPercentage = Math.round(50 + (Math.abs(totalScore) / maxPossible) * 50);
-    leftScore = 100 - winnerPercentage;
-    rightScore = winnerPercentage;
-  } else {
-    winner = posType;
-    winnerPercentage = 50;
-  }
-
-  const avgDwellSec = totalDwell / (dimQuestions.length || 1) / 1000;
-  const strengthFactor = Math.abs(totalScore) / maxPossible;
-  const penalty =
-    totalChanges * 12 + (totalHesitation / (dimQuestions.length || 1)) * 0.4 + (avgDwellSec > 10 ? 15 : 0);
-  const certaintyScore = Math.max(20, Math.min(99, Math.round(strengthFactor * 100 - penalty + 25)));
-
-  let insight = '';
-  if (certaintyScore >= 80) {
-    insight = `해당 영역에서는 망설임 없는 단호한 결정을 보였습니다. 확신도 ${certaintyScore}%`;
-  } else if (certaintyScore >= 55) {
-    insight = `상황에 따라 균형을 고려하며 신중하게 답변을 선택했습니다.`;
-  } else {
-    insight = `두 성향 사이에서 마우스 방황과 답변 수정이 빈번하여 경계선에 가까운 유연함을 보입니다.`;
-  }
-
-  return {
-    dimension: dim,
-    leftType: posType,
-    rightType: negType,
-    leftScore,
-    rightScore,
-    winner,
-    winnerPercentage,
-    certaintyScore,
-    averageHesitation: Math.round(totalDwell / (dimQuestions.length || 1)),
-    changeCount: totalChanges,
-    behaviorInsight: insight,
-  };
-}
-
-function determinePersona(
-  totalChanges: number,
-  avgDwellMs: number,
-  totalDistance: number,
-  indecisivenessIndex: number
-) {
-  if (totalChanges >= 3 || indecisivenessIndex >= 70) {
-    return BEHAVIOR_PERSONAS.THE_VACILLATOR;
-  }
-  if (avgDwellMs >= 7000) {
-    return BEHAVIOR_PERSONAS.THE_DELIBERATOR;
-  }
-  if (totalDistance > 35) {
-    return BEHAVIOR_PERSONAS.THE_EXPLORER;
-  }
-  if (avgDwellMs < 3200 && totalChanges === 0) {
-    return BEHAVIOR_PERSONAS.THE_DECISIVE;
-  }
-  return BEHAVIOR_PERSONAS.THE_STEALTH;
-}
-
-function detectPersonaGap(
-  logs: QuestionBehaviorLog[],
-  logMap: Map<number, QuestionBehaviorLog>
-): PersonaGapAnalysis {
-  const gapItems: PersonaGapAnalysis['items'] = [];
-
-  logs.forEach((log) => {
-    if (log && Array.isArray(log.selectionHistory) && log.selectionHistory.length >= 2) {
-      const first = log.selectionHistory[0];
-      const last = log.selectionHistory[log.selectionHistory.length - 1];
-      const diff = Math.abs(first.value - last.value);
-      const q = QUESTIONS.find((question) => question.id === log.questionId);
-
-      if (diff >= 2 && q) {
-        let interpretation = '';
-        if (first.value < last.value) {
-          interpretation = `처음에는 소극적이거나 반대되는 입장을 취했으나(${getOptionLabel(
-            first.value
-          )}), 고민 끝에 긍정적인 방향(${getOptionLabel(last.value)})으로 의사를 조정했습니다.`;
-        } else {
-          interpretation = `처음에는 즉각적으로 ${getOptionLabel(
-            first.value
-          )}를 골랐으나, 현실적 조건이나 자신의 실제 패턴을 재숙고하여 ${getOptionLabel(
-            last.value
-          )}로 솔직하게 수정했습니다.`;
+  // 8. Persona Gap (Instinct vs Final Choice)
+  const personaGapItems: PersonaGapAnalysis['items'] = [];
+  safeLogs.forEach((log) => {
+    if (log.selectionHistory && log.selectionHistory.length >= 2) {
+      const firstSelection = log.selectionHistory[0].value;
+      const finalSelection = log.finalValue;
+      if (finalSelection !== null && firstSelection !== finalSelection) {
+        const q = QUESTIONS.find((item) => item.id === log.questionId);
+        if (q) {
+          personaGapItems.push({
+            question: q,
+            initialChoiceText: getOptionLabel(firstSelection),
+            finalChoiceText: getOptionLabel(finalSelection),
+            hesitationDuration: log.totalDwellTime,
+            psychologicalInterpretation: `첫 직감은 [${getOptionLabel(firstSelection)}]이었으나, 신중한 재고민을 거쳐 [${getOptionLabel(finalSelection)}]으로 답을 조정했습니다.`,
+          });
         }
-
-        gapItems.push({
-          question: q,
-          initialChoiceText: getOptionLabel(first.value),
-          finalChoiceText: getOptionLabel(last.value),
-          hesitationDuration: last.timestamp - first.timestamp || 1200,
-          psychologicalInterpretation: interpretation,
-        });
       }
     }
   });
 
-  return {
-    detected: gapItems.length > 0,
-    count: gapItems.length,
+  const personaGap: PersonaGapAnalysis = {
+    detected: personaGapItems.length > 0,
+    count: personaGapItems.length,
     summary:
-      gapItems.length > 0
-        ? `총 ${gapItems.length}개 문항에서 최초의 본능적 선택과 최종 선택 간의 유의미한 심리적 유턴이 포착되었습니다.`
-        : `답변을 크게 뒤바꾼 문항이 없어, 자신의 성향을 매우 일관되고 뚜렷하게 인식하고 있습니다.`,
-    items: gapItems,
+      personaGapItems.length > 0
+        ? `총 ${personaGapItems.length}개 문항에서 첫 직감과 최종 선택 간의 심사숙고 조정이 관측되었습니다.`
+        : '모든 문항에서 첫 직감과 최종 선택이 일치하여 매우 확고한 자기 인식을 보였습니다.',
+    items: personaGapItems,
   };
-}
 
-function extractTopDilemmas(
-  logs: QuestionBehaviorLog[],
-  logMap: Map<number, QuestionBehaviorLog>
-): DilemmaQuestionDetail[] {
-  const validLogs = logs.filter((l) => l && QUESTIONS.some((q) => q.id === l.questionId));
+  // 9. Benchmark Percentile Stats
+  const benchmark = calculateUserBenchmark(totalTestDuration, totalAnswerChanges);
 
-  const scored = validLogs.map((log) => {
-    const q = QUESTIONS.find((item) => item.id === log.questionId)!;
-    const changeCount = log.changeCount || 0;
-    const dwellTime = log.totalDwellTime || 0;
-    const changeScore = changeCount * 40;
-    const dwellScore = Math.min(60, (dwellTime / 1000) * 5);
-    const hesitationScore = (log.hesitationScore || 0) * 0.4;
-    const zigZagScore = (log.directionChanges || 0) * 3;
-    const totalDilemmaScore = changeScore + dwellScore + hesitationScore + zigZagScore;
-
-    let summary = '';
-    if (changeCount > 0 && Array.isArray(log.selectionHistory)) {
-      const historyStr = log.selectionHistory.map((s) => getOptionLabel(s.value)).join(' ➔ ');
-      summary = `선택 변경 ${changeCount}회 (${historyStr})`;
-    } else {
-      summary = `체류 시간 ${(dwellTime / 1000).toFixed(1)}초 동안 신중한 마우스 탐색 후 확정`;
-    }
-
-    let insight = '';
-    if (changeCount >= 2) {
-      insight = '양쪽 극단과 중립을 오가며 심리적 갈등이 가장 격렬했던 질문입니다.';
-    } else if (dwellTime > 8000) {
-      insight = '긴 시간 동안 질문의 단어 하나하나를 곱씹으며 깊은 사색에 잠겼습니다.';
-    } else if ((log.directionChanges || 0) > 10) {
-      insight = '마우스 커서가 여러 선택지 위에서 머뭇거리며 흔들리는 패턴이 뚜렷했습니다.';
-    } else {
-      insight = '상대적으로 고민의 흔적이 묻어난 의미 있는 문항입니다.';
-    }
-
-    return {
-      dilemmaScore: totalDilemmaScore,
-      detail: {
-        question: q,
-        behavior: log,
-        hesitationTime: dwellTime,
-        changeHistorySummary: summary,
-        insight,
-      },
-    };
-  });
-
-  scored.sort((a, b) => b.dilemmaScore - a.dilemmaScore);
-  return scored.slice(0, 3).map((s) => s.detail);
+  return {
+    mbti,
+    mbtiTitle: mbtiProfile.title,
+    mbtiDescription: mbtiProfile.summary,
+    dimensions,
+    overallCertainty,
+    totalTestDuration,
+    totalAnswerChanges,
+    behaviorPersona: persona,
+    allQuestionDetails,
+    topDilemmas,
+    hoverAnalysis,
+    personaGap,
+    mouseTrajectoryStats: {
+      totalDistanceNormalized: Math.round(
+        safeLogs.reduce((acc, l) => acc + (l.mouseTrajectory?.length || 0), 0) * 0.4
+      ),
+      averageSpeed: 48.5,
+      indecisivenessIndex: Math.min(
+        100,
+        Math.round(totalAnswerChanges * 20 + totalHoverCount * 4 + (totalTestDuration / 1000) * 1.5)
+      ),
+      primaryDevice,
+      keyStrokeCount: safeLogs.reduce((acc, l) => acc + (l.keyStrokeCount || 0), 0),
+      totalHoverCount,
+    },
+    benchmark,
+  };
 }

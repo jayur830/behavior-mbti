@@ -90,6 +90,22 @@ export interface DilemmaQuestionDetail {
   hesitationTime: number;
   changeHistorySummary: string;
   insight: string;
+  hoverSummary?: string;
+  longestHoveredOption?: number | null;
+}
+
+export interface HoverPsychologyAnalysis {
+  totalHoverCount: number;
+  totalHoverDurationMs: number;
+  hesitatedOptionsCount: number;
+  hoverInsight: string;
+  conflictedHoverItems: {
+    questionTitle: string;
+    hoveredOptionLabel: string;
+    finalOptionLabel: string;
+    hoverDurationMs: number;
+    interpretation: string;
+  }[];
 }
 
 export interface PersonaGapAnalysis {
@@ -137,7 +153,9 @@ export interface FullAnalysisResult {
   totalTestDuration: number;
   totalAnswerChanges: number;
   behaviorPersona: BehaviorPersona;
+  allQuestionDetails: DilemmaQuestionDetail[]; // All 12 questions with trajectories
   topDilemmas: DilemmaQuestionDetail[];
+  hoverAnalysis: HoverPsychologyAnalysis;
   personaGap: PersonaGapAnalysis;
   mouseTrajectoryStats: {
     totalDistanceNormalized: number;
@@ -145,6 +163,7 @@ export interface FullAnalysisResult {
     indecisivenessIndex: number;
     primaryDevice: InputDevice;
     keyStrokeCount: number;
+    totalHoverCount: number;
   };
   benchmark: BenchmarkStats;
 }

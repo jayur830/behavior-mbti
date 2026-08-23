@@ -67,18 +67,34 @@ export const MouseReplayCanvas: React.FC<MouseReplayCanvasProps> = ({
       ];
 
       const optionY = height * 0.74;
+      const currentPoint = trajectory.findLast ? trajectory.findLast((p) => p.timestamp <= currentTime) : trajectory.filter((p) => p.timestamp <= currentTime).slice(-1)[0];
+
       optionPositions.forEach((opt) => {
         const cx = opt.x * width;
+        const isCurrentlyHovered = currentPoint && Math.abs(currentPoint.x - opt.x) < 0.055 && Math.abs(currentPoint.y - 0.74) < 0.16;
+
+        if (isCurrentlyHovered) {
+          ctx.beginPath();
+          ctx.arc(cx, optionY, 18, 0, Math.PI * 2);
+          ctx.fillStyle = 'rgba(56, 189, 248, 0.15)';
+          ctx.strokeStyle = 'rgba(56, 189, 248, 0.6)';
+          ctx.lineWidth = 1.5;
+          ctx.fill();
+          ctx.stroke();
+        }
+
         ctx.beginPath();
         ctx.arc(cx, optionY, 12, 0, Math.PI * 2);
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.03)';
-        ctx.strokeStyle = 'rgba(255, 255, 255, 0.12)';
+        ctx.fillStyle = isCurrentlyHovered ? 'rgba(56, 189, 248, 0.25)' : 'rgba(255, 255, 255, 0.03)';
+        ctx.strokeStyle = isCurrentlyHovered ? '#38bdf8' : 'rgba(255, 255, 255, 0.12)';
         ctx.lineWidth = 1.5;
         ctx.fill();
         ctx.stroke();
 
-        ctx.fillStyle = '#71717a';
-        ctx.font = '10px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+        ctx.fillStyle = isCurrentlyHovered ? '#ffffff' : '#71717a';
+        ctx.font = isCurrentlyHovered
+          ? 'bold 10px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
+          : '10px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
         ctx.textAlign = 'center';
         ctx.fillText(opt.label, cx, optionY + 26);
       });
