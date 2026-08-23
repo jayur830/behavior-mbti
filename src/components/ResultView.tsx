@@ -4,6 +4,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { FullAnalysisResult } from '../types';
 import { MouseReplayCanvas } from './MouseReplayCanvas';
 import { TouchTimelinePlayer } from './TouchTimelinePlayer';
+import { StoryCardModal } from './StoryCardModal';
 import confetti from 'canvas-confetti';
 import { toPng } from 'html-to-image';
 import {
@@ -44,6 +45,7 @@ export const ResultView: React.FC<ResultViewProps> = ({
   const [selectedQuestionIdx, setSelectedQuestionIdx] = useState<number>(0);
   const [copied, setCopied] = useState<boolean>(false);
   const [isExporting, setIsExporting] = useState<boolean>(false);
+  const [isStoryModalOpen, setIsStoryModalOpen] = useState<boolean>(false);
   const cardExportRef = useRef<HTMLDivElement | null>(null);
 
   const isTouchDevice = result.mouseTrajectoryStats.primaryDevice === 'touch';
@@ -657,23 +659,32 @@ export const ResultView: React.FC<ResultViewProps> = ({
         </div>
       )}
 
-      {/* 8. Action Controls: Image Download, Share & Restart */}
+      {/* 8. Action Controls: Image Download, Story Card, Share & Restart */}
       {isSharedView ? (
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-6">
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-6">
+          <button
+            type="button"
+            onClick={() => setIsStoryModalOpen(true)}
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-full font-medium text-xs sm:text-sm bg-gradient-to-r from-emerald-950/80 to-teal-950/80 hover:from-emerald-900/90 hover:to-teal-900/90 text-emerald-300 border border-emerald-500/30 transition-all cursor-pointer shadow-sm touch-manipulation"
+          >
+            <Sparkles className="w-4 h-4 text-emerald-400" />
+            <span>📸 인스타 스토리용 카드 (9:16)</span>
+          </button>
+
           <button
             type="button"
             onClick={handleDownloadCard}
             disabled={isExporting}
-            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-4 rounded-full font-medium text-xs sm:text-sm bg-neutral-900 hover:bg-neutral-800 text-neutral-200 border border-white/[0.1] transition-all cursor-pointer shadow-sm touch-manipulation"
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-full font-medium text-xs sm:text-sm bg-neutral-900 hover:bg-neutral-800 text-neutral-200 border border-white/[0.1] transition-all cursor-pointer shadow-sm touch-manipulation"
           >
             <Download className="w-4 h-4 text-emerald-400" />
-            <span>{isExporting ? '이미지 생성 중...' : '결과 카드 이미지 저장 (PNG)'}</span>
+            <span>{isExporting ? '이미지 생성 중...' : '결과 카드 저장 (PNG)'}</span>
           </button>
 
           <button
             type="button"
             onClick={onRestart}
-            className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-8 py-4 rounded-full font-bold text-sm bg-emerald-400 hover:bg-emerald-300 text-neutral-950 shadow-[0_0_25px_rgba(52,211,153,0.3)] hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer touch-manipulation"
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-8 py-3.5 rounded-full font-bold text-sm bg-emerald-400 hover:bg-emerald-300 text-neutral-950 shadow-[0_0_25px_rgba(52,211,153,0.3)] hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer touch-manipulation"
           >
             <span>나도 행동 분석 MBTI 검사하기</span>
             <ArrowRight className="w-4 h-4 stroke-[3]" />
@@ -683,12 +694,21 @@ export const ResultView: React.FC<ResultViewProps> = ({
         <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-6">
           <button
             type="button"
+            onClick={() => setIsStoryModalOpen(true)}
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-full font-medium text-xs sm:text-sm bg-gradient-to-r from-emerald-950/80 to-teal-950/80 hover:from-emerald-900/90 hover:to-teal-900/90 text-emerald-300 border border-emerald-500/30 transition-all cursor-pointer shadow-sm touch-manipulation"
+          >
+            <Sparkles className="w-4 h-4 text-emerald-400" />
+            <span>📸 인스타 스토리용 카드 (9:16)</span>
+          </button>
+
+          <button
+            type="button"
             onClick={handleDownloadCard}
             disabled={isExporting}
             className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-full font-medium text-xs sm:text-sm bg-neutral-900 hover:bg-neutral-800 text-neutral-200 border border-white/[0.1] transition-all cursor-pointer shadow-sm touch-manipulation"
           >
             <Download className="w-4 h-4 text-emerald-400" />
-            <span>{isExporting ? '이미지 생성 중...' : '결과 카드 이미지 저장 (PNG)'}</span>
+            <span>{isExporting ? '이미지 생성 중...' : '결과 카드 저장 (PNG)'}</span>
           </button>
 
           <button
@@ -710,6 +730,13 @@ export const ResultView: React.FC<ResultViewProps> = ({
           </button>
         </div>
       )}
+
+      {/* 9:16 Instagram Story Card Modal */}
+      <StoryCardModal
+        result={result}
+        isOpen={isStoryModalOpen}
+        onClose={() => setIsStoryModalOpen(false)}
+      />
     </div>
   );
 };
