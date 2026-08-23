@@ -1,9 +1,10 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { FullAnalysisResult } from '../types';
 import { MouseReplayCanvas } from './MouseReplayCanvas';
 import confetti from 'canvas-confetti';
+import { toPng } from 'html-to-image';
 import {
   Zap,
   Brain,
@@ -17,6 +18,13 @@ import {
   MousePointer,
   Clock,
   Sparkles,
+  Download,
+  BarChart3,
+  Flame,
+  Award,
+  Smartphone,
+  Mouse,
+  Keyboard,
 } from 'lucide-react';
 
 interface ResultViewProps {
@@ -27,6 +35,8 @@ interface ResultViewProps {
 export const ResultView: React.FC<ResultViewProps> = ({ result, onRestart }) => {
   const [selectedDilemmaIdx, setSelectedDilemmaIdx] = useState<number>(0);
   const [copied, setCopied] = useState<boolean>(false);
+  const [isExporting, setIsExporting] = useState<boolean>(false);
+  const cardExportRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     confetti({
@@ -41,6 +51,26 @@ export const ResultView: React.FC<ResultViewProps> = ({ result, onRestart }) => 
       navigator.clipboard.writeText(window.location.href);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
+    }
+  };
+
+  const handleDownloadCard = async () => {
+    if (!cardExportRef.current) return;
+    try {
+      setIsExporting(true);
+      const dataUrl = await toPng(cardExportRef.current, {
+        cacheBust: true,
+        pixelRatio: 2,
+        backgroundColor: '#090a0f',
+      });
+      const link = document.createElement('a');
+      link.download = `BEHAVIOR_MBTI_${result.mbti}_Report.png`;
+      link.href = dataUrl;
+      link.click();
+    } catch (err) {
+      console.error('Failed to export image', err);
+    } finally {
+      setIsExporting(false);
     }
   };
 
@@ -60,8 +90,85 @@ export const ResultView: React.FC<ResultViewProps> = ({ result, onRestart }) => 
     }
   };
 
+  const getDeviceLabel = () => {
+    switch (result.mouseTrajectoryStats.primaryDevice) {
+      case 'touch':
+        return '모바일 터치 제스처';
+      case 'keyboard':
+        return '키보드 단축키';
+      case 'mouse':
+      default:
+        return '데스크톱 마우스 궤적';
+    }
+  };
+
   return (
     <div className="max-w-4xl mx-auto px-4 py-8 sm:py-16 space-y-12 text-neutral-100 font-sans">
+      {/* Hidden Export Card for High-Res PNG Download */}
+      <div className="overflow-hidden h-0 w-0">
+        <div
+          ref={cardExportRef}
+          className="w-[600px] p-8 bg-[#090a0f] text-neutral-100 border border-white/[0.1] rounded-3xl flex flex-col items-center text-center font-sans space-y-6"
+        >
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/[0.05] border border-white/[0.1] text-neutral-400 text-xs font-mono">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+            BEHAVIORAL MBTI PSYCHOMETRICS
+          </div>
+
+          <div>
+            <h1 className="text-6xl font-black font-mono text-white mb-1">{result.mbti}</h1>
+            <h2 className="text-2xl font-bold text-neutral-200">{result.mbtiTitle}</h2>
+          </div>
+
+          <p className="text-xs text-neutral-400 max-w-md leading-relaxed">
+            {result.mbtiDescription}
+          </p>
+
+          <div className="grid grid-cols-4 gap-2 w-full bg-neutral-900/90 p-3 rounded-2xl border border-white/[0.08]">
+            <div className="p-1">
+              <span className="text-[10px] font-mono text-neutral-500 block">종합 확신도</span>
+              <span className="text-base font-bold text-amber-400 font-mono">
+                {result.overallCertainty}%
+              </span>
+            </div>
+            <div className="p-1">
+              <span className="text-[10px] font-mono text-neutral-500 block">총 고민 시간</span>
+              <span className="text-base font-bold text-sky-400 font-mono">
+                {(result.totalTestDuration / 1000).toFixed(1)}s
+              </span>
+            </div>
+            <div className="p-1">
+              <span className="text-[10px] font-mono text-neutral-500 block">선택 번복</span>
+              <span className="text-base font-bold text-rose-400 font-mono">
+                {result.totalAnswerChanges}회
+              </span>
+            </div>
+            <div className="p-1">
+              <span className="text-[10px] font-mono text-neutral-500 block">단호함 순위</span>
+              <span className="text-base font-bold text-emerald-400 font-mono">
+                상위 {result.benchmark.changeCountPercentile}%
+              </span>
+            </div>
+          </div>
+
+          <div className="w-full bg-neutral-900/60 p-4 rounded-2xl border border-white/[0.06] text-left">
+            <span className="text-[10px] font-mono text-neutral-400 uppercase block mb-1">
+              행동 프로필
+            </span>
+            <span className="text-sm font-bold text-white block">
+              {result.behaviorPersona.title}
+            </span>
+            <span className="text-xs text-neutral-400 font-light block">
+              {result.behaviorPersona.subtitle}
+            </span>
+          </div>
+
+          <div className="text-[10px] font-mono text-neutral-500">
+            © 2026 BEHAVIOR MBTI LAB | https://github.com/jayur830/behavior-mbti
+          </div>
+        </div>
+      </div>
+
       {/* 1. Top Dossier Hero */}
       <div className="relative overflow-hidden bg-neutral-900/80 border border-white/[0.08] rounded-3xl p-6 sm:p-12 shadow-2xl flex flex-col items-center text-center">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/[0.04] border border-white/[0.08] text-neutral-400 text-xs font-mono mb-6">
@@ -112,16 +219,97 @@ export const ResultView: React.FC<ResultViewProps> = ({ result, onRestart }) => 
           <div className="flex flex-col items-center p-2">
             <span className="text-[11px] font-mono text-neutral-500 mb-1 flex items-center gap-1">
               <MousePointer className="w-3 h-3 text-emerald-400" />
-              방황 지수
+              주 입력 수단
             </span>
-            <span className="text-lg sm:text-xl font-bold text-neutral-100 font-mono">
-              {result.mouseTrajectoryStats.indecisivenessIndex}/100
+            <span className="text-xs font-semibold text-neutral-200 mt-1">
+              {getDeviceLabel()}
             </span>
           </div>
         </div>
       </div>
 
-      {/* 2. Behavior Profile Card */}
+      {/* 2. Global Benchmark Stats & Percentiles */}
+      <div className="bg-neutral-900/60 border border-white/[0.08] rounded-3xl p-6 sm:p-8 shadow-xl space-y-6">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2 text-xs font-mono text-neutral-400 uppercase tracking-wide">
+            <BarChart3 className="w-3.5 h-3.5 text-emerald-400" />
+            <span>Global Benchmark Analysis</span>
+          </div>
+          <span className="text-[11px] font-mono text-neutral-500">
+            참여자 12,000+ 샘플 기준
+          </span>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="bg-neutral-950/70 border border-white/[0.06] p-4 rounded-2xl flex flex-col justify-between">
+            <div>
+              <span className="text-xs text-neutral-400 block mb-1">고민 속도 랭킹</span>
+              <div className="flex items-baseline gap-2">
+                <span className="text-2xl sm:text-3xl font-black font-mono text-sky-400">
+                  상위 {result.benchmark.dwellTimePercentile}%
+                </span>
+                <span className="text-xs text-neutral-500">
+                  (평균 {(result.benchmark.globalAverageDwellSec).toFixed(1)}초 대비{' '}
+                  {((result.totalTestDuration / 1000) - result.benchmark.globalAverageDwellSec).toFixed(1)}초)
+                </span>
+              </div>
+            </div>
+            <p className="text-[11px] text-neutral-400 mt-3 font-light">
+              전체 응답자 대비 평균보다 훨씬 빠르게 직관적으로 결정을 완료했습니다.
+            </p>
+          </div>
+
+          <div className="bg-neutral-950/70 border border-white/[0.06] p-4 rounded-2xl flex flex-col justify-between">
+            <div>
+              <span className="text-xs text-neutral-400 block mb-1">단호함 & 확신도 랭킹</span>
+              <div className="flex items-baseline gap-2">
+                <span className="text-2xl sm:text-3xl font-black font-mono text-emerald-400">
+                  상위 {result.benchmark.changeCountPercentile}%
+                </span>
+                <span className="text-xs text-neutral-500">
+                  (평균 {result.benchmark.globalAverageChanges}회 번복 대비 {result.totalAnswerChanges}회)
+                </span>
+              </div>
+            </div>
+            <p className="text-[11px] text-neutral-400 mt-3 font-light">
+              선택지를 번복하지 않고 자신의 가치관에 확신을 가지고 답변했습니다.
+            </p>
+          </div>
+        </div>
+
+        {/* Global Persona Distribution Bar */}
+        <div className="bg-neutral-950/60 border border-white/[0.06] p-4 rounded-2xl">
+          <span className="text-xs font-mono text-neutral-400 block mb-3">
+            전체 참여자 행동 페르소나 분포
+          </span>
+          <div className="w-full bg-neutral-800 h-3 rounded-full overflow-hidden flex mb-3">
+            {result.benchmark.personaDistribution.map((item, idx) => {
+              const isUserPersona = item.personaCode === result.behaviorPersona.code;
+              const bgColors = ['bg-amber-400', 'bg-sky-400', 'bg-rose-400', 'bg-emerald-400', 'bg-purple-400'];
+              return (
+                <div
+                  key={item.personaCode}
+                  className={`h-full ${bgColors[idx % bgColors.length]} ${isUserPersona ? 'ring-2 ring-white scale-105' : 'opacity-70'}`}
+                  style={{ width: `${item.percentage}%` }}
+                  title={`${item.name} (${item.percentage}%)`}
+                />
+              );
+            })}
+          </div>
+          <div className="flex flex-wrap gap-x-4 gap-y-1 text-[11px] text-neutral-400 font-mono">
+            {result.benchmark.personaDistribution.map((item) => (
+              <span
+                key={item.personaCode}
+                className={item.personaCode === result.behaviorPersona.code ? 'text-white font-bold' : ''}
+              >
+                {item.name}: {item.percentage}%
+              </span>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* 3. Behavior Profile Card */}
       <div className="bg-neutral-900/60 border border-white/[0.08] rounded-3xl p-6 sm:p-8 shadow-xl">
         <div className="flex items-center gap-2 text-xs font-mono text-neutral-400 uppercase tracking-wide mb-4">
           <Activity className="w-3.5 h-3.5" />
@@ -156,7 +344,7 @@ export const ResultView: React.FC<ResultViewProps> = ({ result, onRestart }) => 
         </div>
       </div>
 
-      {/* 3. 4 MBTI Dimensions with Clean Precision Ratios */}
+      {/* 4. 4 MBTI Dimensions with Clean Precision Ratios */}
       <div className="bg-neutral-900/60 border border-white/[0.08] rounded-3xl p-6 sm:p-8 shadow-xl">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-lg font-bold text-white font-mono tracking-tight">
@@ -217,7 +405,7 @@ export const ResultView: React.FC<ResultViewProps> = ({ result, onRestart }) => 
         </div>
       </div>
 
-      {/* 4. Top Dilemmas with Telemetry Replay */}
+      {/* 5. Top Dilemmas with Telemetry Replay */}
       {result.topDilemmas.length > 0 && (
         <div className="bg-neutral-900/60 border border-white/[0.08] rounded-3xl p-6 sm:p-8 shadow-xl">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
@@ -277,7 +465,7 @@ export const ResultView: React.FC<ResultViewProps> = ({ result, onRestart }) => 
         </div>
       )}
 
-      {/* 5. Persona Gap Analysis */}
+      {/* 6. Persona Gap Analysis */}
       {result.personaGap.detected && (
         <div className="bg-neutral-900/60 border border-white/[0.08] rounded-3xl p-6 sm:p-8 shadow-xl">
           <h2 className="text-lg font-bold text-white font-mono tracking-tight mb-2">
@@ -312,8 +500,17 @@ export const ResultView: React.FC<ResultViewProps> = ({ result, onRestart }) => 
         </div>
       )}
 
-      {/* 6. Action Controls */}
+      {/* 7. Action Controls: Image Download, Share & Restart */}
       <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-6">
+        <button
+          onClick={handleDownloadCard}
+          disabled={isExporting}
+          className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-full font-medium text-xs sm:text-sm bg-neutral-900 hover:bg-neutral-800 text-neutral-200 border border-white/[0.1] transition-all cursor-pointer shadow-sm"
+        >
+          <Download className="w-4 h-4 text-emerald-400" />
+          <span>{isExporting ? '이미지 생성 중...' : '결과 카드 이미지 저장 (PNG)'}</span>
+        </button>
+
         <button
           onClick={handleCopyLink}
           className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-full font-medium text-xs sm:text-sm bg-neutral-900 hover:bg-neutral-800 text-neutral-200 border border-white/[0.1] transition-all cursor-pointer"

@@ -1,21 +1,23 @@
 export type MBTIType = 'E' | 'I' | 'S' | 'N' | 'T' | 'F' | 'J' | 'P';
 export type Dimension = 'EI' | 'SN' | 'TF' | 'JP';
+export type InputDevice = 'mouse' | 'touch' | 'keyboard';
 
 export interface Question {
   id: number;
   dimension: Dimension;
-  positiveType: MBTIType; // e.g., 'E', 'N', 'T', 'J'
-  negativeType: MBTIType; // e.g., 'I', 'S', 'F', 'P'
+  positiveType: MBTIType;
+  negativeType: MBTIType;
   title: string;
   description?: string;
   category: 'social' | 'cognition' | 'decision' | 'lifestyle';
 }
 
 export interface MousePoint {
-  x: number; // 0~1 normalized relative to card / viewport
+  x: number; // 0~1 normalized
   y: number;
   timestamp: number; // relative ms from question start
   speed?: number; // px/ms
+  type?: 'move' | 'touch' | 'key';
 }
 
 export interface OptionHoverLog {
@@ -29,22 +31,25 @@ export interface AnswerSelectionEvent {
   value: number; // -3 to 3
   timestamp: number; // ms from question start
   timeSinceLastChange?: number; // ms
+  inputDevice?: InputDevice;
 }
 
 export interface QuestionBehaviorLog {
   questionId: number;
-  startTime: number; // unix timestamp
+  startTime: number;
   endTime: number;
-  totalDwellTime: number; // ms
-  firstInteractionTime: number | null; // ms from start
-  finalValue: number | null; // -3 to 3
+  totalDwellTime: number;
+  firstInteractionTime: number | null;
+  finalValue: number | null;
   selectionHistory: AnswerSelectionEvent[];
-  changeCount: number; // number of times answer was changed
+  changeCount: number;
   hoverLogs: OptionHoverLog[];
   mouseTrajectory: MousePoint[];
-  directionChanges: number; // mouse zig-zag count
-  hesitationScore: number; // 0 to 100 calculated
-  tabBlurCount: number; // if user switched tab
+  directionChanges: number;
+  hesitationScore: number;
+  tabBlurCount: number;
+  primaryDevice: InputDevice;
+  keyStrokeCount: number;
 }
 
 export interface DimensionAnalysis {
@@ -55,8 +60,8 @@ export interface DimensionAnalysis {
   rightScore: number;
   winner: MBTIType;
   winnerPercentage: number;
-  certaintyScore: number; // 0~100 (high = decisive, low = conflicted)
-  averageHesitation: number; // ms
+  certaintyScore: number;
+  averageHesitation: number;
   changeCount: number;
   behaviorInsight: string;
 }
@@ -73,7 +78,7 @@ export interface BehaviorPersona {
 export interface DilemmaQuestionDetail {
   question: Question;
   behavior: QuestionBehaviorLog;
-  hesitationTime: number; // ms
+  hesitationTime: number;
   changeHistorySummary: string;
   insight: string;
 }
@@ -91,8 +96,26 @@ export interface PersonaGapAnalysis {
   }[];
 }
 
+export interface BenchmarkStats {
+  dwellTimePercentile: number; // e.g. top 15% fastest
+  changeCountPercentile: number; // e.g. top 8% most decisive
+  globalAverageDwellSec: number; // e.g. 52.4s
+  globalAverageChanges: number; // e.g. 2.1 times
+  personaDistribution: {
+    personaCode: string;
+    name: string;
+    percentage: number;
+  }[];
+  topRevisedQuestionsRank: {
+    rank: number;
+    questionId: number;
+    questionTitle: string;
+    revisionRate: number; // %
+  }[];
+}
+
 export interface FullAnalysisResult {
-  mbti: string; // e.g. "ENTJ"
+  mbti: string;
   mbtiTitle: string;
   mbtiDescription: string;
   dimensions: {
@@ -101,8 +124,8 @@ export interface FullAnalysisResult {
     TF: DimensionAnalysis;
     JP: DimensionAnalysis;
   };
-  overallCertainty: number; // 0~100
-  totalTestDuration: number; // ms
+  overallCertainty: number;
+  totalTestDuration: number;
   totalAnswerChanges: number;
   behaviorPersona: BehaviorPersona;
   topDilemmas: DilemmaQuestionDetail[];
@@ -110,6 +133,9 @@ export interface FullAnalysisResult {
   mouseTrajectoryStats: {
     totalDistanceNormalized: number;
     averageSpeed: number;
-    indecisivenessIndex: number; // 0~100
+    indecisivenessIndex: number;
+    primaryDevice: InputDevice;
+    keyStrokeCount: number;
   };
+  benchmark: BenchmarkStats;
 }

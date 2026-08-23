@@ -1,10 +1,10 @@
 'use client';
 
-import React, { useRef } from 'react';
+import React, { useRef, useCallback } from 'react';
 import { Question, QuestionBehaviorLog } from '../types';
 import { LIKERT_OPTIONS } from '../data/questions';
 import { useBehaviorTracker } from '../hooks/useBehaviorTracker';
-import { ArrowRight, Check, Activity } from 'lucide-react';
+import { ArrowRight, Check, Activity, Smartphone, Mouse, Keyboard } from 'lucide-react';
 
 interface QuestionCardProps {
   question: Question;
@@ -20,6 +20,11 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
   onNext,
 }) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
+
+  const handleNextClick = useCallback(() => {
+    // handled inside hook or via ref
+  }, []);
+
   const {
     selectedVal,
     handleSelectOption,
@@ -27,11 +32,19 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
     handleOptionMouseLeave,
     finalizeLog,
     changeCount,
-  } = useBehaviorTracker({ questionId: question.id, containerRef });
+    primaryDevice,
+  } = useBehaviorTracker({
+    questionId: question.id,
+    containerRef,
+    onAutoSubmit: () => {
+      const log = finalizeLog();
+      onNext(log);
+    },
+  });
 
   const progressPercent = Math.round(((currentIndex + 1) / totalQuestions) * 100);
 
-  const handleNextClick = () => {
+  const onSubmit = () => {
     if (selectedVal === null) return;
     const log = finalizeLog();
     onNext(log);
@@ -50,10 +63,22 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
     }
   };
 
+  const getDeviceIcon = () => {
+    switch (primaryDevice) {
+      case 'touch':
+        return <Smartphone className="w-3 h-3 text-sky-400" />;
+      case 'keyboard':
+        return <Keyboard className="w-3 h-3 text-amber-400" />;
+      case 'mouse':
+      default:
+        return <Mouse className="w-3 h-3 text-emerald-400" />;
+    }
+  };
+
   return (
     <div
       ref={containerRef}
-      className="relative w-full max-w-2xl mx-auto bg-neutral-900/90 border border-white/[0.08] backdrop-blur-xl rounded-3xl p-6 sm:p-10 shadow-2xl transition-all duration-300 text-neutral-100 flex flex-col justify-between min-h-[480px]"
+      className="relative w-full max-w-2xl mx-auto bg-neutral-900/90 border border-white/[0.08] backdrop-blur-xl rounded-3xl p-6 sm:p-10 shadow-2xl transition-all duration-300 text-neutral-100 flex flex-col justify-between min-h-[480px] select-none"
     >
       {/* Top Header: Progress & Telemetry */}
       <div>
@@ -61,10 +86,10 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
           <span className="text-neutral-300 font-medium tracking-wide uppercase">
             {getCategoryLabel(question.category)}
           </span>
-          <div className="flex items-center gap-2.5">
-            <span className="flex items-center gap-1.5 text-[11px] text-emerald-400/90 bg-emerald-500/10 px-2.5 py-0.5 rounded-full border border-emerald-500/20">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-              TELEMETRY LOGGING
+          <div className="flex items-center gap-2">
+            <span className="flex items-center gap-1.5 text-[11px] text-neutral-300 bg-white/[0.05] px-2.5 py-0.5 rounded-full border border-white/[0.08]">
+              {getDeviceIcon()}
+              <span className="uppercase">{primaryDevice} TRACKING</span>
             </span>
             <span className="text-neutral-200 font-semibold">
               {String(currentIndex + 1).padStart(2, '0')} / {String(totalQuestions).padStart(2, '0')}
@@ -86,7 +111,7 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
             {question.title}
           </h2>
           {question.description && (
-            <p className="text-xs sm:text-sm text-neutral-400 leading-relaxed">
+            <p className="text-xs sm:text-sm text-neutral-400 leading-relaxed font-light">
               {question.description}
             </p>
           )}
@@ -96,13 +121,13 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
       {/* Likert Scale Choices */}
       <div className="my-4">
         <div className="flex justify-between items-center text-xs font-medium text-neutral-400 mb-4 px-3">
-          <span className="text-rose-400 font-semibold">비동의</span>
+          <span className="text-rose-400 font-semibold">비동의 (아니다)</span>
           <span className="text-neutral-500 text-[11px]">중립</span>
-          <span className="text-emerald-400 font-semibold">동의</span>
+          <span className="text-emerald-400 font-semibold">동의 (그렇다)</span>
         </div>
 
         <div className="flex items-center justify-between gap-1 sm:gap-2 px-2 sm:px-4 py-5 bg-neutral-950/60 rounded-2xl border border-white/[0.06]">
-          {LIKERT_OPTIONS.map((opt) => {
+          {LIKERT_OPTIONS.map((opt, idx) => {
             const isSelected = selectedVal === opt.value;
             const sizeClass =
               Math.abs(opt.value) === 3
@@ -122,7 +147,7 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
               >
                 <button
                   type="button"
-                  onClick={() => handleSelectOption(opt.value)}
+                  onClick={() => handleSelectOption(opt.value, 'mouse')}
                   className={`
                     relative rounded-full transition-all duration-150 cursor-pointer flex items-center justify-center
                     ${sizeClass}
@@ -142,13 +167,17 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
                 >
                   {opt.label}
                 </span>
+                {/* Keyboard Shortcut Hint */}
+                <span className="hidden sm:inline text-[9px] font-mono text-neutral-600 bg-neutral-900/90 px-1.5 py-0.5 rounded border border-white/[0.05]">
+                  {idx + 1}
+                </span>
               </div>
             );
           })}
         </div>
       </div>
 
-      {/* Bottom Action Footer */}
+      {/* Bottom Action Footer & Keyboard Hint */}
       <div className="flex items-center justify-between pt-6 border-t border-white/[0.06] mt-4">
         <div className="text-xs text-neutral-400">
           {changeCount > 0 ? (
@@ -157,12 +186,15 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
               선택 번복 {changeCount}회 감지됨
             </span>
           ) : (
-            <span className="text-neutral-500 text-[11px]">솔직한 첫 반응에 집중해보세요</span>
+            <span className="text-neutral-500 font-mono text-[11px] hidden sm:inline">
+              단축키: <kbd className="px-1 py-0.5 rounded bg-white/[0.06] text-neutral-400">1~7</kbd> 선택,{' '}
+              <kbd className="px-1 py-0.5 rounded bg-white/[0.06] text-neutral-400">Enter</kbd> 다음
+            </span>
           )}
         </div>
 
         <button
-          onClick={handleNextClick}
+          onClick={onSubmit}
           disabled={selectedVal === null}
           className={`
             inline-flex items-center gap-2 px-6 py-3 rounded-full font-medium text-xs sm:text-sm transition-all duration-200 cursor-pointer
