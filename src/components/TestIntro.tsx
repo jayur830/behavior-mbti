@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { ArrowRight, Compass, Shield, GitCommit, Timer, Eye } from 'lucide-react';
+import { ArrowRight, Compass, Shield, GitCommit, Timer } from 'lucide-react';
 
 interface TestIntroProps {
   onStart: () => void;
@@ -38,7 +38,7 @@ export const TestIntro: React.FC<TestIntroProps> = ({ onStart }) => {
             </div>
             <h3 className="text-sm font-semibold text-neutral-100 mb-1.5">01. 궤적 & 떨림 측정</h3>
             <p className="text-xs text-neutral-400 leading-relaxed font-light">
-              마우스 커서의 이동 거리, 속도, 방향 전환(지그재그) 횟수를 16ms 단위로 캡처하여 망설임 지수를 계산합니다.
+              마우스 커서와 터치 제스처의 이동 거리, 속도, 방향 전환(지그재그) 횟수를 16ms 단위로 캡처하여 망설임 지수를 계산합니다.
             </p>
           </div>
         </div>
@@ -70,8 +70,9 @@ export const TestIntro: React.FC<TestIntroProps> = ({ onStart }) => {
 
       {/* Start Button */}
       <button
+        type="button"
         onClick={onStart}
-        className="group inline-flex items-center justify-center gap-3 px-8 py-4 text-sm sm:text-base font-semibold text-neutral-950 bg-neutral-100 hover:bg-white rounded-full shadow-[0_0_25px_rgba(255,255,255,0.15)] hover:shadow-[0_0_35px_rgba(255,255,255,0.25)] hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 cursor-pointer"
+        className="group relative z-10 inline-flex items-center justify-center gap-3 px-8 py-4 text-sm sm:text-base font-semibold text-neutral-950 bg-neutral-100 hover:bg-white active:bg-neutral-200 rounded-full shadow-[0_0_25px_rgba(255,255,255,0.15)] hover:shadow-[0_0_35px_rgba(255,255,255,0.25)] hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 cursor-pointer touch-manipulation select-none"
       >
         <span>검사 시작하기</span>
         <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
