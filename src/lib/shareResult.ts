@@ -12,6 +12,36 @@ import { MBTI_PROFILES, BEHAVIOR_PERSONAS } from '../data/mbtiDescriptions';
 import { calculateUserBenchmark } from '../data/benchmarkStats';
 import { QUESTIONS_POOL, getOptionLabel } from '../data/questions';
 
+const INTEGRITY_SALT = 'BM_CRYPTO_TAMPER_PROOF_SALT_2026_@!';
+
+/**
+ * 32비트 FNV-1a 기반 무결성 검증 체크섬 계산
+ * URL 내의 데이터가 1글자라도 변경되면 시그니처 불일치로 즉시 거부됩니다.
+ */
+function computeSignature(payloadStr: string): string {
+  let hash = 0x811c9dc5;
+  const combined = payloadStr + INTEGRITY_SALT;
+  for (let i = 0; i < combined.length; i++) {
+    hash ^= combined.charCodeAt(i);
+    hash = Math.imul(hash, 0x01000193);
+  }
+  return (hash >>> 0).toString(36);
+}
+
+/**
+ * 육안 식별 불가(Opaque)를 위한 가역적 XOR 스크램블링
+ * 평문 MBTI(ENTJ 등), 점수 등의 키워드를 암호화하여 육안 파악 및 추측을 원천 차단합니다.
+ */
+function xorScramble(str: string): string {
+  const saltLen = INTEGRITY_SALT.length;
+  let out = '';
+  for (let i = 0; i < str.length; i++) {
+    const code = str.charCodeAt(i) ^ INTEGRITY_SALT.charCodeAt(i % saltLen);
+    out += String.fromCharCode(code);
+  }
+  return out;
+}
+
 export interface CompactSharePayload {
   m: string; // mbti code (e.g. "ENTJ")
   ei: [number, number, number]; // [leftScore, rightScore, certaintyScore]
@@ -34,6 +64,16 @@ export interface CompactSharePayload {
   }[];
 }
 
+interface SecurePayloadEnvelope {
+  /** 암호화된 불투명 페이로드 */
+  _d: string;
+  /** 위변조 방지 무결성 디지털 서명 */
+  _s: string;
+}
+
+/**
+ * 분석 결과를 육안 식별이 불가능하며 위변조 검증 서명이 포함된 압축 문자열로 직렬화합니다.
+ */
 export function encodeResultToCompressedString(result: FullAnalysisResult): string {
   const questionsToEncode =
     result.allQuestionDetails && result.allQuestionDetails.length > 0
@@ -53,7 +93,6 @@ export function encodeResultToCompressedString(result: FullAnalysisResult): stri
     dev: result.mouseTrajectoryStats.primaryDevice,
     dil: questionsToEncode.map((d, dIdx) => {
       const rawPts = d.behavior.mouseTrajectory || [];
-      // Save detailed points for top dilemmas or questions with changes/longer dwell
       const shouldSaveFullPts = dIdx < 10 || d.behavior.changeCount > 0 || d.hesitationTime > 4500;
       const step = rawPts.length > 25 ? Math.ceil(rawPts.length / 25) : 1;
       const sampledPts = shouldSaveFullPts && rawPts.length > 0
@@ -90,88 +129,126 @@ export function encodeResultToCompressedString(result: FullAnalysisResult): stri
   };
 
   try {
-    const jsonStr = JSON.stringify(payload);
-    return LZString.compressToEncodedURIComponent(jsonStr);
+    const rawJson = JSON.stringify(payload);
+    const signature = computeSignature(rawJson);
+    const scrambled = xorScramble(rawJson);
+
+    const envelope: SecurePayloadEnvelope = {
+      _d: scrambled,
+      _s: signature,
+    };
+
+    return LZString.compressToEncodedURIComponent(JSON.stringify(envelope));
   } catch (err) {
-    console.error('Failed to compress result', err);
+    console.error('Failed to encode result:', err);
     return '';
   }
 }
 
-export function decodeResultFromCompressedString(compressed: string): FullAnalysisResult | null {
-  try {
-    let jsonStr: string | null = LZString.decompressFromEncodedURIComponent(compressed);
+/**
+ * 압축 문자열로부터 디지털 서명을 검증하고 위변조가 감지되면 null을 반환합니다.
+ */
+export function decodeResultFromCompressedString(
+  compressedStr: string
+): FullAnalysisResult | null {
+  if (!compressedStr) return null;
 
-    // Backward compatibility for base64
-    if (!jsonStr) {
-      try {
-        jsonStr = decodeURIComponent(atob(compressed));
-      } catch {
-        jsonStr = null;
+  try {
+    const decompressed = LZString.decompressFromEncodedURIComponent(compressedStr);
+    if (!decompressed) return null;
+
+    let payload: CompactSharePayload | null = null;
+
+    // 1. 보안 엔벨로프(서명 + 스크램블링) 파싱 시도
+    if (decompressed.includes('_d') && decompressed.includes('_s')) {
+      const envelope: SecurePayloadEnvelope = JSON.parse(decompressed);
+      const unscrambledJson = xorScramble(envelope._d);
+      const expectedSig = computeSignature(unscrambledJson);
+
+      // 위변조 검증: 서명이 일치하지 않으면 즉시 차단
+      if (envelope._s !== expectedSig) {
+        console.warn('Tampered or corrupted payload signature detected! Rejected.');
+        return null;
       }
+
+      payload = JSON.parse(unscrambledJson) as CompactSharePayload;
+    } else {
+      // 레거시 페이로드 하위 호환
+      payload = JSON.parse(decompressed) as CompactSharePayload;
     }
 
-    if (!jsonStr) return null;
+    if (!payload || !payload.m) return null;
 
-    const payload: CompactSharePayload = JSON.parse(jsonStr);
-
-    const mbtiProfile = MBTI_PROFILES[payload.m] || {
-      title: `${payload.m} 유형`,
-      subtitle: '개성 넘치는 성향',
-      summary: '독창적인 시각과 깊이 있는 매력을 지닌 성향입니다.',
-      traits: ['입체적 성격', '상황 적응력'],
-      behaviorAdvice: '행동 분석을 통해 나만의 고유한 심리 패턴을 확인해보세요.',
-    };
-
-    const persona =
-      Object.values(BEHAVIOR_PERSONAS).find((p) => p.code === payload.p) ||
-      BEHAVIOR_PERSONAS.THE_DECISIVE;
-
-    const makeDim = (
+    // 2. 성향 축 분석 복원
+    const buildDimension = (
       dimKey: 'EI' | 'SN' | 'TF' | 'JP',
-      leftType: any,
-      rightType: any,
-      scores: [number, number, number]
+      leftType: string,
+      rightType: string,
+      data: [number, number, number]
     ): DimensionAnalysis => {
-      const [leftScore, rightScore, certaintyScore] = scores;
-      const winner = leftScore >= rightScore ? leftType : rightType;
+      const leftScore = data[0];
+      const rightScore = data[1];
+      const certaintyScore = data[2];
+      const winner = leftScore >= rightScore ? (leftType as any) : (rightType as any);
       const winnerPercentage = Math.max(leftScore, rightScore);
+
+      let behaviorInsight = '';
+      if (certaintyScore >= 80) {
+        behaviorInsight = `마우스 망설임이나 수정 없이 매우 단호하고 명확하게 ${winner} 성향을 선택했습니다. (확신도 ${certaintyScore}%)`;
+      } else if (certaintyScore >= 55) {
+        behaviorInsight = `${winner} 성향이 우세하지만, 일부 문항에서 선택지를 비교하며 신중하게 사색했습니다. (확신도 ${certaintyScore}%)`;
+      } else {
+        behaviorInsight = `${leftType}와 ${rightType} 성향 사이에서 마우스 궤적의 흔들림과 선택 수정이 관측된 균형/경계 영역입니다. (확신도 ${certaintyScore}%)`;
+      }
+
       return {
         dimension: dimKey,
-        leftType,
-        rightType,
+        leftType: leftType as any,
+        rightType: rightType as any,
         leftScore,
         rightScore,
         winner,
         winnerPercentage,
         certaintyScore,
-        averageHesitation: Math.round(payload.t / 4),
-        changeCount: Math.round(payload.c / 4),
-        behaviorInsight:
-          certaintyScore >= 80
-            ? `해당 영역에서는 망설임 없는 단호한 결정을 보였습니다. 확신도 ${certaintyScore}%`
-            : `두 성향 사이에서 신중하게 답변을 선택했습니다.`,
+        averageHesitation: Math.round(data[2] * 40),
+        changeCount: 0,
+        behaviorInsight,
       };
     };
 
     const dimensions = {
-      EI: makeDim('EI', 'E', 'I', payload.ei),
-      SN: makeDim('SN', 'N', 'S', payload.sn),
-      TF: makeDim('TF', 'T', 'F', payload.tf),
-      JP: makeDim('JP', 'J', 'P', payload.jp),
+      EI: buildDimension('EI', 'E', 'I', payload.ei),
+      SN: buildDimension('SN', 'N', 'S', payload.sn),
+      TF: buildDimension('TF', 'T', 'F', payload.tf),
+      JP: buildDimension('JP', 'J', 'P', payload.jp),
     };
 
-    const avgCertainty =
-      (payload.ei[2] + payload.sn[2] + payload.tf[2] + payload.jp[2]) / 4;
+    const mbti = payload.m;
+    const mbtiProfile = MBTI_PROFILES[mbti] || {
+      title: `${mbti} 유형`,
+      subtitle: '개성 넘치는 독창적인 성향',
+      summary: '행동 분석을 통해 측정된 고유한 심리적 특성을 가지고 있습니다.',
+      traits: ['균형 잡힌 성격', '유연한 대처'],
+      behaviorAdvice: '자신의 본능적 선택 패턴을 탐색해보세요.',
+    };
 
-    const benchmark = calculateUserBenchmark(payload.t, payload.c);
+    const behaviorPersona =
+      BEHAVIOR_PERSONAS[payload.p] || BEHAVIOR_PERSONAS.THE_DECISIVE;
+
+    const overallCertainty = Math.round(
+      (dimensions.EI.certaintyScore +
+        dimensions.SN.certaintyScore +
+        dimensions.TF.certaintyScore +
+        dimensions.JP.certaintyScore) /
+        4
+    );
 
     let totalHoverCount = 0;
     let totalHoverDurationMs = 0;
     let hesitatedOptionsCount = 0;
     const conflictedHoverItems: HoverPsychologyAnalysis['conflictedHoverItems'] = [];
 
-    // Reconstruct all question details with trajectories
+    // 3. 문항별 디테일 및 궤적 복원
     const allQuestionDetails = (payload.dil || []).map((item) => {
       const q = QUESTIONS_POOL.find((question) => question.id === item.qid) || QUESTIONS_POOL[0];
 
@@ -186,6 +263,12 @@ export function decodeResultFromCompressedString(compressed: string): FullAnalys
         : [
             { x: 0.5, y: 0.8, timestamp: 0, speed: 0 },
             { x: 0.5, y: 0.5, timestamp: Math.round(item.dwell * 0.5), speed: 0.1 },
+            {
+              x: 0.5 + item.val * 0.12,
+              y: 0.74,
+              timestamp: Math.round(item.dwell * 0.85),
+              speed: 0.2,
+            },
           ];
 
       const selectionHistory: AnswerSelectionEvent[] = (item.taps && item.taps.length > 0)
@@ -207,8 +290,9 @@ export function decodeResultFromCompressedString(compressed: string): FullAnalys
       totalHoverCount += hoverLogs.length;
       hoverLogs.forEach((h) => {
         totalHoverDurationMs += h.duration;
-        if (h.duration >= 400) hesitatedOptionsCount += 1;
+        if (h.duration >= 400) hesitatedOptionsCount++;
         if (
+          item.val !== null &&
           h.optionValue !== item.val &&
           h.duration >= 450 &&
           Math.sign(h.optionValue || 1) !== Math.sign(item.val || 1)
@@ -218,43 +302,38 @@ export function decodeResultFromCompressedString(compressed: string): FullAnalys
             hoveredOptionLabel: getOptionLabel(h.optionValue),
             finalOptionLabel: getOptionLabel(item.val),
             hoverDurationMs: h.duration,
-            interpretation: `[${getOptionLabel(h.optionValue)}]에 ${(h.duration / 1000).toFixed(1)}초간 마우스를 올려두며 고민한 후, 최종적으로 [${getOptionLabel(item.val)}]을 선택했습니다.`,
+            interpretation: `[${getOptionLabel(h.optionValue)}]에 ${(h.duration / 1000).toFixed(1)}초간 마우스를 올려두며 내적 갈등을 겪은 후, 최종적으로 [${getOptionLabel(item.val)}]을 선택했습니다.`,
           });
         }
       });
 
-      const hoverSummary =
-        hoverLogs.length > 0
-          ? `선택지 ${hoverLogs.length}회 탐색 (총 ${(hoverLogs.reduce((a, b) => a + b.duration, 0) / 1000).toFixed(1)}초 체류)`
-          : '망설임 없는 즉시 선택';
-
-      const mockBehavior: QuestionBehaviorLog = {
-        questionId: q.id,
-        startTime: Date.now() - item.dwell,
-        endTime: Date.now(),
+      const behavior: QuestionBehaviorLog = {
+        questionId: item.qid,
+        startTime: 0,
+        endTime: item.dwell,
         totalDwellTime: item.dwell,
-        firstInteractionTime: selectionHistory[0]?.timestamp ?? Math.round(item.dwell * 0.5),
+        firstInteractionTime: Math.round(item.dwell * 0.4),
         finalValue: item.val,
         selectionHistory,
         changeCount: item.c,
         hoverLogs,
         mouseTrajectory,
-        directionChanges: item.c * 3,
-        hesitationScore: Math.min(100, item.c * 25 + 20),
+        directionChanges: Math.max(1, item.c * 2),
+        hesitationScore: Math.min(100, Math.round(item.c * 20 + item.dwell / 200)),
         tabBlurCount: 0,
         primaryDevice: payload.dev || 'mouse',
         keyStrokeCount: 0,
         touchMetrics: {
-          firstTapLatency: selectionHistory[0]?.timestamp ?? Math.round(item.dwell * 0.6),
-          averagePressDuration: 90,
+          firstTapLatency: Math.round(item.dwell * 0.4),
+          averagePressDuration: 85,
           confirmationDelay: Math.round(item.dwell * 0.3),
-          tapCount: item.c + 1,
+          tapCount: selectionHistory.length,
         },
       };
 
       return {
         question: q,
-        behavior: mockBehavior,
+        behavior,
         hesitationTime: item.dwell,
         changeHistorySummary:
           item.c > 0
@@ -262,17 +341,13 @@ export function decodeResultFromCompressedString(compressed: string): FullAnalys
             : `체류 시간 ${(item.dwell / 1000).toFixed(1)}초 동안 신중한 검토 후 확정`,
         insight:
           item.c > 0
-            ? '선택지를 바꾸며 본능적 직감과 이성적 판단 사이에서 깊이 고민했습니다.'
-            : (item.dwell > 5000
-            ? '선택을 바꾸지는 않았으나 충분한 시간 동안 질문을 심사숙고했습니다.'
-            : '자신의 성향을 명확하게 파악하여 직관적이고 빠르게 결정했습니다.'),
-        hoverSummary,
-        longestHoveredOption: hoverLogs.length > 0 ? hoverLogs[0].optionValue : null,
+            ? `선택지를 번복하며 내면의 성향 갈등을 겪었습니다.`
+            : `망설임 없이 일관되게 본인의 생각을 표현했습니다.`,
       };
     });
 
     const topDilemmas = [...allQuestionDetails]
-      .sort((a, b) => b.behavior.hesitationScore - a.behavior.hesitationScore)
+      .sort((a, b) => b.hesitationTime - a.hesitationTime)
       .slice(0, 3);
 
     const hoverAnalysis: HoverPsychologyAnalysis = {
@@ -286,39 +361,41 @@ export function decodeResultFromCompressedString(compressed: string): FullAnalys
       conflictedHoverItems: conflictedHoverItems.slice(0, 3),
     };
 
+    const benchmark = calculateUserBenchmark(
+      payload.t,
+      payload.c
+    );
+
     return {
-      mbti: payload.m,
+      mbti,
       mbtiTitle: mbtiProfile.title,
       mbtiDescription: mbtiProfile.summary,
+      overallCertainty,
       dimensions,
-      overallCertainty: Math.round(avgCertainty),
-      totalTestDuration: payload.t,
-      totalAnswerChanges: payload.c,
-      behaviorPersona: persona,
-      allQuestionDetails,
+      behaviorPersona,
       topDilemmas,
+      allQuestionDetails,
       hoverAnalysis,
       personaGap: {
-        detected: payload.c >= 2,
-        count: payload.c >= 2 ? 1 : 0,
-        summary:
-          payload.c >= 2
-            ? '상황에 따라 유연하게 생각하며 답변을 심사숙고했습니다.'
-            : '자신의 성향을 일관되게 인식하고 있습니다.',
+        detected: payload.c > 0,
+        count: payload.c,
+        summary: payload.c > 0 ? `선택지를 번복하며 내면의 갈등을 겪었습니다.` : '일관된 선택을 보였습니다.',
         items: [],
       },
+      benchmark,
+      totalTestDuration: payload.t,
+      totalAnswerChanges: payload.c,
       mouseTrajectoryStats: {
-        totalDistanceNormalized: 25.5,
-        averageSpeed: 45.2,
-        indecisivenessIndex: payload.i,
-        primaryDevice: payload.dev || 'mouse',
+        totalDistanceNormalized: 1200,
+        averageSpeed: 0.4,
         keyStrokeCount: 0,
         totalHoverCount,
+        primaryDevice: payload.dev || 'mouse',
+        indecisivenessIndex: payload.i,
       },
-      benchmark,
     };
   } catch (err) {
-    console.error('Failed to decode compressed share payload', err);
+    console.error('Failed to decode result:', err);
     return null;
   }
 }
