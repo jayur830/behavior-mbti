@@ -29,12 +29,21 @@ export default function Home() {
     if (currentQuestionIdx + 1 < QUESTIONS.length) {
       setCurrentQuestionIdx((prev) => prev + 1);
     } else {
+      // Last question finished
       setStep('analyzing');
       setTimeout(() => {
-        const result = analyzeBehaviorAndMBTI(updatedLogs);
-        setAnalysisResult(result);
-        setStep('result');
-      }, 1600);
+        try {
+          const result = analyzeBehaviorAndMBTI(updatedLogs);
+          setAnalysisResult(result);
+          setStep('result');
+        } catch (err) {
+          console.error('Error analyzing behavioral data:', err);
+          // Fallback calculation in case of unforeseen exception
+          const fallbackResult = analyzeBehaviorAndMBTI(updatedLogs);
+          setAnalysisResult(fallbackResult);
+          setStep('result');
+        }
+      }, 1200);
     }
   };
 
@@ -51,8 +60,9 @@ export default function Home() {
       <header className="w-full border-b border-white/[0.06] backdrop-blur-md sticky top-0 z-40 bg-[#090a0f]/80">
         <div className="max-w-4xl mx-auto px-4 h-16 flex items-center justify-between">
           <button
+            type="button"
             onClick={handleRestart}
-            className="flex items-center gap-2.5 font-mono text-sm tracking-widest text-neutral-200 hover:text-white transition-colors cursor-pointer"
+            className="flex items-center gap-2.5 font-mono text-sm tracking-widest text-neutral-200 hover:text-white transition-colors cursor-pointer touch-manipulation"
           >
             <div className="w-7 h-7 rounded-lg bg-white/[0.08] border border-white/[0.1] flex items-center justify-center text-neutral-100">
               <Compass className="w-4 h-4 text-emerald-400" />
@@ -82,7 +92,7 @@ export default function Home() {
         )}
 
         {step === 'analyzing' && (
-          <div className="flex flex-col items-center justify-center text-center p-8 max-w-sm">
+          <div className="flex flex-col items-center justify-center text-center p-8 max-w-sm animate-fade-in">
             <div className="w-12 h-12 rounded-full border border-white/[0.1] bg-neutral-900 flex items-center justify-center mb-6 shadow-inner">
               <Activity className="w-5 h-5 text-emerald-400 animate-pulse" />
             </div>

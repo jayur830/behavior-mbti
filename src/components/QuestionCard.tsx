@@ -21,10 +21,6 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
 }) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
 
-  const handleNextClick = useCallback(() => {
-    // handled inside hook or via ref
-  }, []);
-
   const {
     selectedVal,
     handleSelectOption,
@@ -44,11 +40,11 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
 
   const progressPercent = Math.round(((currentIndex + 1) / totalQuestions) * 100);
 
-  const onSubmit = () => {
+  const onSubmit = useCallback(() => {
     if (selectedVal === null) return;
     const log = finalizeLog();
     onNext(log);
-  };
+  }, [selectedVal, finalizeLog, onNext]);
 
   const getCategoryLabel = (cat: Question['category']) => {
     switch (cat) {
@@ -78,7 +74,7 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
   return (
     <div
       ref={containerRef}
-      className="relative w-full max-w-2xl mx-auto bg-neutral-900/90 border border-white/[0.08] backdrop-blur-xl rounded-3xl p-6 sm:p-10 shadow-2xl transition-all duration-300 text-neutral-100 flex flex-col justify-between min-h-[480px] select-none"
+      className="relative w-full max-w-2xl mx-auto bg-neutral-900/90 border border-white/[0.08] backdrop-blur-xl rounded-3xl p-6 sm:p-10 shadow-2xl transition-all duration-300 text-neutral-100 flex flex-col justify-between min-h-[480px]"
     >
       {/* Top Header: Progress & Telemetry */}
       <div>
@@ -149,12 +145,12 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
                   type="button"
                   onClick={() => handleSelectOption(opt.value, 'mouse')}
                   className={`
-                    relative rounded-full transition-all duration-150 cursor-pointer flex items-center justify-center
+                    relative rounded-full transition-all duration-150 cursor-pointer flex items-center justify-center touch-manipulation
                     ${sizeClass}
                     ${
                       isSelected
                         ? 'bg-neutral-100 text-neutral-950 shadow-[0_0_15px_rgba(255,255,255,0.3)] ring-2 ring-white scale-105'
-                        : 'bg-neutral-900 border border-white/[0.15] hover:border-white/[0.4] text-transparent hover:scale-105'
+                        : 'bg-neutral-900 border border-white/[0.15] hover:border-white/[0.4] text-transparent hover:scale-105 active:scale-95'
                     }
                   `}
                 >
@@ -194,10 +190,11 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
         </div>
 
         <button
+          type="button"
           onClick={onSubmit}
           disabled={selectedVal === null}
           className={`
-            inline-flex items-center gap-2 px-6 py-3 rounded-full font-medium text-xs sm:text-sm transition-all duration-200 cursor-pointer
+            relative z-10 inline-flex items-center gap-2 px-6 py-3 rounded-full font-medium text-xs sm:text-sm transition-all duration-200 cursor-pointer touch-manipulation
             ${
               selectedVal !== null
                 ? 'bg-neutral-100 hover:bg-white text-neutral-950 shadow-md hover:scale-[1.02] active:scale-[0.98]'

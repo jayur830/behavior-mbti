@@ -13,15 +13,20 @@ import { BEHAVIOR_PERSONAS, MBTI_PROFILES } from '../data/mbtiDescriptions';
 import { calculateUserBenchmark } from '../data/benchmarkStats';
 
 export function analyzeBehaviorAndMBTI(logs: QuestionBehaviorLog[]): FullAnalysisResult {
+  const safeLogs = Array.isArray(logs) ? logs : [];
   const logMap = new Map<number, QuestionBehaviorLog>();
-  logs.forEach((log) => logMap.set(log.questionId, log));
+  safeLogs.forEach((log) => {
+    if (log && typeof log.questionId === 'number') {
+      logMap.set(log.questionId, log);
+    }
+  });
 
   // 1. Calculate MBTI 4 Dimensions
   const dimensionResults: Record<Dimension, DimensionAnalysis> = {
-    EI: calculateDimension('EI', 'E', 'I', logs, logMap),
-    SN: calculateDimension('SN', 'N', 'S', logs, logMap),
-    TF: calculateDimension('TF', 'T', 'F', logs, logMap),
-    JP: calculateDimension('JP', 'J', 'P', logs, logMap),
+    EI: calculateDimension('EI', 'E', 'I', safeLogs, logMap),
+    SN: calculateDimension('SN', 'N', 'S', safeLogs, logMap),
+    TF: calculateDimension('TF', 'T', 'F', safeLogs, logMap),
+    JP: calculateDimension('JP', 'J', 'P', safeLogs, logMap),
   };
 
   const mbtiCode = `${dimensionResults.EI.winner}${dimensionResults.SN.winner}${dimensionResults.TF.winner}${dimensionResults.JP.winner}`;
@@ -34,9 +39,9 @@ export function analyzeBehaviorAndMBTI(logs: QuestionBehaviorLog[]): FullAnalysi
   };
 
   // 2. Aggregate Overall Stats
-  const totalTestDuration = logs.reduce((acc, l) => acc + (l.totalDwellTime || 0), 0);
-  const totalAnswerChanges = logs.reduce((acc, l) => acc + l.changeCount, 0);
-  const totalKeyStrokes = logs.reduce((acc, l) => acc + (l.keyStrokeCount || 0), 0);
+  const totalTestDuration = safeLogs.reduce((acc, l) => acc + (l?.totalDwellTime || 0), 0);
+  const totalAnswerChanges = safeLogs.reduce((acc, l) => acc + (l?.changeCount || 0), 0);
+  const totalKeyStrokes = safeLogs.reduce((acc, l) => acc + (l?.keyStrokeCount || 0), 0);
   const avgCertainty =
     (dimensionResults.EI.certaintyScore +
       dimensionResults.SN.certaintyScore +
@@ -48,9 +53,9 @@ export function analyzeBehaviorAndMBTI(logs: QuestionBehaviorLog[]): FullAnalysi
   let touchCount = 0;
   let keyCount = 0;
   let mouseCount = 0;
-  logs.forEach((l) => {
-    if (l.primaryDevice === 'touch') touchCount++;
-    else if (l.primaryDevice === 'keyboard') keyCount++;
+  safeLogs.forEach((l) => {
+    if (l?.primaryDevice === 'touch') touchCount++;
+    else if (l?.primaryDevice === 'keyboard') keyCount++;
     else mouseCount++;
   });
   let primaryDevice: InputDevice = 'mouse';
@@ -62,9 +67,10 @@ export function analyzeBehaviorAndMBTI(logs: QuestionBehaviorLog[]): FullAnalysi
   let totalTrajectoryPoints = 0;
   let totalDirectionChanges = 0;
 
-  logs.forEach((l) => {
+  safeLogs.forEach((l) => {
+    if (!l) return;
     totalDirectionChanges += l.directionChanges || 0;
-    const pts = l.mouseTrajectory || [];
+    const pts = Array.isArray(l.mouseTrajectory) ? l.mouseTrajectory : [];
     totalTrajectoryPoints += pts.length;
     for (let i = 1; i < pts.length; i++) {
       const dx = pts[i].x - pts[i - 1].x;
@@ -78,24 +84,24 @@ export function analyzeBehaviorAndMBTI(logs: QuestionBehaviorLog[]): FullAnalysi
     100,
     Math.round(
       totalAnswerChanges * 18 +
-        (totalDirectionChanges / (logs.length || 1)) * 5 +
-        (totalTestDuration / logs.length / 1000) * 3
+        (totalDirectionChanges / (safeLogs.length || 1)) * 5 +
+        (totalTestDuration / (safeLogs.length || 1) / 1000) * 3
     )
   );
 
   // 5. Determine Behavior Persona
   const behaviorPersona = determinePersona(
     totalAnswerChanges,
-    totalTestDuration / (logs.length || 1),
+    totalTestDuration / (safeLogs.length || 1),
     totalDistance,
     indecisivenessIndex
   );
 
   // 6. Detect Persona Gap
-  const personaGap = detectPersonaGap(logs, logMap);
+  const personaGap = detectPersonaGap(safeLogs, logMap);
 
   // 7. Extract Top Dilemmas
-  const topDilemmas = extractTopDilemmas(logs, logMap);
+  const topDilemmas = extractTopDilemmas(safeLogs, logMap);
 
   // 8. Global Benchmark Stats
   const benchmark = calculateUserBenchmark(totalTestDuration, totalAnswerChanges);
@@ -140,13 +146,13 @@ function calculateDimension(
     const val = l?.finalValue ?? 0;
     totalScore += val;
     if (l) {
-      totalChanges += l.changeCount;
-      totalDwell += l.totalDwellTime;
-      totalHesitation += l.hesitationScore;
+      totalChanges += l.changeCount || 0;
+      totalDwell += l.totalDwellTime || 0;
+      totalHesitation += l.hesitationScore || 0;
     }
   });
 
-  const maxPossible = dimQuestions.length * 3;
+  const maxPossible = Math.max(1, dimQuestions.length * 3);
   let winner: MBTIType = posType;
   let leftScore = 50;
   let rightScore = 50;
@@ -167,10 +173,10 @@ function calculateDimension(
     winnerPercentage = 50;
   }
 
-  const avgDwellSec = totalDwell / dimQuestions.length / 1000;
+  const avgDwellSec = totalDwell / (dimQuestions.length || 1) / 1000;
   const strengthFactor = Math.abs(totalScore) / maxPossible;
   const penalty =
-    totalChanges * 12 + (totalHesitation / dimQuestions.length) * 0.4 + (avgDwellSec > 10 ? 15 : 0);
+    totalChanges * 12 + (totalHesitation / (dimQuestions.length || 1)) * 0.4 + (avgDwellSec > 10 ? 15 : 0);
   const certaintyScore = Math.max(20, Math.min(99, Math.round(strengthFactor * 100 - penalty + 25)));
 
   let insight = '';
@@ -225,7 +231,7 @@ function detectPersonaGap(
   const gapItems: PersonaGapAnalysis['items'] = [];
 
   logs.forEach((log) => {
-    if (log.selectionHistory.length >= 2) {
+    if (log && Array.isArray(log.selectionHistory) && log.selectionHistory.length >= 2) {
       const first = log.selectionHistory[0];
       const last = log.selectionHistory[log.selectionHistory.length - 1];
       const diff = Math.abs(first.value - last.value);
@@ -271,28 +277,32 @@ function extractTopDilemmas(
   logs: QuestionBehaviorLog[],
   logMap: Map<number, QuestionBehaviorLog>
 ): DilemmaQuestionDetail[] {
-  const scored = logs.map((log) => {
+  const validLogs = logs.filter((l) => l && QUESTIONS.some((q) => q.id === l.questionId));
+
+  const scored = validLogs.map((log) => {
     const q = QUESTIONS.find((item) => item.id === log.questionId)!;
-    const changeScore = log.changeCount * 40;
-    const dwellScore = Math.min(60, (log.totalDwellTime / 1000) * 5);
+    const changeCount = log.changeCount || 0;
+    const dwellTime = log.totalDwellTime || 0;
+    const changeScore = changeCount * 40;
+    const dwellScore = Math.min(60, (dwellTime / 1000) * 5);
     const hesitationScore = (log.hesitationScore || 0) * 0.4;
     const zigZagScore = (log.directionChanges || 0) * 3;
     const totalDilemmaScore = changeScore + dwellScore + hesitationScore + zigZagScore;
 
     let summary = '';
-    if (log.changeCount > 0) {
+    if (changeCount > 0 && Array.isArray(log.selectionHistory)) {
       const historyStr = log.selectionHistory.map((s) => getOptionLabel(s.value)).join(' ➔ ');
-      summary = `선택 변경 ${log.changeCount}회 (${historyStr})`;
+      summary = `선택 변경 ${changeCount}회 (${historyStr})`;
     } else {
-      summary = `체류 시간 ${(log.totalDwellTime / 1000).toFixed(1)}초 동안 신중한 마우스 탐색 후 확정`;
+      summary = `체류 시간 ${(dwellTime / 1000).toFixed(1)}초 동안 신중한 마우스 탐색 후 확정`;
     }
 
     let insight = '';
-    if (log.changeCount >= 2) {
+    if (changeCount >= 2) {
       insight = '양쪽 극단과 중립을 오가며 심리적 갈등이 가장 격렬했던 질문입니다.';
-    } else if (log.totalDwellTime > 8000) {
+    } else if (dwellTime > 8000) {
       insight = '긴 시간 동안 질문의 단어 하나하나를 곱씹으며 깊은 사색에 잠겼습니다.';
-    } else if (log.directionChanges > 10) {
+    } else if ((log.directionChanges || 0) > 10) {
       insight = '마우스 커서가 여러 선택지 위에서 머뭇거리며 흔들리는 패턴이 뚜렷했습니다.';
     } else {
       insight = '상대적으로 고민의 흔적이 묻어난 의미 있는 문항입니다.';
@@ -303,7 +313,7 @@ function extractTopDilemmas(
       detail: {
         question: q,
         behavior: log,
-        hesitationTime: log.totalDwellTime,
+        hesitationTime: dwellTime,
         changeHistorySummary: summary,
         insight,
       },
