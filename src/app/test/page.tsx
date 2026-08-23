@@ -53,6 +53,7 @@ export default function TestPage() {
   };
 
   const currentLog = behaviorLogs[currentQuestionIdx];
+  const activeQuestion = QUESTIONS[currentQuestionIdx];
 
   return (
     <div className="min-h-screen bg-[#090a0f] text-neutral-100 flex flex-col justify-between selection:bg-neutral-200 selection:text-neutral-900 bg-grid-pattern relative">
@@ -81,7 +82,7 @@ export default function TestPage() {
 
       {/* Main Content Area */}
       <main className="flex-1 flex flex-col justify-center items-center px-4 py-8">
-        {isAnalyzing ? (
+        {isAnalyzing || !activeQuestion ? (
           <div className="flex flex-col items-center justify-center text-center p-8 max-w-sm animate-fade-in">
             <div className="w-12 h-12 rounded-full border border-white/[0.1] bg-neutral-900 flex items-center justify-center mb-6 shadow-inner">
               <Activity className="w-5 h-5 text-emerald-400 animate-pulse" />
@@ -95,8 +96,8 @@ export default function TestPage() {
           </div>
         ) : (
           <QuestionCard
-            key={QUESTIONS[currentQuestionIdx].id}
-            question={QUESTIONS[currentQuestionIdx]}
+            key={activeQuestion.id}
+            question={activeQuestion}
             currentIndex={currentQuestionIdx}
             totalQuestions={QUESTIONS.length}
             initialValue={currentLog?.finalValue ?? null}

@@ -67,7 +67,8 @@ export const MouseReplayCanvas: React.FC<MouseReplayCanvasProps> = ({
       ];
 
       const optionY = height * 0.74;
-      const currentPoint = trajectory.findLast ? trajectory.findLast((p) => p.timestamp <= currentTime) : trajectory.filter((p) => p.timestamp <= currentTime).slice(-1)[0];
+      const visiblePts = trajectory.filter((p) => p.timestamp <= currentTime);
+      const currentPoint = visiblePts.length > 0 ? visiblePts[visiblePts.length - 1] : null;
 
       optionPositions.forEach((opt) => {
         const cx = opt.x * width;
