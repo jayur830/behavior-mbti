@@ -81,7 +81,7 @@ export const TestIntro: React.FC<TestIntroProps> = ({ onStart }) => {
       {/* Footer Info */}
       <div className="mt-8 flex items-center gap-2 text-xs text-neutral-500 font-mono">
         <Shield className="w-3.5 h-3.5 text-neutral-400" />
-        <span>12문항 (약 3분) · 데이터는 외부 서버 전송 없이 브라우저 내에서 안전하게 실시간 분석됩니다</span>
+        <span>60개 문항 풀 기반 랜덤 12문항 (약 3분) · 데이터는 외부 서버 전송 없이 브라우저 내에서 안전하게 실시간 분석됩니다</span>
       </div>
     </div>
   );

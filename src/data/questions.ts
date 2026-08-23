@@ -15,8 +15,10 @@ export function getOptionLabel(value: number): string {
   return found ? found.label : `${value}`;
 }
 
-export const QUESTIONS: Question[] = [
-  // E vs I (Positive = E, Negative = I)
+export const QUESTIONS_POOL: Question[] = [
+  // ==========================================
+  // 1. E vs I (Positive = E, Negative = I) [15 Questions]
+  // ==========================================
   {
     id: 1,
     dimension: 'EI',
@@ -44,10 +46,120 @@ export const QUESTIONS: Question[] = [
     description: '대화를 통해 생각을 정리하는 편인가요, 생각이 정리된 후에야 입을 여는 편인가요?',
     category: 'social',
   },
-
-  // S vs N (Positive = N, Negative = S)
   {
     id: 4,
+    dimension: 'EI',
+    positiveType: 'E',
+    negativeType: 'I',
+    title: '많은 사람들 앞에서 발표하거나 주목받는 자리에 서면 긴장되기보다 은근한 도파민과 흥분이 솟는다.',
+    description: '타인의 시선과 관심이 부담스러운지, 오히려 에너지를 주는지 돌아보세요.',
+    category: 'social',
+  },
+  {
+    id: 5,
+    dimension: 'EI',
+    positiveType: 'E',
+    negativeType: 'I',
+    title: '힘들고 스트레스받는 일이 있을 때 혼자 삭히기보다 친구를 불러 수다를 떨며 털어내야 풀린다.',
+    description: '감정 소모 후의 회복을 외부 연결을 통해 하는지, 동굴로 들어가 해결하는지 체크해보세요.',
+    category: 'social',
+  },
+  {
+    id: 6,
+    dimension: 'EI',
+    positiveType: 'E',
+    negativeType: 'I',
+    title: '식당이나 카페에서 직원을 부르거나 도움을 요청할 때 아무런 망설임 없이 즉시 부른다.',
+    description: '일상의 사소한 사회적 접촉에서도 심적 준비 과정이 필요한지 살펴보세요.',
+    category: 'social',
+  },
+  {
+    id: 7,
+    dimension: 'EI',
+    positiveType: 'E',
+    negativeType: 'I',
+    title: '새로운 취미를 배울 때 독학이나 1:1 과외보다 여러 사람과 함께하는 그룹 클래스가 훨씬 즐겁다.',
+    description: '집단 에너지가 학습과 흥미에 긍정적인 영향을 미치나요?',
+    category: 'social',
+  },
+  {
+    id: 8,
+    dimension: 'EI',
+    positiveType: 'E',
+    negativeType: 'I',
+    title: '엘리베이터나 대기실에서 아는 사람을 마주치면 가벼운 스몰토크를 자연스럽게 이어간다.',
+    description: '침묵이 어색해서 대화를 던지는 편인가요, 모른 척 지나가는 것이 편한가요?',
+    category: 'social',
+  },
+  {
+    id: 9,
+    dimension: 'EI',
+    positiveType: 'E',
+    negativeType: 'I',
+    title: 'SNS에 내 일상, 생각, 사진을 올리고 사람들과 반응을 주고받는 행위가 자연스럽고 즐겁다.',
+    description: '나를 외부에 드러내고 소통하는 데 거부감이 없는 편인가요?',
+    category: 'social',
+  },
+  {
+    id: 10,
+    dimension: 'EI',
+    positiveType: 'E',
+    negativeType: 'I',
+    title: '여러 친구들과 왁자지껄하게 밤새 놀고 난 다음 날에도 피로감보다는 재미있었다는 뿌듯함이 앞선다.',
+    description: '긴 사교 활동이 나의 에너지를 방전시키나요, 아니면 오히려 채워주나요?',
+    category: 'social',
+  },
+  {
+    id: 11,
+    dimension: 'EI',
+    positiveType: 'E',
+    negativeType: 'I',
+    title: '회의나 브레인스토밍을 할 때 침묵이 흐르면 내가 먼저 아이디어를 던져 분위기를 띄운다.',
+    description: '집단의 대화 흐름을 활성화하려는 본능적인 충동이 있는가요?',
+    category: 'social',
+  },
+  {
+    id: 12,
+    dimension: 'EI',
+    positiveType: 'E',
+    negativeType: 'I',
+    title: '낯선 동네에 혼자 여행을 갈 때도 현지인이나 다른 여행자에게 말을 걸어 친구가 되는 편이다.',
+    description: '우연한 인연과 즉흥적인 만남에 대해 개방적인 태도를 가지고 있나요?',
+    category: 'social',
+  },
+  {
+    id: 13,
+    dimension: 'EI',
+    positiveType: 'E',
+    negativeType: 'I',
+    title: '전화 통화보다 메신저 텍스트로 소통하는 것이 훨씬 편안하고 스트레스가 적다.',
+    description: '실시간 음성 상호작용에 느끼는 심리적 피로도를 평가해보세요. (반대 채점)',
+    category: 'social',
+  },
+  {
+    id: 14,
+    dimension: 'EI',
+    positiveType: 'E',
+    negativeType: 'I',
+    title: '관심사가 생기면 혼자 깊이 파고들기보다 동호회나 커뮤니티에 가입해 교류하며 즐긴다.',
+    description: '취미 활동을 함께 공유하는 타인의 존재가 얼마나 중요한가요?',
+    category: 'social',
+  },
+  {
+    id: 15,
+    dimension: 'EI',
+    positiveType: 'E',
+    negativeType: 'I',
+    title: '내 감정이나 기분 상태가 표정과 말투에 솔직하게 바로 드러나는 편이다.',
+    description: '내면의 생각을 숨김없이 외부로 표출하는 편인지 생각해보세요.',
+    category: 'social',
+  },
+
+  // ==========================================
+  // 2. S vs N (Positive = N, Negative = S) [15 Questions]
+  // ==========================================
+  {
+    id: 16,
     dimension: 'SN',
     positiveType: 'N',
     negativeType: 'S',
@@ -56,7 +168,7 @@ export const QUESTIONS: Question[] = [
     category: 'cognition',
   },
   {
-    id: 5,
+    id: 17,
     dimension: 'SN',
     positiveType: 'N',
     negativeType: 'S',
@@ -65,7 +177,7 @@ export const QUESTIONS: Question[] = [
     category: 'cognition',
   },
   {
-    id: 6,
+    id: 18,
     dimension: 'SN',
     positiveType: 'N',
     negativeType: 'S',
@@ -73,10 +185,120 @@ export const QUESTIONS: Question[] = [
     description: '검증된 실용성을 선호하는지, 파격적이고 새로운 시도를 즐기는지 돌아보세요.',
     category: 'cognition',
   },
-
-  // T vs F (Positive = T, Negative = F)
   {
-    id: 7,
+    id: 19,
+    dimension: 'SN',
+    positiveType: 'N',
+    negativeType: 'S',
+    title: '사물이나 사건을 볼 때 세부적인 디테일보다 전체적인 맥락과 큰 그림(Big Picture)이 먼저 눈에 들어온다.',
+    description: '나무를 먼저 보는지, 숲의 형태와 흐름을 먼저 보는지 생각해보세요.',
+    category: 'cognition',
+  },
+  {
+    id: 20,
+    dimension: 'SN',
+    positiveType: 'N',
+    negativeType: 'S',
+    title: '설명할 때 "예를 들면"이라며 추상적인 비유나 상징적인 표현을 자주 사용한다.',
+    description: '정확한 수치와 데이터 중심인지, 직관적인 비유와 은유를 선호하는지 체크해보세요.',
+    category: 'cognition',
+  },
+  {
+    id: 21,
+    dimension: 'SN',
+    positiveType: 'N',
+    negativeType: 'S',
+    title: '현재 눈앞에 닥친 현실적인 문제보다 5년, 10년 뒤의 미래 비전이나 트렌드를 상상할 때 더 가슴이 뛴다.',
+    description: '시간 감각의 중심이 현재의 실행에 있는지, 미래의 가능성에 있는지 점검해보세요.',
+    category: 'cognition',
+  },
+  {
+    id: 22,
+    dimension: 'SN',
+    positiveType: 'N',
+    negativeType: 'S',
+    title: '반복적인 루틴 업무나 꼼꼼한 서류 정리 작업을 할 때 쉽게 지루해지고 집중력이 급격히 떨어진다.',
+    description: '디테일한 사실 검증 작업에서 느끼는 피로도를 평가해보세요.',
+    category: 'cognition',
+  },
+  {
+    id: 23,
+    dimension: 'SN',
+    positiveType: 'N',
+    negativeType: 'S',
+    title: '어떤 현상을 보면 "왜 저럴까?"라며 보이지 않는 근본 원리나 숨겨진 인과관계를 파고드는 편이다.',
+    description: '관찰된 사실 그 자체보다 배후의 개념적 이론에 더 매력을 느끼나요?',
+    category: 'cognition',
+  },
+  {
+    id: 24,
+    dimension: 'SN',
+    positiveType: 'N',
+    negativeType: 'S',
+    title: '대화할 때 구체적인 일상 경험담보다 우주, 철학, 미래 기술 같은 거대 담론을 나눌 때 훨씬 신난다.',
+    description: '대화 주제의 선호도가 구체적 현실인지, 개념적 상상인지 생각해보세요.',
+    category: 'cognition',
+  },
+  {
+    id: 25,
+    dimension: 'SN',
+    positiveType: 'N',
+    negativeType: 'S',
+    title: '무언가를 결정할 때 경험이나 통계 데이터보다 순간적인 번뜩이는 육감(직관)을 믿는 편이다.',
+    description: '내적인 통찰과 영감에 얼마나 무게를 두는지 평가해보세요.',
+    category: 'cognition',
+  },
+  {
+    id: 26,
+    dimension: 'SN',
+    positiveType: 'N',
+    negativeType: 'S',
+    title: '가구 조립이나 기계 설치 시 설명서를 꼼꼼히 읽기보다 대충 감으로 먼저 조립해본다.',
+    description: '단계별 검증된 절차보다 본능적인 직관을 먼저 적용하는 편인가요?',
+    category: 'cognition',
+  },
+  {
+    id: 27,
+    dimension: 'SN',
+    positiveType: 'N',
+    negativeType: 'S',
+    title: '꿈을 자주 꾸고, 그 꿈의 기묘한 이미지나 분위기를 아침에 일어나서도 곰곰이 생각해보곤 한다.',
+    description: '무의식과 상징적인 심상에 대한 관심도를 돌아보세요.',
+    category: 'cognition',
+  },
+  {
+    id: 28,
+    dimension: 'SN',
+    positiveType: 'N',
+    negativeType: 'S',
+    title: '"전통과 관례"라는 이유로 유지되는 방식에 대해 의문을 품고 새로운 대안을 끊임없이 찾는다.',
+    description: '기존의 검증된 관습을 존중하는지, 언제나 변화와 혁신을 추구하는지 생각해보세요.',
+    category: 'cognition',
+  },
+  {
+    id: 29,
+    dimension: 'SN',
+    positiveType: 'N',
+    negativeType: 'S',
+    title: '하나의 아이디어가 떠오르면 꼬리에 꼬리를 물고 수많은 연관 상상으로 뻗어나간다.',
+    description: '생각의 전개 방식이 직선적인지, 방사형의 마인드맵 같은지 체크해보세요.',
+    category: 'cognition',
+  },
+  {
+    id: 30,
+    dimension: 'SN',
+    positiveType: 'N',
+    negativeType: 'S',
+    title: '실제 일어난 사실(Fact)을 정확하게 기억하고 묘사하는 데 뛰어난 편이다.',
+    description: '오감으로 인지한 세부 정보를 사진처럼 생생히 기억하나요? (반대 채점)',
+    category: 'cognition',
+  },
+
+  // ==========================================
+  // 3. T vs F (Positive = T, Negative = F) [15 Questions]
+  // ==========================================
+  {
+    id: 31,
     dimension: 'TF',
     positiveType: 'T',
     negativeType: 'F',
@@ -85,7 +307,7 @@ export const QUESTIONS: Question[] = [
     category: 'decision',
   },
   {
-    id: 8,
+    id: 32,
     dimension: 'TF',
     positiveType: 'T',
     negativeType: 'F',
@@ -94,7 +316,7 @@ export const QUESTIONS: Question[] = [
     category: 'decision',
   },
   {
-    id: 9,
+    id: 33,
     dimension: 'TF',
     positiveType: 'T',
     negativeType: 'F',
@@ -102,10 +324,120 @@ export const QUESTIONS: Question[] = [
     description: '기분이 상할 수 있어도 팩트가 우선인가요, 상대의 감정을 배려한 전달이 우선인가요?',
     category: 'decision',
   },
-
-  // J vs P (Positive = J, Negative = P)
   {
-    id: 10,
+    id: 34,
+    dimension: 'TF',
+    positiveType: 'T',
+    negativeType: 'F',
+    title: '팀 프로젝트에서 열심히 했지만 결과가 나쁜 동료에게 냉정한 피드백을 전달할 수 있다.',
+    description: '과정의 노력과 감정적 안타까움보다 결과의 엄밀성을 명확히 짚는 편인가요?',
+    category: 'decision',
+  },
+  {
+    id: 35,
+    dimension: 'TF',
+    positiveType: 'T',
+    negativeType: 'F',
+    title: '토론이나 논쟁이 붙으면 상대방의 기분보다 논리적 오류를 바로잡는 것에 더 집중한다.',
+    description: '진실과 논리의 정합성을 증명하는 것이 관계의 평화보다 중요한가요?',
+    category: 'decision',
+  },
+  {
+    id: 36,
+    dimension: 'TF',
+    positiveType: 'T',
+    negativeType: 'F',
+    title: '슬픈 영화나 감동적인 사연을 볼 때 감정적으로 몰입하여 눈물을 흘리는 일이 거의 없다.',
+    description: '감정적인 자극에 대해 이성적 거리를 유지하는 편인지 생각해보세요.',
+    category: 'decision',
+  },
+  {
+    id: 37,
+    dimension: 'TF',
+    positiveType: 'T',
+    negativeType: 'F',
+    title: '규칙과 법률은 개인의 딱한 사정에 따라 예외를 두기보다 엄격하고 공평하게 적용되어야 한다.',
+    description: '정의의 기준이 보편적 원칙인지, 개별적 맥락과 온정인지 점검해보세요.',
+    category: 'decision',
+  },
+  {
+    id: 38,
+    dimension: 'TF',
+    positiveType: 'T',
+    negativeType: 'F',
+    title: '누군가 감정적으로 격양되어 화를 내면 당황하기보다 왜 저러는지 차분하게 분석하게 된다.',
+    description: '타인의 감정 폭발 앞에서 감정 전이가 되는지, 제3자 시선으로 관찰하는지 돌아보세요.',
+    category: 'decision',
+  },
+  {
+    id: 39,
+    dimension: 'TF',
+    positiveType: 'T',
+    negativeType: 'F',
+    title: '거절해야 하는 상황에서 상대방이 상처받을까 봐 거절을 미루기보다 단호하게 의사를 밝힌다.',
+    description: '명확한 거절과 관계의 부드러움 중 어느 쪽을 더 우선시하나요?',
+    category: 'decision',
+  },
+  {
+    id: 40,
+    dimension: 'TF',
+    positiveType: 'T',
+    negativeType: 'F',
+    title: '선물을 고를 때 감성적인 의미나 정성보다 실용성과 가성비를 가장 먼저 고려한다.',
+    description: '선물의 가치를 효용과 필요성에서 찾는지, 마음의 감동에서 찾는지 생각해보세요.',
+    category: 'decision',
+  },
+  {
+    id: 41,
+    dimension: 'TF',
+    positiveType: 'T',
+    negativeType: 'F',
+    title: '나와 반대 의견을 가진 사람과 대화할 때 감정적으로 불편하기보다 지적 호기심과 흥미가 생긴다.',
+    description: '의견 충돌을 개인적 공격으로 받아들이지 않고 순수한 논리로 대하나요?',
+    category: 'decision',
+  },
+  {
+    id: 42,
+    dimension: 'TF',
+    positiveType: 'T',
+    negativeType: 'F',
+    title: '"너 정말 착하다"는 말보다 "너 일 진짜 똑부러지게 잘한다"는 칭찬을 들을 때 훨씬 뿌듯하다.',
+    description: '나의 가치 인정이 따뜻한 인성인지, 뛰어난 역량과 능력인지 체크해보세요.',
+    category: 'decision',
+  },
+  {
+    id: 43,
+    dimension: 'TF',
+    positiveType: 'T',
+    negativeType: 'F',
+    title: '친한 사이일수록 사적인 정에 얽매이지 않고 공과 사를 명확히 구분해야 한다고 믿는다.',
+    description: '친분 관계에서도 객관적인 선과 원칙을 칼같이 지키는 편인가요?',
+    category: 'decision',
+  },
+  {
+    id: 44,
+    dimension: 'TF',
+    positiveType: 'T',
+    negativeType: 'F',
+    title: '타인의 고민을 들었을 때 그 감정에 전염되어 내 하루 기분까지 우울해지는 경우가 많다.',
+    description: '공감 능력이 너무 높아 타인의 정서에 쉽게 휘둘리나요? (반대 채점)',
+    category: 'decision',
+  },
+  {
+    id: 45,
+    dimension: 'TF',
+    positiveType: 'T',
+    negativeType: 'F',
+    title: '결정을 번복해야 할 때 감정적인 아쉬움보다 새로운 팩트와 수치에 따라 쿨하게 바꾼다.',
+    description: '이성적 타당성이 증명되면 미련 없이 결정을 수정하는 편인가요?',
+    category: 'decision',
+  },
+
+  // ==========================================
+  // 4. J vs P (Positive = J, Negative = P) [15 Questions]
+  // ==========================================
+  {
+    id: 46,
     dimension: 'JP',
     positiveType: 'J',
     negativeType: 'P',
@@ -114,7 +446,7 @@ export const QUESTIONS: Question[] = [
     category: 'lifestyle',
   },
   {
-    id: 11,
+    id: 47,
     dimension: 'JP',
     positiveType: 'J',
     negativeType: 'P',
@@ -123,7 +455,7 @@ export const QUESTIONS: Question[] = [
     category: 'lifestyle',
   },
   {
-    id: 12,
+    id: 48,
     dimension: 'JP',
     positiveType: 'J',
     negativeType: 'P',
@@ -131,4 +463,135 @@ export const QUESTIONS: Question[] = [
     description: '예측 불가능한 유연한 상황에 대처하는 본인의 솔직한 스트레스 반응은 어떤가요?',
     category: 'lifestyle',
   },
+  {
+    id: 49,
+    dimension: 'JP',
+    positiveType: 'J',
+    negativeType: 'P',
+    title: '내 방이나 책상, 컴퓨터 바탕화면 폴더가 카테고리별로 정돈되어 있지 않으면 신경이 쓰인다.',
+    description: '물리적/디지털 공간의 구조화와 정리 정돈 상태에 민감한 편인가요?',
+    category: 'lifestyle',
+  },
+  {
+    id: 50,
+    dimension: 'JP',
+    positiveType: 'J',
+    negativeType: 'P',
+    title: '하루를 시작할 때 오늘 해야 할 일 목록(To-Do List)을 작성하고 하나씩 지워나가는 쾌감이 있다.',
+    description: '목록화와 성취 확인 과정이 일상의 중요한 원동력인가요?',
+    category: 'lifestyle',
+  },
+  {
+    id: 51,
+    dimension: 'JP',
+    positiveType: 'J',
+    negativeType: 'P',
+    title: '약속 시간보다 10~15분 일찍 도착하도록 이동 동선과 교통편을 미리 계산해 움직인다.',
+    description: '지각 가능성을 사전에 차단하기 위해 여유 시간을 두는 편인가요?',
+    category: 'lifestyle',
+  },
+  {
+    id: 52,
+    dimension: 'JP',
+    positiveType: 'J',
+    negativeType: 'P',
+    title: '쇼핑하러 마트에 갈 때 사고 싶은 목록을 메모해서 가며, 불필요한 충동구매를 거의 하지 않는다.',
+    description: '사전 계획된 범위 내에서 소비를 통제하는 편인지 생각해보세요.',
+    category: 'lifestyle',
+  },
+  {
+    id: 53,
+    dimension: 'JP',
+    positiveType: 'J',
+    negativeType: 'P',
+    title: '주말이나 휴일에도 아무 계획 없이 흘려보내기보다 대략적인 일정 블록을 짜두는 편이다.',
+    description: '휴식조차도 계획된 시간 안에서 누려야 진정한 안식이 되나요?',
+    category: 'lifestyle',
+  },
+  {
+    id: 54,
+    dimension: 'JP',
+    positiveType: 'J',
+    negativeType: 'P',
+    title: '결론이 정해지지 않고 열려 있는 애매모호한 상태를 참기 힘들며, 빠르게 결말을 짓고 싶다.',
+    description: '불확실성의 개방성보다 종결(Closure)과 명확한 결정을 선호하나요?',
+    category: 'lifestyle',
+  },
+  {
+    id: 55,
+    dimension: 'JP',
+    positiveType: 'J',
+    negativeType: 'P',
+    title: '일을 시작하기 전에 작업의 전반적인 프로세스와 마일스톤을 먼저 머릿속에 설계해둔다.',
+    description: '일단 부딪쳐보며 수정하는지, 체계적인 청사진을 먼저 그리는지 돌아보세요.',
+    category: 'lifestyle',
+  },
+  {
+    id: 56,
+    dimension: 'JP',
+    positiveType: 'J',
+    negativeType: 'P',
+    title: '주변 사람들이 약속 시간을 어기거나 계획을 즉흥적으로 바꾸면 내색하지 않더라도 속으로 실망한다.',
+    description: '타인의 시간 엄수와 약속 이행에 대해 엄격한 기준을 적용하나요?',
+    category: 'lifestyle',
+  },
+  {
+    id: 57,
+    dimension: 'JP',
+    positiveType: 'J',
+    negativeType: 'P',
+    title: '계획이 틀어졌을 때를 대비해 항상 플랜 B와 대체 시나리오를 미리 생각해둔다.',
+    description: '안전장치와 리스크 관리를 사전에 준비하는 편인가요?',
+    category: 'lifestyle',
+  },
+  {
+    id: 58,
+    dimension: 'JP',
+    positiveType: 'J',
+    negativeType: 'P',
+    title: '식당을 고를 때 예약 없이 가서 줄을 서기보다 미리 예약이 확정된 곳을 선호한다.',
+    description: '확정된 예약의 안정감을 즉흥적인 현장 탐방보다 좋아하는지 생각해보세요.',
+    category: 'lifestyle',
+  },
+  {
+    id: 59,
+    dimension: 'JP',
+    positiveType: 'J',
+    negativeType: 'P',
+    title: '일할 때 정해진 규칙이나 표준 가이드라인을 지키는 것이 작업 효율을 높인다고 믿는다.',
+    description: '시스템과 절차의 준수가 자유로운 변칙보다 효과적이라고 보나요?',
+    category: 'lifestyle',
+  },
+  {
+    id: 60,
+    dimension: 'JP',
+    positiveType: 'J',
+    negativeType: 'P',
+    title: '즉흥적인 번개 모임이나 당일치기 무계획 여행 제안을 받으면 매우 설레고 흔쾌히 응한다.',
+    description: '예상치 못한 즉흥 제안을 즐기는 편인가요? (반대 채점)',
+    category: 'lifestyle',
+  },
 ];
+
+// Fallback constant for backwards compatibility
+export const QUESTIONS: Question[] = QUESTIONS_POOL.slice(0, 12);
+
+/**
+ * 60개 대규모 문항 풀에서 각 성향 축(EI, SN, TF, JP)별로 균형 있게 N개씩 무작위 추출하여 섞습니다.
+ * @param countPerDimension 축당 추출할 문항 수 (기본값: 3개 -> 총 12문항)
+ */
+export function getRandomQuestions(countPerDimension = 3): Question[] {
+  const pickRandom = (arr: Question[], n: number) => {
+    const shuffled = [...arr].sort(() => Math.random() - 0.5);
+    return shuffled.slice(0, n);
+  };
+
+  const ei = pickRandom(QUESTIONS_POOL.filter((q) => q.dimension === 'EI'), countPerDimension);
+  const sn = pickRandom(QUESTIONS_POOL.filter((q) => q.dimension === 'SN'), countPerDimension);
+  const tf = pickRandom(QUESTIONS_POOL.filter((q) => q.dimension === 'TF'), countPerDimension);
+  const jp = pickRandom(QUESTIONS_POOL.filter((q) => q.dimension === 'JP'), countPerDimension);
+
+  const combined = [...ei, ...sn, ...tf, ...jp];
+  // Shuffle the final order so dimensions are evenly interweaved
+  return combined.sort(() => Math.random() - 0.5);
+}

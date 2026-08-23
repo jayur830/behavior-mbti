@@ -10,7 +10,7 @@ import {
 } from '../types';
 import { MBTI_PROFILES, BEHAVIOR_PERSONAS } from '../data/mbtiDescriptions';
 import { calculateUserBenchmark } from '../data/benchmarkStats';
-import { QUESTIONS, getOptionLabel } from '../data/questions';
+import { QUESTIONS_POOL, getOptionLabel } from '../data/questions';
 
 export interface CompactSharePayload {
   m: string; // mbti code (e.g. "ENTJ")
@@ -169,7 +169,7 @@ export function decodeResultFromCompressedString(compressed: string): FullAnalys
 
     // Reconstruct all question details with trajectories
     const allQuestionDetails = (payload.dil || []).map((item) => {
-      const q = QUESTIONS.find((question) => question.id === item.qid) || QUESTIONS[0];
+      const q = QUESTIONS_POOL.find((question) => question.id === item.qid) || QUESTIONS_POOL[0];
 
       const mouseTrajectory: MousePoint[] = (item.pts && item.pts.length > 0)
         ? item.pts.map((p) => ({

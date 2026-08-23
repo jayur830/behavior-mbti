@@ -9,35 +9,33 @@ import {
   Dimension,
   InputDevice,
 } from '../types';
-import { QUESTIONS, getOptionLabel } from '../data/questions';
+import { QUESTIONS_POOL, getOptionLabel } from '../data/questions';
 import { MBTI_PROFILES, BEHAVIOR_PERSONAS } from '../data/mbtiDescriptions';
 import { calculateUserBenchmark } from '../data/benchmarkStats';
 
 export function analyzeBehaviorAndMBTI(
-  logs: QuestionBehaviorLog[]
+  logs: QuestionBehaviorLog[],
+  activeQuestions?: import('../types').Question[]
 ): FullAnalysisResult {
+  const currentPool = activeQuestions && activeQuestions.length > 0 ? activeQuestions : QUESTIONS_POOL;
   // Ensure safe fallback if logs are incomplete
-  const safeLogs: QuestionBehaviorLog[] = QUESTIONS.map((q) => {
-    const existing = logs.find((l) => l && l.questionId === q.id);
-    if (existing) return existing;
-    return {
-      questionId: q.id,
-      startTime: Date.now() - 2000,
-      endTime: Date.now(),
-      totalDwellTime: 2000,
-      firstInteractionTime: 1000,
-      finalValue: 0,
-      selectionHistory: [{ value: 0, timestamp: 1000 }],
-      changeCount: 0,
-      hoverLogs: [],
-      mouseTrajectory: [],
-      directionChanges: 0,
-      hesitationScore: 20,
-      tabBlurCount: 0,
-      primaryDevice: 'mouse',
-      keyStrokeCount: 0,
-    };
-  });
+  const safeLogs: QuestionBehaviorLog[] = (logs && logs.length > 0 ? logs : currentPool.slice(0, 12).map((q) => ({
+    questionId: q.id,
+    startTime: Date.now() - 2000,
+    endTime: Date.now(),
+    totalDwellTime: 2000,
+    firstInteractionTime: 1000,
+    finalValue: 0,
+    selectionHistory: [{ value: 0, timestamp: 1000 }],
+    changeCount: 0,
+    hoverLogs: [],
+    mouseTrajectory: [],
+    directionChanges: 0,
+    hesitationScore: 20,
+    tabBlurCount: 0,
+    primaryDevice: 'mouse' as const,
+    keyStrokeCount: 0,
+  })));
 
   // 1. Total stats calculation
   const totalTestDuration = safeLogs.reduce(
@@ -56,7 +54,7 @@ export function analyzeBehaviorAndMBTI(
   const conflictedHoverItems: HoverPsychologyAnalysis['conflictedHoverItems'] = [];
 
   safeLogs.forEach((log) => {
-    const q = QUESTIONS.find((question) => question.id === log.questionId);
+    const q = QUESTIONS_POOL.find((question) => question.id === log.questionId);
     if (!q) return;
 
     const hoverLogs = log.hoverLogs || [];
@@ -121,7 +119,7 @@ export function analyzeBehaviorAndMBTI(
   };
 
   safeLogs.forEach((log) => {
-    const q = QUESTIONS.find((item) => item.id === log.questionId);
+    const q = QUESTIONS_POOL.find((item) => item.id === log.questionId);
     if (!q) return;
 
     const val = log.finalValue ?? 0;
@@ -228,7 +226,7 @@ export function analyzeBehaviorAndMBTI(
 
   // 7. Dilemma Details for All 12 Questions
   const allQuestionDetails: DilemmaQuestionDetail[] = safeLogs.map((log) => {
-    const q = QUESTIONS.find((item) => item.id === log.questionId) || QUESTIONS[0];
+    const q = QUESTIONS_POOL.find((item) => item.id === log.questionId) || QUESTIONS_POOL[0];
     const hoverSummary =
       log.hoverLogs && log.hoverLogs.length > 0
         ? `선택지 ${log.hoverLogs.length}회 탐색 (총 ${(log.hoverLogs.reduce((a, b) => a + b.duration, 0) / 1000).toFixed(1)}초 체류)`
@@ -275,7 +273,7 @@ export function analyzeBehaviorAndMBTI(
       const firstSelection = log.selectionHistory[0].value;
       const finalSelection = log.finalValue;
       if (finalSelection !== null && firstSelection !== finalSelection) {
-        const q = QUESTIONS.find((item) => item.id === log.questionId);
+        const q = QUESTIONS_POOL.find((item) => item.id === log.questionId);
         if (q) {
           personaGapItems.push({
             question: q,

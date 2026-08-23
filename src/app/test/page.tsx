@@ -1,26 +1,35 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { QUESTIONS } from '../../data/questions';
-import { QuestionBehaviorLog } from '../../types';
+import { getRandomQuestions } from '../../data/questions';
+import { Question, QuestionBehaviorLog } from '../../types';
 import { analyzeBehaviorAndMBTI } from '../../lib/analyzer';
 import { encodeResultToCompressedString } from '../../lib/shareResult';
 import { QuestionCard } from '../../components/QuestionCard';
-import { Compass, Activity } from 'lucide-react';
+import { Compass, Activity, Sparkles } from 'lucide-react';
 
 export default function TestPage() {
   const router = useRouter();
+  const [questions, setQuestions] = useState<Question[]>([]);
   const [currentQuestionIdx, setCurrentQuestionIdx] = useState<number>(0);
   const [behaviorLogs, setBehaviorLogs] = useState<(QuestionBehaviorLog | null)[]>([]);
   const [isAnalyzing, setIsAnalyzing] = useState<boolean>(false);
+
+  // Initialize with randomly sampled questions from the 60-item pool
+  useEffect(() => {
+    const sampled = getRandomQuestions(3); // 3 questions * 4 dimensions = 12 balanced questions
+    setQuestions(sampled);
+    setBehaviorLogs([]);
+    setCurrentQuestionIdx(0);
+  }, []);
 
   const handleQuestionNext = (log: QuestionBehaviorLog) => {
     const updated = [...behaviorLogs];
     updated[currentQuestionIdx] = log;
     setBehaviorLogs(updated);
 
-    if (currentQuestionIdx + 1 < QUESTIONS.length) {
+    if (currentQuestionIdx + 1 < questions.length) {
       setCurrentQuestionIdx((prev) => prev + 1);
     } else {
       // Completed all questions
@@ -29,12 +38,12 @@ export default function TestPage() {
 
       setTimeout(() => {
         try {
-          const result = analyzeBehaviorAndMBTI(validLogs);
+          const result = analyzeBehaviorAndMBTI(validLogs, questions);
           const compressed = encodeResultToCompressedString(result);
           router.push(`/result?data=${compressed}`);
         } catch (err) {
           console.error('Error analyzing behavioral data:', err);
-          const fallbackResult = analyzeBehaviorAndMBTI(validLogs);
+          const fallbackResult = analyzeBehaviorAndMBTI(validLogs, questions);
           const compressed = encodeResultToCompressedString(fallbackResult);
           router.push(`/result?data=${compressed}`);
         }
@@ -52,8 +61,19 @@ export default function TestPage() {
     }
   };
 
+  if (questions.length === 0) {
+    return (
+      <div className="min-h-screen bg-[#090a0f] text-neutral-100 flex flex-col justify-center items-center font-mono text-xs">
+        <div className="flex items-center gap-2 text-neutral-400">
+          <Activity className="w-4 h-4 text-emerald-400 animate-pulse" />
+          <span>GENERATING RANDOMIZED QUESTION SET...</span>
+        </div>
+      </div>
+    );
+  }
+
   const currentLog = behaviorLogs[currentQuestionIdx];
-  const activeQuestion = QUESTIONS[currentQuestionIdx];
+  const activeQuestion = questions[currentQuestionIdx];
 
   return (
     <div className="min-h-screen bg-[#090a0f] text-neutral-100 flex flex-col justify-between selection:bg-neutral-200 selection:text-neutral-900 bg-grid-pattern relative">
@@ -75,7 +95,7 @@ export default function TestPage() {
 
           <div className="flex items-center gap-2 text-xs font-mono text-neutral-400">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-            <span className="hidden sm:inline">TELEMETRY ONLINE</span>
+            <span className="hidden sm:inline">DYNAMIC POOL ONLINE</span>
           </div>
         </div>
       </header>
@@ -99,7 +119,7 @@ export default function TestPage() {
             key={activeQuestion.id}
             question={activeQuestion}
             currentIndex={currentQuestionIdx}
-            totalQuestions={QUESTIONS.length}
+            totalQuestions={questions.length}
             initialValue={currentLog?.finalValue ?? null}
             existingLog={currentLog}
             onNext={handleQuestionNext}
