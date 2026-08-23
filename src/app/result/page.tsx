@@ -39,20 +39,11 @@ export async function generateMetadata({ searchParams }: Props): Promise<Metadat
         siteName: 'Behavior MBTI',
         locale: 'ko_KR',
         type: 'article',
-        images: [
-          {
-            url: `/api/og?data=${data}`,
-            width: 1200,
-            height: 630,
-            alt: `${decoded.mbti} 무의식 심리 분석 리포트`,
-          },
-        ],
       },
       twitter: {
         card: 'summary_large_image',
         title,
         description,
-        images: [`/api/og?data=${data}`],
       },
     };
   } catch {

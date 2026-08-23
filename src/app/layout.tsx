@@ -35,21 +35,12 @@ export const metadata: Metadata = {
     siteName: "Behavior MBTI",
     locale: "ko_KR",
     type: "website",
-    images: [
-      {
-        url: "/api/og",
-        width: 1200,
-        height: 630,
-        alt: "Behavior MBTI 무의식 심리 분석 검사",
-      },
-    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "Behavior MBTI | 마우스 행동 & 고민 분석 심리검사",
     description:
       "선택지 변경 시간, 마우스 포인터 궤적, 망설임 지수를 함께 분석하여 당신의 진짜 MBTI와 내면의 페르소나를 도출합니다.",
-    images: ["/api/og"],
   },
 };
 
