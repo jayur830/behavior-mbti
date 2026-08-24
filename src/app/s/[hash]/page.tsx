@@ -1,6 +1,6 @@
 import { Metadata } from 'next';
 import { decodeResultFromCompressedString } from '../../../lib/shareResult';
-import { getResultFromSupabase } from '../../../lib/supabase';
+import { getResultFromDb } from '../../../lib/db';
 import { FullAnalysisResult } from '../../../types';
 import { ResultView } from '../../../components/ResultView';
 import { Compass, ArrowRight, Activity } from 'lucide-react';
@@ -13,9 +13,9 @@ interface Props {
 async function resolveResult(hash: string): Promise<FullAnalysisResult | null> {
   if (!hash) return null;
 
-  // 1. If it's a short 5~15 char ID, try fetching from Supabase DB first
+  // 1. If it's a short 5~15 char ID, try fetching from persona.mbti_results DB first
   if (hash.length <= 15) {
-    const fromDb = await getResultFromSupabase(hash);
+    const fromDb = await getResultFromDb(hash);
     if (fromDb) return fromDb;
   }
 

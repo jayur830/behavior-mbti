@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { saveResultToSupabase, deleteResultFromSupabase, generateShortId } from '../../../lib/supabase';
+import { saveResultToDb, deleteResultFromDb, generateShortId } from '../../../lib/db';
 import { FullAnalysisResult } from '../../../types';
 
 export async function POST(req: NextRequest) {
@@ -11,15 +11,10 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Invalid result payload' }, { status: 400 });
     }
 
-    // 1. Try saving to DB (Supabase / Prisma)
-    let shortId: string | null = null;
-    try {
-      shortId = await saveResultToSupabase(result);
-    } catch (dbErr) {
-      console.warn('DB save warning:', dbErr);
-    }
+    // persona.mbti_results 테이블에 적재
+    let shortId = await saveResultToDb(result);
 
-    // 2. If DB save failed or DB is not configured, generate 10-char fallback ID
+    // DB 일시 장애 시에도 클라이언트 링크 복사가 가능하도록 Fallback ID 제공
     if (!shortId) {
       shortId = generateShortId(10);
     }
@@ -55,13 +50,9 @@ export async function DELETE(req: NextRequest) {
       return NextResponse.json({ error: 'Missing id' }, { status: 400 });
     }
 
-    try {
-      await deleteResultFromSupabase(id);
-    } catch (delErr) {
-      console.warn('DB delete warning:', delErr);
-    }
+    const deleted = await deleteResultFromDb(id);
 
-    return NextResponse.json({ success: true });
+    return NextResponse.json({ success: deleted });
   } catch (err) {
     console.error('API DELETE /api/results error:', err);
     return NextResponse.json({ success: false });
