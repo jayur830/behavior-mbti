@@ -76,17 +76,29 @@ export const ResultView: React.FC<ResultViewProps> = ({
       const origin = typeof window !== 'undefined' ? window.location.origin : '';
       const deleteUrl = `${origin}/api/results?id=${encodeURIComponent(idToDelete)}`;
 
-      // 1. sendBeacon (절대 URL + Blob payload로 브라우저 탭 닫기/새로고침 시 전송)
+      // 1. sendBeacon (CORS Preflight 없는 text/plain Blob - Chrome/Safari 탭 닫기 100% 보장)
       if (typeof navigator !== 'undefined' && navigator.sendBeacon) {
         try {
-          const blob = new Blob([JSON.stringify({ id: idToDelete })], { type: 'application/json' });
+          const blob = new Blob([idToDelete], { type: 'text/plain;charset=UTF-8' });
           navigator.sendBeacon(deleteUrl, blob);
         } catch {
           // fallback
         }
       }
 
-      // 2. fetch keepalive (SPA 페이지 이동 및 최신 브라우저)
+      // 2. fetch keepalive POST (CORS Preflight가 없는 Simple Request로 즉시 전송)
+      if (typeof fetch !== 'undefined') {
+        try {
+          fetch(deleteUrl, {
+            method: 'POST',
+            keepalive: true,
+            headers: { 'Content-Type': 'text/plain' },
+            body: idToDelete,
+          }).catch(() => {});
+        } catch {}
+      }
+
+      // 3. fetch keepalive DELETE
       if (typeof fetch !== 'undefined') {
         try {
           fetch(deleteUrl, {
