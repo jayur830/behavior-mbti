@@ -84,8 +84,8 @@ export const ResultView: React.FC<ResultViewProps> = ({
       })
       .catch((err) => console.error('Auto save error:', err));
 
-    // 3. 링크 복사 버튼을 클릭하지 않고 페이지 이탈 시 해당 id의 row를 다시 delete
-    const cleanupUnsaved = () => {
+    // 3. 링크 복사 버튼을 클릭하지 않고 페이지를 닫거나 이탈 시에만 해당 id의 row를 delete
+    const handleBeforeUnload = () => {
       if (!isCopiedRef.current && savedDbIdRef.current) {
         const idToDelete = savedDbIdRef.current;
         const deleteUrl = `/api/results?id=${encodeURIComponent(idToDelete)}`;
@@ -97,10 +97,9 @@ export const ResultView: React.FC<ResultViewProps> = ({
       }
     };
 
-    window.addEventListener('beforeunload', cleanupUnsaved);
+    window.addEventListener('beforeunload', handleBeforeUnload);
     return () => {
-      window.removeEventListener('beforeunload', cleanupUnsaved);
-      cleanupUnsaved();
+      window.removeEventListener('beforeunload', handleBeforeUnload);
     };
   }, [isSharedView, result]);
 
