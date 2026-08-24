@@ -61,6 +61,24 @@ export const ResultView: React.FC<ResultViewProps> = ({
   const savedDbIdRef = useRef<string | null>(null);
   const isCopiedRef = useRef<boolean>(false);
 
+  // 링크 복사를 하지 않은 경우 DB에서 해당 row를 즉시 삭제하는 함수
+  const triggerDeleteIfUnsaved = () => {
+    if (!isCopiedRef.current && savedDbIdRef.current) {
+      const idToDelete = savedDbIdRef.current;
+      const deleteUrl = `/api/results?id=${encodeURIComponent(idToDelete)}`;
+
+      // 1. sendBeacon (탭 닫기, 새로고침 시 브라우저 백그라운드 전송)
+      if (typeof navigator !== 'undefined' && navigator.sendBeacon) {
+        navigator.sendBeacon(deleteUrl);
+      }
+
+      // 2. fetch keepalive (SPA 페이지 이동 및 최신 브라우저 안전 전송)
+      if (typeof fetch !== 'undefined') {
+        fetch(deleteUrl, { method: 'DELETE', keepalive: true }).catch(() => {});
+      }
+    }
+  };
+
   useEffect(() => {
     confetti({
       particleCount: 50,
@@ -84,22 +102,19 @@ export const ResultView: React.FC<ResultViewProps> = ({
       })
       .catch((err) => console.error('Auto save error:', err));
 
-    // 3. 링크 복사 버튼을 클릭하지 않고 페이지를 닫거나 이탈 시에만 해당 id의 row를 delete
-    const handleBeforeUnload = () => {
-      if (!isCopiedRef.current && savedDbIdRef.current) {
-        const idToDelete = savedDbIdRef.current;
-        const deleteUrl = `/api/results?id=${encodeURIComponent(idToDelete)}`;
-        if (navigator.sendBeacon) {
-          navigator.sendBeacon(deleteUrl);
-        } else {
-          fetch(deleteUrl, { method: 'DELETE', keepalive: true }).catch(() => {});
-        }
-      }
+    // 3. 브라우저 이벤트 감지 (새로고침, 탭 닫기, 뒤로가기, 창 닫기)
+    const handleExit = () => {
+      triggerDeleteIfUnsaved();
     };
 
-    window.addEventListener('beforeunload', handleBeforeUnload);
+    window.addEventListener('pagehide', handleExit);
+    window.addEventListener('beforeunload', handleExit);
+
+    // 4. SPA 클라이언트 라우팅 및 언마운트 (홈 로고 클릭, 다시 검사하기 버튼 등)
     return () => {
-      window.removeEventListener('beforeunload', handleBeforeUnload);
+      window.removeEventListener('pagehide', handleExit);
+      window.removeEventListener('beforeunload', handleExit);
+      triggerDeleteIfUnsaved();
     };
   }, [isSharedView, result]);
 
