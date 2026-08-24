@@ -34,8 +34,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     };
   }
 
-  const title = `[${decoded.mbti} · ${decoded.behaviorPersona.title}] 친구의 무의식 행동 MBTI 진단서`;
-  const description = `${decoded.mbtiTitle} | 종합 확신도 ${decoded.overallCertainty}% · 고민 속도 상위 ${decoded.benchmark.dwellTimePercentile}%`;
+  const title = `[${decoded.mbti} · ${decoded.behaviorPersona?.title || '성격 진단'}] 친구의 무의식 행동 MBTI 진단서`;
+  const description = `${decoded.mbtiTitle || 'MBTI 진단'} | 종합 확신도 ${decoded.overallCertainty || 85}% · 고민 속도 상위 ${decoded.benchmark?.dwellTimePercentile || 50}%`;
 
   return {
     title,
@@ -125,7 +125,7 @@ export default async function ShortLinkPage({ params }: Props) {
       </header>
 
       <main className="flex-1 flex flex-col justify-center items-center px-4 py-8">
-        <ResultView result={decoded} isSharedView={true} onRestart={() => {}} />
+        <ResultView result={decoded} isSharedView={true} />
       </main>
 
       <footer className="w-full border-t border-white/[0.04] py-6 text-center text-xs text-neutral-500 font-mono">

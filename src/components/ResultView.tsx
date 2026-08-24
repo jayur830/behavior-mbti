@@ -34,7 +34,7 @@ import { encodeResultToCompressedString } from '../lib/shareResult';
 interface ResultViewProps {
   result: FullAnalysisResult;
   isSharedView?: boolean;
-  onRestart: () => void;
+  onRestart?: () => void;
 }
 
 export const ResultView: React.FC<ResultViewProps> = ({
@@ -48,15 +48,15 @@ export const ResultView: React.FC<ResultViewProps> = ({
   const [isStoryModalOpen, setIsStoryModalOpen] = useState<boolean>(false);
   const cardExportRef = useRef<HTMLDivElement | null>(null);
 
-  const isTouchDevice = result.mouseTrajectoryStats.primaryDevice === 'touch';
+  const isTouchDevice = result.mouseTrajectoryStats?.primaryDevice === 'touch';
   const [replayerMode, setReplayerMode] = useState<'canvas' | 'timeline'>(
     isTouchDevice ? 'timeline' : 'canvas'
   );
 
   const questionsList =
-    result.allQuestionDetails && result.allQuestionDetails.length > 0
+    (result.allQuestionDetails && result.allQuestionDetails.length > 0
       ? result.allQuestionDetails
-      : result.topDilemmas;
+      : result.topDilemmas) || [];
 
   const savedDbIdRef = useRef<string | null>(null);
   const isCopiedRef = useRef<boolean>(false);
@@ -213,7 +213,7 @@ export const ResultView: React.FC<ResultViewProps> = ({
   };
 
   const getDeviceLabel = () => {
-    switch (result.mouseTrajectoryStats.primaryDevice) {
+    switch (result.mouseTrajectoryStats?.primaryDevice) {
       case 'touch':
         return '모바일 터치 제스처';
       case 'keyboard':
@@ -285,7 +285,7 @@ export const ResultView: React.FC<ResultViewProps> = ({
             <div className="p-1">
               <span className="text-[10px] font-mono text-neutral-500 block">일관성 순위</span>
               <span className="text-base font-bold text-emerald-400 font-mono">
-                상위 {result.benchmark.changeCountPercentile}%
+                상위 {result.benchmark?.changeCountPercentile ?? 20}%
               </span>
             </div>
           </div>
@@ -295,10 +295,10 @@ export const ResultView: React.FC<ResultViewProps> = ({
               행동 프로필
             </span>
             <span className="text-sm font-bold text-white block">
-              {result.behaviorPersona.title}
+              {result.behaviorPersona?.title || '성격 진단'}
             </span>
             <span className="text-xs text-neutral-400 font-light block">
-              {result.behaviorPersona.subtitle}
+              {result.behaviorPersona?.subtitle || ''}
             </span>
           </div>
 
@@ -351,7 +351,7 @@ export const ResultView: React.FC<ResultViewProps> = ({
               선택지 호버 탐색
             </span>
             <span className="text-lg sm:text-xl font-bold text-neutral-100 font-mono">
-              {result.hoverAnalysis.totalHoverCount}회
+              {result.hoverAnalysis?.totalHoverCount ?? 0}회
             </span>
           </div>
 
@@ -385,11 +385,11 @@ export const ResultView: React.FC<ResultViewProps> = ({
               <span className="text-xs text-neutral-400 block mb-1">고민 속도 랭킹</span>
               <div className="flex items-baseline gap-2">
                 <span className="text-2xl sm:text-3xl font-black font-mono text-sky-400">
-                  상위 {result.benchmark.dwellTimePercentile}%
+                  상위 {result.benchmark?.dwellTimePercentile ?? 15}%
                 </span>
                 <span className="text-xs text-neutral-500">
-                  (평균 {(result.benchmark.globalAverageDwellSec).toFixed(1)}초 대비{' '}
-                  {((result.totalTestDuration / 1000) - result.benchmark.globalAverageDwellSec).toFixed(1)}초)
+                  (평균 {(result.benchmark?.globalAverageDwellSec ?? 3.2).toFixed(1)}초 대비{' '}
+                  {(((result.totalTestDuration || 30000) / 1000) - (result.benchmark?.globalAverageDwellSec ?? 3.2)).toFixed(1)}초)
                 </span>
               </div>
             </div>
@@ -403,10 +403,10 @@ export const ResultView: React.FC<ResultViewProps> = ({
               <span className="text-xs text-neutral-400 block mb-1">자기 인식 일관성 랭킹</span>
               <div className="flex items-baseline gap-2">
                 <span className="text-2xl sm:text-3xl font-black font-mono text-emerald-400">
-                  상위 {result.benchmark.changeCountPercentile}%
+                  상위 {result.benchmark?.changeCountPercentile ?? 20}%
                 </span>
                 <span className="text-xs text-neutral-500">
-                  (평균 {result.benchmark.globalAverageChanges}회 재숙고 대비 {result.totalAnswerChanges}회)
+                  (평균 {result.benchmark?.globalAverageChanges ?? 2.1}회 재숙고 대비 {result.totalAnswerChanges || 0}회)
                 </span>
               </div>
             </div>
@@ -422,8 +422,8 @@ export const ResultView: React.FC<ResultViewProps> = ({
             전체 참여자 행동 페르소나 분포
           </span>
           <div className="w-full bg-neutral-800 h-3 rounded-full overflow-hidden flex mb-3">
-            {result.benchmark.personaDistribution.map((item, idx) => {
-              const isUserPersona = item.personaCode === result.behaviorPersona.code;
+            {(result.benchmark?.personaDistribution || []).map((item, idx) => {
+              const isUserPersona = item.personaCode === result.behaviorPersona?.code;
               const bgColors = ['bg-amber-400', 'bg-sky-400', 'bg-rose-400', 'bg-emerald-400', 'bg-purple-400'];
               return (
                 <div
@@ -436,10 +436,10 @@ export const ResultView: React.FC<ResultViewProps> = ({
             })}
           </div>
           <div className="flex flex-wrap gap-x-4 gap-y-1 text-[11px] text-neutral-400 font-mono">
-            {result.benchmark.personaDistribution.map((item) => (
+            {(result.benchmark?.personaDistribution || []).map((item) => (
               <span
                 key={item.personaCode}
-                className={item.personaCode === result.behaviorPersona.code ? 'text-white font-bold' : ''}
+                className={item.personaCode === result.behaviorPersona?.code ? 'text-white font-bold' : ''}
               >
                 {item.name}: {item.percentage}%
               </span>
@@ -461,21 +461,21 @@ export const ResultView: React.FC<ResultViewProps> = ({
               선택지 호버 체류 및 시선 망설임 지표
             </h3>
             <span className="text-xs font-mono text-amber-400">
-              총 {result.hoverAnalysis.totalHoverCount}회 탐색 ({(result.hoverAnalysis.totalHoverDurationMs / 1000).toFixed(1)}초 체류)
+              총 {result.hoverAnalysis?.totalHoverCount ?? 0}회 탐색 ({(((result.hoverAnalysis?.totalHoverDurationMs ?? 0) / 1000)).toFixed(1)}초 체류)
             </span>
           </div>
           <p className="text-xs text-neutral-400 font-light leading-relaxed">
-            {result.hoverAnalysis.hoverInsight}
+            {result.hoverAnalysis?.hoverInsight || '선택지 간 망설임 없이 직관적인 의사결정을 보였습니다.'}
           </p>
         </div>
 
         {/* Conflicted Hovers if present */}
-        {result.hoverAnalysis.conflictedHoverItems.length > 0 && (
+        {(result.hoverAnalysis?.conflictedHoverItems || []).length > 0 && (
           <div className="space-y-3">
             <span className="text-xs font-mono text-neutral-500 uppercase block">
               시선이 머물렀던 잠재적 갈등 선택지
             </span>
-            {result.hoverAnalysis.conflictedHoverItems.map((item, idx) => (
+            {(result.hoverAnalysis?.conflictedHoverItems || []).map((item, idx) => (
               <div
                 key={idx}
                 className="bg-neutral-950/50 border border-white/[0.04] p-3.5 rounded-xl flex flex-col gap-1 text-xs"
@@ -496,21 +496,21 @@ export const ResultView: React.FC<ResultViewProps> = ({
         </div>
 
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-5">
-          <div className="w-14 h-14 rounded-2xl bg-white/[0.04] border border-white/[0.08] flex items-center justify-center shrink-0">
-            {getPersonaIcon(result.behaviorPersona.iconName)}
+          <div className="w-12 h-12 rounded-2xl bg-white/[0.08] border border-white/[0.1] flex items-center justify-center shrink-0">
+            {getPersonaIcon(result.behaviorPersona?.iconName || 'Zap')}
           </div>
           <div>
             <h3 className="text-lg sm:text-xl font-bold text-white mb-1">
-              {result.behaviorPersona.title}
+              {result.behaviorPersona?.title || '성격 진단'}
             </h3>
             <p className="text-xs sm:text-sm font-medium text-neutral-300 mb-2">
-              {result.behaviorPersona.subtitle}
+              {result.behaviorPersona?.subtitle || ''}
             </p>
             <p className="text-xs sm:text-sm text-neutral-400 leading-relaxed mb-4 font-light">
-              {result.behaviorPersona.description}
+              {result.behaviorPersona?.description || ''}
             </p>
             <div className="flex flex-wrap gap-2">
-              {result.behaviorPersona.tags.map((tag) => (
+              {(result.behaviorPersona?.tags || []).map((tag: string) => (
                 <span
                   key={tag}
                   className="px-2.5 py-1 rounded-lg bg-neutral-950 border border-white/[0.06] text-neutral-400 text-xs font-mono"
@@ -533,7 +533,7 @@ export const ResultView: React.FC<ResultViewProps> = ({
         </div>
 
         <div className="space-y-4">
-          {Object.entries(result.dimensions).map(([key, dim]) => {
+          {Object.entries(result.dimensions || {}).map(([key, dim]) => {
             return (
               <div
                 key={key}
