@@ -60,6 +60,8 @@ export const ResultView: React.FC<ResultViewProps> = ({
 
   const savedDbIdRef = useRef<string | null>(null);
   const isCopiedRef = useRef<boolean>(false);
+  const hasSavedRef = useRef<boolean>(false);
+  const isSavingRef = useRef<boolean>(false);
 
   // 링크 복사를 하지 않은 경우 DB에서 해당 row를 즉시 삭제하는 함수
   const triggerDeleteIfUnsaved = () => {
@@ -86,9 +88,10 @@ export const ResultView: React.FC<ResultViewProps> = ({
       origin: { y: 0.6 },
     });
 
-    if (isSharedView) return;
+    if (isSharedView || hasSavedRef.current || isSavingRef.current) return;
+    isSavingRef.current = true;
 
-    // 1. 결과 페이지 진입 후 DB에 자동 적재
+    // 1. 결과 페이지 진입 후 DB에 단 1회만 자동 적재
     fetch('/api/results', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -98,9 +101,13 @@ export const ResultView: React.FC<ResultViewProps> = ({
       .then((data) => {
         if (data?.id) {
           savedDbIdRef.current = data.id;
+          hasSavedRef.current = true;
         }
       })
-      .catch((err) => console.error('Auto save error:', err));
+      .catch((err) => console.error('Auto save error:', err))
+      .finally(() => {
+        isSavingRef.current = false;
+      });
 
     // 3. 브라우저 이벤트 감지 (새로고침, 탭 닫기, 뒤로가기, 창 닫기)
     const handleExit = () => {
@@ -123,8 +130,19 @@ export const ResultView: React.FC<ResultViewProps> = ({
 
     let id = savedDbIdRef.current;
 
-    // 만약 진입 직후 초고속으로 복사를 눌러서 아직 id가 없다면 즉시 생성
-    if (!id) {
+    // 만약 자동 적재 요청이 진행 중인 경우 완료될 때까지 대기
+    if (!id && isSavingRef.current) {
+      let attempts = 0;
+      while (!savedDbIdRef.current && attempts < 10) {
+        await new Promise((r) => setTimeout(r, 100));
+        attempts++;
+      }
+      id = savedDbIdRef.current;
+    }
+
+    // 아직도 id가 없고 저장 시도가 없었을 경우에만 신규 저장
+    if (!id && !hasSavedRef.current && !isSavingRef.current) {
+      isSavingRef.current = true;
       try {
         const res = await fetch('/api/results', {
           method: 'POST',
@@ -137,10 +155,13 @@ export const ResultView: React.FC<ResultViewProps> = ({
           if (json.id) {
             id = json.id;
             savedDbIdRef.current = id;
+            hasSavedRef.current = true;
           }
         }
       } catch (err) {
         console.error('Instant save error:', err);
+      } finally {
+        isSavingRef.current = false;
       }
     }
 

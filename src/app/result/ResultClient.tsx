@@ -1,6 +1,6 @@
 'use client';
 
-import React, { Suspense } from 'react';
+import React, { Suspense, useMemo } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { decodeResultFromCompressedString } from '../../lib/shareResult';
 import { ResultView } from '../../components/ResultView';
@@ -11,7 +11,9 @@ function ResultContent() {
   const searchParams = useSearchParams();
   const compressedData = searchParams.get('data') || searchParams.get('r');
 
-  const result = compressedData ? decodeResultFromCompressedString(compressedData) : null;
+  const result = useMemo(() => {
+    return compressedData ? decodeResultFromCompressedString(compressedData) : null;
+  }, [compressedData]);
 
   const handleRestart = () => {
     router.push('/test');
