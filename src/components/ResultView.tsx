@@ -67,17 +67,32 @@ export const ResultView: React.FC<ResultViewProps> = ({
   const triggerDeleteIfUnsaved = () => {
     if (!isCopiedRef.current && savedDbIdRef.current) {
       const idToDelete = savedDbIdRef.current;
-      const deleteUrl = `/api/results?id=${encodeURIComponent(idToDelete)}`;
+      const origin = typeof window !== 'undefined' ? window.location.origin : '';
+      const deleteUrl = `${origin}/api/results?id=${encodeURIComponent(idToDelete)}`;
 
-      // 1. sendBeacon (탭 닫기, 새로고침 시 브라우저 백그라운드 전송)
+      // 1. sendBeacon (절대 URL + Blob payload로 브라우저 탭 닫기/새로고침 시 전송)
       if (typeof navigator !== 'undefined' && navigator.sendBeacon) {
-        navigator.sendBeacon(deleteUrl);
+        try {
+          const blob = new Blob([JSON.stringify({ id: idToDelete })], { type: 'application/json' });
+          navigator.sendBeacon(deleteUrl, blob);
+        } catch {
+          // fallback
+        }
       }
 
-      // 2. fetch keepalive (SPA 페이지 이동 및 최신 브라우저 안전 전송)
+      // 2. fetch keepalive (SPA 페이지 이동 및 최신 브라우저)
       if (typeof fetch !== 'undefined') {
-        fetch(deleteUrl, { method: 'DELETE', keepalive: true }).catch(() => {});
+        fetch(deleteUrl, {
+          method: 'DELETE',
+          keepalive: true,
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id: idToDelete }),
+        }).catch(() => {});
       }
+
+      try {
+        sessionStorage.removeItem('unsaved_mbti_id');
+      } catch {}
     }
   };
 
@@ -88,7 +103,21 @@ export const ResultView: React.FC<ResultViewProps> = ({
       origin: { y: 0.6 },
     });
 
-    if (isSharedView || hasSavedRef.current || isSavingRef.current) return;
+    if (isSharedView) return;
+
+    // 0. 새로고침 직후: 이전 세션에서 미공유 상태로 남아있던 ID가 있다면 즉시 DB 정리
+    try {
+      const prevUnsavedId = sessionStorage.getItem('unsaved_mbti_id');
+      if (prevUnsavedId) {
+        fetch(`/api/results?id=${encodeURIComponent(prevUnsavedId)}`, {
+          method: 'DELETE',
+          keepalive: true,
+        }).catch(() => {});
+        sessionStorage.removeItem('unsaved_mbti_id');
+      }
+    } catch {}
+
+    if (hasSavedRef.current || isSavingRef.current) return;
     isSavingRef.current = true;
 
     // 1. 결과 페이지 진입 후 DB에 단 1회만 자동 적재
@@ -102,6 +131,9 @@ export const ResultView: React.FC<ResultViewProps> = ({
         if (data?.id) {
           savedDbIdRef.current = data.id;
           hasSavedRef.current = true;
+          try {
+            sessionStorage.setItem('unsaved_mbti_id', data.id);
+          } catch {}
         }
       })
       .catch((err) => console.error('Auto save error:', err))
@@ -165,8 +197,11 @@ export const ResultView: React.FC<ResultViewProps> = ({
       }
     }
 
-    // 2. 링크 복사 플래그를 true로 설정하여 이탈 시 row가 삭제되지 않도록 보존
+    // 2. 링크 복사 플래그를 true로 설정하고 sessionStorage에서 제거하여 영구 보존
     isCopiedRef.current = true;
+    try {
+      sessionStorage.removeItem('unsaved_mbti_id');
+    } catch {}
 
     // 10자리 영문 대소문자+숫자 랜덤 ID로 링크 생성 (DB 미연결 시 무상태 해시 대체)
     const targetUrl = id

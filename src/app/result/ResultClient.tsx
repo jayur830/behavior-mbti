@@ -16,6 +16,16 @@ function ResultContent() {
   }, [compressedData]);
 
   const handleRestart = () => {
+    try {
+      const unsavedId = sessionStorage.getItem('unsaved_mbti_id');
+      if (unsavedId) {
+        fetch(`/api/results?id=${encodeURIComponent(unsavedId)}`, {
+          method: 'DELETE',
+          keepalive: true,
+        }).catch(() => {});
+        sessionStorage.removeItem('unsaved_mbti_id');
+      }
+    } catch {}
     router.push('/test');
   };
 
@@ -47,6 +57,20 @@ function ResultContent() {
 export default function ResultClient() {
   const router = useRouter();
 
+  const handleHome = () => {
+    try {
+      const unsavedId = sessionStorage.getItem('unsaved_mbti_id');
+      if (unsavedId) {
+        fetch(`/api/results?id=${encodeURIComponent(unsavedId)}`, {
+          method: 'DELETE',
+          keepalive: true,
+        }).catch(() => {});
+        sessionStorage.removeItem('unsaved_mbti_id');
+      }
+    } catch {}
+    router.push('/');
+  };
+
   return (
     <div className="min-h-screen bg-[#090a0f] text-neutral-100 flex flex-col justify-between selection:bg-neutral-200 selection:text-neutral-900 bg-grid-pattern relative">
       {/* Navigation Header */}
@@ -54,7 +78,7 @@ export default function ResultClient() {
         <div className="max-w-4xl mx-auto px-4 h-16 flex items-center justify-between">
           <button
             type="button"
-            onClick={() => router.push('/')}
+            onClick={handleHome}
             className="flex items-center gap-2.5 font-mono text-sm tracking-widest text-neutral-200 hover:text-white transition-colors cursor-pointer touch-manipulation"
           >
             <div className="w-7 h-7 rounded-lg bg-white/[0.08] border border-white/[0.1] flex items-center justify-center text-neutral-100">
