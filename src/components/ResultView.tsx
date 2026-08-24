@@ -65,8 +65,14 @@ export const ResultView: React.FC<ResultViewProps> = ({
 
   // 링크 복사를 하지 않은 경우 DB에서 해당 row를 즉시 삭제하는 함수
   const triggerDeleteIfUnsaved = () => {
-    if (!isCopiedRef.current && savedDbIdRef.current) {
-      const idToDelete = savedDbIdRef.current;
+    let idToDelete = savedDbIdRef.current;
+    if (!idToDelete && typeof window !== 'undefined') {
+      try {
+        idToDelete = sessionStorage.getItem('unsaved_mbti_id');
+      } catch {}
+    }
+
+    if (!isCopiedRef.current && idToDelete) {
       const origin = typeof window !== 'undefined' ? window.location.origin : '';
       const deleteUrl = `${origin}/api/results?id=${encodeURIComponent(idToDelete)}`;
 
@@ -82,12 +88,12 @@ export const ResultView: React.FC<ResultViewProps> = ({
 
       // 2. fetch keepalive (SPA 페이지 이동 및 최신 브라우저)
       if (typeof fetch !== 'undefined') {
-        fetch(deleteUrl, {
-          method: 'DELETE',
-          keepalive: true,
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ id: idToDelete }),
-        }).catch(() => {});
+        try {
+          fetch(deleteUrl, {
+            method: 'DELETE',
+            keepalive: true,
+          }).catch(() => {});
+        } catch {}
       }
 
       try {
@@ -105,11 +111,12 @@ export const ResultView: React.FC<ResultViewProps> = ({
 
     if (isSharedView) return;
 
-    // 0. 새로고침 직후: 이전 세션에서 미공유 상태로 남아있던 ID가 있다면 즉시 DB 정리
+    // 0. 이전 세션에서 미공유 상태로 남아있던 ID가 있다면 즉시 DB 정리
     try {
       const prevUnsavedId = sessionStorage.getItem('unsaved_mbti_id');
       if (prevUnsavedId) {
-        fetch(`/api/results?id=${encodeURIComponent(prevUnsavedId)}`, {
+        const origin = typeof window !== 'undefined' ? window.location.origin : '';
+        fetch(`${origin}/api/results?id=${encodeURIComponent(prevUnsavedId)}`, {
           method: 'DELETE',
           keepalive: true,
         }).catch(() => {});
@@ -141,18 +148,28 @@ export const ResultView: React.FC<ResultViewProps> = ({
         isSavingRef.current = false;
       });
 
-    // 3. 브라우저 이벤트 감지 (새로고침, 탭 닫기, 뒤로가기, 창 닫기)
+    // 3. 브라우저 탭 닫기, 창 닫기, 새로고침, 백그라운드 전환 감지
     const handleExit = () => {
       triggerDeleteIfUnsaved();
     };
 
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'hidden') {
+        triggerDeleteIfUnsaved();
+      }
+    };
+
     window.addEventListener('pagehide', handleExit);
     window.addEventListener('beforeunload', handleExit);
+    window.addEventListener('unload', handleExit);
+    document.addEventListener('visibilitychange', handleVisibilityChange);
 
-    // 4. SPA 클라이언트 라우팅 및 언마운트 (홈 로고 클릭, 다시 검사하기 버튼 등)
+    // 4. SPA 클라이언트 라우팅 및 언마운트
     return () => {
       window.removeEventListener('pagehide', handleExit);
       window.removeEventListener('beforeunload', handleExit);
+      window.removeEventListener('unload', handleExit);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
       triggerDeleteIfUnsaved();
     };
   }, [isSharedView, result]);
