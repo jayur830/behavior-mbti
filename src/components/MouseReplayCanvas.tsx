@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useRef, useEffect, useState, useCallback } from 'react';
-import { QuestionBehaviorLog } from '../types';
+import React, { useRef, useEffect, useState, useCallback, useMemo } from 'react';
+import { QuestionBehaviorLog, MousePoint, AnswerSelectionEvent } from '../types';
 import { Play, Pause, RotateCcw, Crosshair } from 'lucide-react';
 import { getOptionLabel } from '../data/questions';
 
@@ -24,8 +24,8 @@ export const MouseReplayCanvas: React.FC<MouseReplayCanvasProps> = ({
   const pausedTimeOffsetRef = useRef<number>(0);
 
   const duration = Math.max(1000, behaviorLog.totalDwellTime || 4000);
-  const trajectory = behaviorLog.mouseTrajectory || [];
-  const clicks = behaviorLog.selectionHistory || [];
+  const trajectory = useMemo(() => behaviorLog.mouseTrajectory || [], [behaviorLog.mouseTrajectory]);
+  const clicks = useMemo(() => behaviorLog.selectionHistory || [], [behaviorLog.selectionHistory]);
 
   const drawFrame = useCallback(
     (currentTime: number) => {
@@ -67,7 +67,7 @@ export const MouseReplayCanvas: React.FC<MouseReplayCanvasProps> = ({
       ];
 
       const optionY = height * 0.74;
-      const visiblePts = trajectory.filter((p) => p.timestamp <= currentTime);
+      const visiblePts = trajectory.filter((p: MousePoint) => p.timestamp <= currentTime);
       const currentPoint = visiblePts.length > 0 ? visiblePts[visiblePts.length - 1] : null;
 
       optionPositions.forEach((opt) => {
@@ -101,7 +101,7 @@ export const MouseReplayCanvas: React.FC<MouseReplayCanvasProps> = ({
       });
 
       // Filter points up to current playback time
-      const visiblePoints = trajectory.filter((pt) => pt.timestamp <= currentTime);
+      const visiblePoints = trajectory.filter((pt: MousePoint) => pt.timestamp <= currentTime);
 
       // Draw trajectory path
       if (visiblePoints.length > 1) {
@@ -121,8 +121,8 @@ export const MouseReplayCanvas: React.FC<MouseReplayCanvasProps> = ({
       }
 
       // Draw clicks up to current time
-      const pastClicks = clicks.filter((c) => c.timestamp <= currentTime);
-      pastClicks.forEach((c, idx) => {
+      const pastClicks = clicks.filter((c: AnswerSelectionEvent) => c.timestamp <= currentTime);
+      pastClicks.forEach((c: AnswerSelectionEvent, idx: number) => {
         const opt = optionPositions.find((o) => o.val === c.value);
         if (opt) {
           const cx = opt.x * width;
@@ -165,7 +165,7 @@ export const MouseReplayCanvas: React.FC<MouseReplayCanvasProps> = ({
         ctx.stroke();
       }
     },
-    [trajectory, clicks, width, height, behaviorLog]
+    [trajectory, clicks, width, height]
   );
 
   useEffect(() => {

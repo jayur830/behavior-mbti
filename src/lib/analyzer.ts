@@ -147,7 +147,6 @@ export function analyzeBehaviorAndMBTI(
     const data = dimensionScores[dimKey];
     const totalScore = data.positiveScore + data.negativeScore || 1;
     const leftRatio = data.positiveScore / totalScore;
-    const rightRatio = data.negativeScore / totalScore;
 
     const leftScore = Math.round(leftRatio * 100);
     const rightScore = 100 - leftScore;

@@ -52,7 +52,7 @@ export async function saveResultWithPrisma(
         mbti: result.mbti,
         personaCode: result.behaviorPersona?.code || 'THE_DECISIVE',
         overallCertainty: result.overallCertainty,
-        resultData: result as any,
+        resultData: result as unknown as object,
       },
     });
     return true;

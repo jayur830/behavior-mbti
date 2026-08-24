@@ -119,7 +119,7 @@ export async function getResultFromSupabase(id: string): Promise<FullAnalysisRes
       if (!pubErr && pubData) {
         return pubData.result_data as FullAnalysisResult;
       }
-    } catch (err) {
+    } catch {
       // fallback
     }
 
@@ -135,7 +135,7 @@ export async function getResultFromSupabase(id: string): Promise<FullAnalysisRes
       if (!personaErr && personaData) {
         return personaData.result_data as FullAnalysisResult;
       }
-    } catch (err) {
+    } catch {
       // fallback
     }
   }

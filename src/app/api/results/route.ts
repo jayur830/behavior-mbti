@@ -45,8 +45,9 @@ export async function POST(req: NextRequest) {
       id: fallbackId,
       shortUrl: `/s/${fallbackId}`,
     });
-  } catch (err: any) {
-    console.error('[API /api/results] ❌ POST Error:', err.message);
+  } catch (err: unknown) {
+    const errorMsg = err instanceof Error ? err.message : String(err);
+    console.error('[API /api/results] ❌ POST Error:', errorMsg);
     const fallbackId = generateShortId(10);
     return NextResponse.json({
       id: fallbackId,
@@ -76,8 +77,9 @@ export async function DELETE(req: NextRequest) {
     console.log(`[API /api/results] 🗑️ DELETE 미공유 row 삭제: ID=${id}, 결과=${deleted ? '성공' : '실패'}`);
 
     return NextResponse.json({ success: deleted });
-  } catch (err: any) {
-    console.error('[API /api/results] ❌ DELETE Error:', err.message);
+  } catch (err: unknown) {
+    const errorMsg = err instanceof Error ? err.message : String(err);
+    console.error('[API /api/results] ❌ DELETE Error:', errorMsg);
     return NextResponse.json({ success: false });
   }
 }

@@ -25,18 +25,35 @@ export function useBehaviorTracker({
   existingLog = null,
   onAutoSubmit,
 }: UseBehaviorTrackerProps) {
-  const [selectedVal, setSelectedVal] = useState<number | null>(initialValue);
-  const startTimeRef = useRef<number>(Date.now());
+  const [selectedVal, setSelectedVal] = useState<number | null>(
+    initialValue !== undefined ? initialValue : (existingLog?.finalValue ?? null)
+  );
+  const [changeCountState, setChangeCountState] = useState<number>(
+    Math.max(0, (existingLog?.selectionHistory?.length || 1) - 1)
+  );
+  const [primaryDeviceState, setPrimaryDeviceState] = useState<InputDevice>(
+    existingLog?.primaryDevice || 'mouse'
+  );
+  const [prevQuestionId, setPrevQuestionId] = useState<number>(questionId);
+  if (prevQuestionId !== questionId) {
+    setPrevQuestionId(questionId);
+    setSelectedVal(initialValue !== undefined ? initialValue : (existingLog?.finalValue ?? null));
+    setChangeCountState(Math.max(0, (existingLog?.selectionHistory?.length || 1) - 1));
+    setPrimaryDeviceState(existingLog?.primaryDevice || 'mouse');
+  }
+
+  // Time & Trajectory Refs
+  const startTimeRef = useRef<number>(0);
+  const firstInteractionTimeRef = useRef<number | null>(existingLog?.firstInteractionTime || null);
+  const accumulatedDwellTimeRef = useRef<number>(existingLog?.totalDwellTime || 0);
   const selectionHistoryRef = useRef<AnswerSelectionEvent[]>(existingLog?.selectionHistory ? [...existingLog.selectionHistory] : []);
   const hoverLogsRef = useRef<OptionHoverLog[]>(existingLog?.hoverLogs ? [...existingLog.hoverLogs] : []);
   const currentHoverRef = useRef<{ optionValue: number; enterTime: number } | null>(null);
   const mouseTrajectoryRef = useRef<MousePoint[]>(existingLog?.mouseTrajectory ? [...existingLog.mouseTrajectory] : []);
-  const lastPointRef = useRef<{ x: number; y: number; t: number; dx: number; dy: number } | null>(null);
-  const directionChangesRef = useRef<number>(existingLog?.directionChanges || 0);
-  const firstInteractionTimeRef = useRef<number | null>(existingLog?.firstInteractionTime || null);
-  const accumulatedDwellTimeRef = useRef<number>(existingLog?.totalDwellTime || 0);
-  const tabBlurCountRef = useRef<number>(existingLog?.tabBlurCount || 0);
+  const lastPointRef = useRef<{ x: number; y: number; dx: number; dy: number; t: number } | null>(null);
   const lastFrameTimeRef = useRef<number>(0);
+  const directionChangesRef = useRef<number>(existingLog?.directionChanges || 0);
+  const tabBlurCountRef = useRef<number>(existingLog?.tabBlurCount || 0);
   const keyStrokeCountRef = useRef<number>(existingLog?.keyStrokeCount || 0);
 
   // Interaction Counters
@@ -62,8 +79,7 @@ export function useBehaviorTracker({
     touchCountRef.current = 0;
     touchStartTimeRef.current = null;
     touchPressDurationsRef.current = [];
-    setSelectedVal(initialValue !== undefined ? initialValue : (existingLog?.finalValue ?? null));
-  }, [questionId, initialValue, existingLog]);
+  }, [questionId, existingLog]);
 
   // Tab blur detection
   useEffect(() => {
@@ -208,6 +224,10 @@ export function useBehaviorTracker({
       });
 
       setSelectedVal(val);
+      setChangeCountState(Math.max(0, selectionHistoryRef.current.length - 1));
+      if (device) {
+        setPrimaryDeviceState(device);
+      }
     },
     []
   );
@@ -338,23 +358,13 @@ export function useBehaviorTracker({
     };
   }, [questionId, selectedVal]);
 
-  // Current active device
-  let currentDevice: InputDevice = 'mouse';
-  if (mouseMoveCountRef.current >= 3 || mouseTrajectoryRef.current.length > 3) {
-    currentDevice = 'mouse';
-  } else if (keyStrokeCountRef.current > 0 && touchCountRef.current === 0) {
-    currentDevice = 'keyboard';
-  } else if (touchCountRef.current > 0 && mouseMoveCountRef.current < 3) {
-    currentDevice = 'touch';
-  }
-
   return {
     selectedVal,
     handleSelectOption,
     handleOptionMouseEnter,
     handleOptionMouseLeave,
     finalizeLog,
-    changeCount: Math.max(0, selectionHistoryRef.current.length - 1),
-    primaryDevice: currentDevice,
+    changeCount: changeCountState,
+    primaryDevice: primaryDeviceState,
   };
 }

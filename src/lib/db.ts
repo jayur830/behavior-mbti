@@ -70,8 +70,9 @@ export async function saveResultToDb(
 
     await pool.query(query, values);
     return shortId;
-  } catch (err: any) {
-    console.error('Failed to insert into persona.mbti_results:', err.message);
+  } catch (err: unknown) {
+    const errorMsg = err instanceof Error ? err.message : String(err);
+    console.error('Failed to insert into persona.mbti_results:', errorMsg);
     return null;
   }
 }
@@ -98,8 +99,9 @@ export async function getResultFromDb(id: string): Promise<FullAnalysisResult | 
 
     const raw = res.rows[0].result_data;
     return typeof raw === 'string' ? JSON.parse(raw) : (raw as FullAnalysisResult);
-  } catch (err: any) {
-    console.error('Failed to get from persona.mbti_results:', err.message);
+  } catch (err: unknown) {
+    const errorMsg = err instanceof Error ? err.message : String(err);
+    console.error('Failed to get from persona.mbti_results:', errorMsg);
     return null;
   }
 }
@@ -119,8 +121,9 @@ export async function deleteResultFromDb(id: string): Promise<boolean> {
     `;
     await pool.query(query, [id]);
     return true;
-  } catch (err: any) {
-    console.error('Failed to delete from persona.mbti_results:', err.message);
+  } catch (err: unknown) {
+    const errorMsg = err instanceof Error ? err.message : String(err);
+    console.error('Failed to delete from persona.mbti_results:', errorMsg);
     return false;
   }
 }

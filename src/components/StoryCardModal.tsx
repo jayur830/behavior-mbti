@@ -3,7 +3,7 @@
 import React, { useRef, useState } from 'react';
 import { FullAnalysisResult } from '../types';
 import { toPng } from 'html-to-image';
-import { X, Download, Share2, Sparkles, Zap, Brain, Compass, Target, Clock, ArrowRightLeft, ShieldCheck } from 'lucide-react';
+import { X, Download, Sparkles, Zap, Brain, Compass, Target, ShieldCheck } from 'lucide-react';
 
 interface StoryCardModalProps {
   result: FullAnalysisResult;

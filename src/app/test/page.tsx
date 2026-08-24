@@ -1,28 +1,20 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { getRandomQuestions } from '../../data/questions';
 import { Question, QuestionBehaviorLog } from '../../types';
 import { analyzeBehaviorAndMBTI } from '../../lib/analyzer';
 import { encodeResultToCompressedString } from '../../lib/shareResult';
 import { QuestionCard } from '../../components/QuestionCard';
-import { Compass, Activity, Sparkles } from 'lucide-react';
+import { Compass, Activity } from 'lucide-react';
 
 export default function TestPage() {
   const router = useRouter();
-  const [questions, setQuestions] = useState<Question[]>([]);
+  const [questions] = useState<Question[]>(() => getRandomQuestions(10));
   const [currentQuestionIdx, setCurrentQuestionIdx] = useState<number>(0);
   const [behaviorLogs, setBehaviorLogs] = useState<(QuestionBehaviorLog | null)[]>([]);
   const [isAnalyzing, setIsAnalyzing] = useState<boolean>(false);
-
-  // Initialize with randomly sampled 40 questions (10 per dimension) from the 200-item pool
-  useEffect(() => {
-    const sampled = getRandomQuestions(10); // 10 questions * 4 dimensions = 40 balanced questions
-    setQuestions(sampled);
-    setBehaviorLogs([]);
-    setCurrentQuestionIdx(0);
-  }, []);
 
   const handleQuestionNext = (log: QuestionBehaviorLog) => {
     const updated = [...behaviorLogs];

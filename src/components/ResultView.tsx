@@ -16,16 +16,12 @@ import {
   Share2,
   Check,
   Activity,
-  ArrowRightLeft,
   MousePointer,
   Clock,
   Sparkles,
   Download,
   BarChart3,
   Eye,
-  Smartphone,
-  Mouse,
-  Keyboard,
   ArrowRight,
 } from 'lucide-react';
 

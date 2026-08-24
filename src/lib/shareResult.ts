@@ -7,6 +7,7 @@ import {
   AnswerSelectionEvent,
   OptionHoverLog,
   HoverPsychologyAnalysis,
+  MBTIType,
 } from '../types';
 import { MBTI_PROFILES, BEHAVIOR_PERSONAS } from '../data/mbtiDescriptions';
 import { calculateUserBenchmark } from '../data/benchmarkStats';
@@ -182,14 +183,14 @@ export function decodeResultFromCompressedString(
     // 2. 성향 축 분석 복원
     const buildDimension = (
       dimKey: 'EI' | 'SN' | 'TF' | 'JP',
-      leftType: string,
-      rightType: string,
+      leftType: MBTIType,
+      rightType: MBTIType,
       data: [number, number, number]
     ): DimensionAnalysis => {
       const leftScore = data[0];
       const rightScore = data[1];
       const certaintyScore = data[2];
-      const winner = leftScore >= rightScore ? (leftType as any) : (rightType as any);
+      const winner: MBTIType = leftScore >= rightScore ? leftType : rightType;
       const winnerPercentage = Math.max(leftScore, rightScore);
 
       let behaviorInsight = '';
@@ -203,8 +204,8 @@ export function decodeResultFromCompressedString(
 
       return {
         dimension: dimKey,
-        leftType: leftType as any,
-        rightType: rightType as any,
+        leftType,
+        rightType,
         leftScore,
         rightScore,
         winner,
