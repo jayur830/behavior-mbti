@@ -692,15 +692,15 @@ export const ResultView: React.FC<ResultViewProps> = ({
       )}
 
       {/* 7. Persona Gap Analysis */}
-      {result.personaGap.detected && (
+      {result.personaGap?.detected && (
         <div className="bg-neutral-900/60 border border-white/[0.08] rounded-3xl p-6 sm:p-8 shadow-xl">
           <h2 className="text-lg font-bold text-white font-mono tracking-tight mb-2">
             INSTINCT VS PERSONA GAP
           </h2>
-          <p className="text-xs text-neutral-400 mb-6 font-light">{result.personaGap.summary}</p>
+          <p className="text-xs text-neutral-400 mb-6 font-light">{result.personaGap?.summary}</p>
 
           <div className="space-y-4">
-            {result.personaGap.items.map((item, idx) => (
+            {(result.personaGap?.items || []).map((item, idx) => (
               <div
                 key={idx}
                 className="bg-neutral-950/70 border border-white/[0.06] rounded-2xl p-4 sm:p-5"
@@ -713,7 +713,7 @@ export const ResultView: React.FC<ResultViewProps> = ({
                     첫 직감: {item.initialChoiceText}
                   </span>
                   <span className="text-neutral-500">➔</span>
-                  <span className="px-2.5 py-1 rounded-lg bg-white/[0.06] border border-white/[0.12] text-neutral-100 font-semibold">
+                  <span className="px-2.5 py-1 rounded-lg bg-white/[0.06] border border-white/[12%] text-neutral-100 font-semibold">
                     최종 선택: {item.finalChoiceText}
                   </span>
                 </div>
