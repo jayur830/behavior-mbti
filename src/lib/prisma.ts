@@ -23,7 +23,7 @@ function createPrismaClient(): PrismaClient | null {
     const adapter = new PrismaPg(pool);
     return new PrismaClient({
       adapter,
-      log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
+      log: process.env.NODE_ENV === 'development' ? ['error', 'warn'] : ['error'],
     });
   } catch (err) {
     console.error('Failed to initialize Prisma adapter:', err);
@@ -76,5 +76,21 @@ export async function getResultWithPrisma(id: string): Promise<FullAnalysisResul
   } catch (err) {
     console.error('Prisma fetch error:', err);
     return null;
+  }
+}
+
+/**
+ * Prisma ORM을 통해 mbti_results 테이블에서 미공유 진단서 삭제
+ */
+export async function deleteResultWithPrisma(id: string): Promise<boolean> {
+  if (!prisma) return false;
+  try {
+    await prisma.mbtiResult.delete({
+      where: { id },
+    });
+    return true;
+  } catch (err) {
+    console.error('Prisma delete error:', err);
+    return false;
   }
 }

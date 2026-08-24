@@ -13,8 +13,8 @@ interface Props {
 async function resolveResult(hash: string): Promise<FullAnalysisResult | null> {
   if (!hash) return null;
 
-  // 1. If it's a short 5~10 char ID, try fetching from Supabase DB first
-  if (hash.length <= 12) {
+  // 1. If it's a short 5~15 char ID, try fetching from Supabase DB first
+  if (hash.length <= 15) {
     const fromDb = await getResultFromSupabase(hash);
     if (fromDb) return fromDb;
   }

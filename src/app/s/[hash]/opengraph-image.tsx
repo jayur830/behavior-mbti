@@ -13,7 +13,7 @@ export const alt = 'Behavior MBTI | 공유 진단서';
 
 async function resolveResult(hash: string): Promise<FullAnalysisResult | null> {
   if (!hash) return null;
-  if (hash.length <= 12) {
+  if (hash.length <= 15) {
     const fromDb = await getResultFromSupabase(hash);
     if (fromDb) return fromDb;
   }

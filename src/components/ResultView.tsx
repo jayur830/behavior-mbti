@@ -58,42 +58,85 @@ export const ResultView: React.FC<ResultViewProps> = ({
       ? result.allQuestionDetails
       : result.topDilemmas;
 
+  const savedDbIdRef = useRef<string | null>(null);
+  const isCopiedRef = useRef<boolean>(false);
+
   useEffect(() => {
     confetti({
       particleCount: 50,
       spread: 60,
       origin: { y: 0.6 },
     });
-  }, []);
+
+    if (isSharedView) return;
+
+    // 1. 결과 페이지 진입 후 DB에 자동 적재
+    fetch('/api/results', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ result }),
+    })
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (data?.id) {
+          savedDbIdRef.current = data.id;
+        }
+      })
+      .catch((err) => console.error('Auto save error:', err));
+
+    // 3. 링크 복사 버튼을 클릭하지 않고 페이지 이탈 시 해당 id의 row를 다시 delete
+    const cleanupUnsaved = () => {
+      if (!isCopiedRef.current && savedDbIdRef.current) {
+        const idToDelete = savedDbIdRef.current;
+        const deleteUrl = `/api/results?id=${encodeURIComponent(idToDelete)}`;
+        if (navigator.sendBeacon) {
+          navigator.sendBeacon(deleteUrl);
+        } else {
+          fetch(deleteUrl, { method: 'DELETE', keepalive: true }).catch(() => {});
+        }
+      }
+    };
+
+    window.addEventListener('beforeunload', cleanupUnsaved);
+    return () => {
+      window.removeEventListener('beforeunload', cleanupUnsaved);
+      cleanupUnsaved();
+    };
+  }, [isSharedView, result]);
 
   const handleCopyLink = async () => {
     if (typeof window === 'undefined') return;
 
-    let targetUrl = '';
+    let id = savedDbIdRef.current;
 
-    // 1. Try generating ultra-short 7-character Supabase ID (/s/k8F2wQ9)
-    try {
-      const res = await fetch('/api/results', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ result }),
-      });
+    // 만약 진입 직후 초고속으로 복사를 눌러서 아직 id가 없다면 즉시 생성
+    if (!id) {
+      try {
+        const res = await fetch('/api/results', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ result }),
+        });
 
-      if (res.ok) {
-        const json = await res.json();
-        if (json.shortUrl) {
-          targetUrl = `${window.location.origin}${json.shortUrl}`;
+        if (res.ok) {
+          const json = await res.json();
+          if (json.id) {
+            id = json.id;
+            savedDbIdRef.current = id;
+          }
         }
+      } catch (err) {
+        console.error('Instant save error:', err);
       }
-    } catch {
-      // Fallback to stateless hash
     }
 
-    // 2. Fallback to stateless encrypted hash if DB is not yet connected
-    if (!targetUrl) {
-      const compressed = encodeResultToCompressedString(result);
-      targetUrl = `${window.location.origin}/s/${compressed}`;
-    }
+    // 2. 링크 복사 플래그를 true로 설정하여 이탈 시 row가 삭제되지 않도록 보존
+    isCopiedRef.current = true;
+
+    // 10자리 영문 대소문자+숫자 랜덤 ID로 링크 생성 (DB 미연결 시 무상태 해시 대체)
+    const targetUrl = id
+      ? `${window.location.origin}/s/${id}`
+      : `${window.location.origin}/s/${encodeResultToCompressedString(result)}`;
 
     let success = false;
 
