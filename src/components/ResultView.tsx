@@ -1,31 +1,31 @@
 'use client';
 
-import React, { useEffect, useState, useRef } from 'react';
-import { FullAnalysisResult } from '../types';
-import { MouseReplayCanvas } from './MouseReplayCanvas';
-import { TouchTimelinePlayer } from './TouchTimelinePlayer';
-import { StoryCardModal } from './StoryCardModal';
 import confetti from 'canvas-confetti';
 import { toPng } from 'html-to-image';
 import {
-  Zap,
+  Activity,
+  ArrowRight,
+  BarChart3,
   Brain,
+  Check,
+  Clock,
   Compass,
-  Target,
+  Download,
+  Eye,
+  MousePointer,
   RotateCcw,
   Share2,
-  Check,
-  Activity,
-  MousePointer,
-  Clock,
   Sparkles,
-  Download,
-  BarChart3,
-  Eye,
-  ArrowRight,
+  Target,
+  Zap,
 } from 'lucide-react';
+import { FC, useEffect, useRef, useState } from 'react';
 
 import { encodeResultToCompressedString } from '../lib/shareResult';
+import { FullAnalysisResult } from '../types';
+import { MouseReplayCanvas } from './MouseReplayCanvas';
+import { StoryCardModal } from './StoryCardModal';
+import { TouchTimelinePlayer } from './TouchTimelinePlayer';
 
 interface ResultViewProps {
   result: FullAnalysisResult;
@@ -33,11 +33,7 @@ interface ResultViewProps {
   onRestart?: () => void;
 }
 
-export const ResultView: React.FC<ResultViewProps> = ({
-  result,
-  isSharedView = false,
-  onRestart,
-}) => {
+export const ResultView: FC<ResultViewProps> = ({ result, isSharedView = false, onRestart }) => {
   const [selectedQuestionIdx, setSelectedQuestionIdx] = useState<number>(0);
   const [copied, setCopied] = useState<boolean>(false);
   const [isExporting, setIsExporting] = useState<boolean>(false);
@@ -45,9 +41,7 @@ export const ResultView: React.FC<ResultViewProps> = ({
   const cardExportRef = useRef<HTMLDivElement | null>(null);
 
   const isTouchDevice = result.mouseTrajectoryStats?.primaryDevice === 'touch';
-  const [replayerMode, setReplayerMode] = useState<'canvas' | 'timeline'>(
-    isTouchDevice ? 'timeline' : 'canvas'
-  );
+  const [replayerMode, setReplayerMode] = useState<'canvas' | 'timeline'>(isTouchDevice ? 'timeline' : 'canvas');
 
   const questionsList =
     (result.allQuestionDetails && result.allQuestionDetails.length > 0
@@ -355,16 +349,12 @@ export const ResultView: React.FC<ResultViewProps> = ({
             <h2 className="text-2xl font-bold text-neutral-200">{result.mbtiTitle}</h2>
           </div>
 
-          <p className="text-xs text-neutral-400 max-w-md leading-relaxed">
-            {result.mbtiDescription}
-          </p>
+          <p className="text-xs text-neutral-400 max-w-md leading-relaxed">{result.mbtiDescription}</p>
 
           <div className="grid grid-cols-4 gap-2 w-full bg-neutral-900/90 p-3 rounded-2xl border border-white/8">
             <div className="p-1">
               <span className="text-[10px] font-mono text-neutral-500 block">종합 확신도</span>
-              <span className="text-base font-bold text-amber-400 font-mono">
-                {result.overallCertainty}%
-              </span>
+              <span className="text-base font-bold text-amber-400 font-mono">{result.overallCertainty}%</span>
             </div>
             <div className="p-1">
               <span className="text-[10px] font-mono text-neutral-500 block">총 고민 시간</span>
@@ -374,9 +364,7 @@ export const ResultView: React.FC<ResultViewProps> = ({
             </div>
             <div className="p-1">
               <span className="text-[10px] font-mono text-neutral-500 block">선택 조정</span>
-              <span className="text-base font-bold text-rose-400 font-mono">
-                {result.totalAnswerChanges}회
-              </span>
+              <span className="text-base font-bold text-rose-400 font-mono">{result.totalAnswerChanges}회</span>
             </div>
             <div className="p-1">
               <span className="text-[10px] font-mono text-neutral-500 block">일관성 순위</span>
@@ -387,15 +375,9 @@ export const ResultView: React.FC<ResultViewProps> = ({
           </div>
 
           <div className="w-full bg-neutral-900/60 p-4 rounded-2xl border border-white/6 text-left">
-            <span className="text-[10px] font-mono text-neutral-400 uppercase block mb-1">
-              행동 프로필
-            </span>
-            <span className="text-sm font-bold text-white block">
-              {result.behaviorPersona?.title || '성격 진단'}
-            </span>
-            <span className="text-xs text-neutral-400 font-light block">
-              {result.behaviorPersona?.subtitle || ''}
-            </span>
+            <span className="text-[10px] font-mono text-neutral-400 uppercase block mb-1">행동 프로필</span>
+            <span className="text-sm font-bold text-white block">{result.behaviorPersona?.title || '성격 진단'}</span>
+            <span className="text-xs text-neutral-400 font-light block">{result.behaviorPersona?.subtitle || ''}</span>
           </div>
 
           <div className="text-[10px] font-mono text-neutral-500">
@@ -429,15 +411,12 @@ export const ResultView: React.FC<ResultViewProps> = ({
               <Zap className="w-3.5 h-3.5 text-amber-400" />
               종합 확신도
             </span>
-            <span className="text-lg sm:text-xl font-bold text-slate-100">
-              {result.overallCertainty}%
-            </span>
+            <span className="text-lg sm:text-xl font-bold text-slate-100">{result.overallCertainty}%</span>
           </div>
 
           <div className="flex flex-col items-center p-2">
             <span className="text-xs text-slate-400 mb-1 flex items-center gap-1.5 font-medium">
-              <Clock className="w-3.5 h-3.5 text-indigo-400" />
-              총 소요 시간
+              <Clock className="w-3.5 h-3.5 text-indigo-400" />총 소요 시간
             </span>
             <span className="text-lg sm:text-xl font-bold text-slate-100">
               {(result.totalTestDuration / 1000).toFixed(1)}초
@@ -456,12 +435,9 @@ export const ResultView: React.FC<ResultViewProps> = ({
 
           <div className="flex flex-col items-center p-2">
             <span className="text-[11px] font-mono text-neutral-500 mb-1 flex items-center gap-1">
-              <MousePointer className="w-3 h-3 text-emerald-400" />
-              주 입력 수단
+              <MousePointer className="w-3 h-3 text-emerald-400" />주 입력 수단
             </span>
-            <span className="text-xs font-semibold text-neutral-200 mt-1">
-              {getDeviceLabel()}
-            </span>
+            <span className="text-xs font-semibold text-neutral-200 mt-1">{getDeviceLabel()}</span>
           </div>
         </div>
       </div>
@@ -473,9 +449,7 @@ export const ResultView: React.FC<ResultViewProps> = ({
             <BarChart3 className="w-3.5 h-3.5 text-emerald-400" />
             <span>Global Benchmark Analysis</span>
           </div>
-          <span className="text-[11px] font-mono text-neutral-500">
-            참여자 12,000+ 샘플 기준
-          </span>
+          <span className="text-[11px] font-mono text-neutral-500">참여자 12,000+ 샘플 기준</span>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -488,7 +462,11 @@ export const ResultView: React.FC<ResultViewProps> = ({
                 </span>
                 <span className="text-xs text-neutral-500">
                   (평균 {(result.benchmark?.globalAverageDwellSec ?? 3.2).toFixed(1)}초 대비{' '}
-                  {(((result.totalTestDuration || 30000) / 1000) - (result.benchmark?.globalAverageDwellSec ?? 3.2)).toFixed(1)}초)
+                  {(
+                    (result.totalTestDuration || 30000) / 1000 -
+                    (result.benchmark?.globalAverageDwellSec ?? 3.2)
+                  ).toFixed(1)}
+                  초)
                 </span>
               </div>
             </div>
@@ -505,7 +483,8 @@ export const ResultView: React.FC<ResultViewProps> = ({
                   상위 {result.benchmark?.changeCountPercentile ?? 20}%
                 </span>
                 <span className="text-xs text-neutral-500">
-                  (평균 {result.benchmark?.globalAverageChanges ?? 2.1}회 재숙고 대비 {result.totalAnswerChanges || 0}회)
+                  (평균 {result.benchmark?.globalAverageChanges ?? 2.1}회 재숙고 대비 {result.totalAnswerChanges || 0}
+                  회)
                 </span>
               </div>
             </div>
@@ -517,9 +496,7 @@ export const ResultView: React.FC<ResultViewProps> = ({
 
         {/* Global Persona Distribution Bar */}
         <div className="bg-neutral-950/60 border border-white/6 p-4 rounded-2xl">
-          <span className="text-xs font-mono text-neutral-400 block mb-3">
-            전체 참여자 행동 페르소나 분포
-          </span>
+          <span className="text-xs font-mono text-neutral-400 block mb-3">전체 참여자 행동 페르소나 분포</span>
           <div className="w-full bg-neutral-800 h-3 rounded-full overflow-hidden flex mb-3">
             {(result.benchmark?.personaDistribution || []).map((item, idx) => {
               const isUserPersona = item.personaCode === result.behaviorPersona?.code;
@@ -556,11 +533,10 @@ export const ResultView: React.FC<ResultViewProps> = ({
 
         <div className="bg-neutral-950/70 border border-white/6 p-5 rounded-2xl mb-4">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
-            <h3 className="text-sm font-bold text-white">
-              선택지 호버 체류 및 시선 망설임 지표
-            </h3>
+            <h3 className="text-sm font-bold text-white">선택지 호버 체류 및 시선 망설임 지표</h3>
             <span className="text-xs font-mono text-amber-400">
-              총 {result.hoverAnalysis?.totalHoverCount ?? 0}회 탐색 ({(((result.hoverAnalysis?.totalHoverDurationMs ?? 0) / 1000)).toFixed(1)}초 체류)
+              총 {result.hoverAnalysis?.totalHoverCount ?? 0}회 탐색 (
+              {((result.hoverAnalysis?.totalHoverDurationMs ?? 0) / 1000).toFixed(1)}초 체류)
             </span>
           </div>
           <p className="text-xs text-neutral-400 font-light leading-relaxed">
@@ -625,35 +601,22 @@ export const ResultView: React.FC<ResultViewProps> = ({
       {/* 5. 4 MBTI Dimensions */}
       <div className="bg-neutral-900/60 border border-white/8 rounded-3xl p-6 sm:p-8 shadow-xl">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-lg font-bold text-white font-mono tracking-tight">
-            4-AXIS PREFERENCE & CERTAINTY
-          </h2>
+          <h2 className="text-lg font-bold text-white font-mono tracking-tight">4-AXIS PREFERENCE & CERTAINTY</h2>
           <span className="text-xs text-neutral-500 font-mono">성향 선호도 및 확신 지표</span>
         </div>
 
         <div className="space-y-4">
           {Object.entries(result.dimensions || {}).map(([key, dim]) => {
             return (
-              <div
-                key={key}
-                className="bg-neutral-950/70 border border-white/6 rounded-2xl p-4 sm:p-5"
-              >
+              <div key={key} className="bg-neutral-950/70 border border-white/6 rounded-2xl p-4 sm:p-5">
                 <div className="flex justify-between items-center mb-2.5 text-xs font-mono">
-                  <span
-                    className={`font-semibold ${
-                      dim.winner === dim.leftType ? 'text-white' : 'text-neutral-500'
-                    }`}
-                  >
+                  <span className={`font-semibold ${dim.winner === dim.leftType ? 'text-white' : 'text-neutral-500'}`}>
                     {dim.leftType} ({dim.leftScore}%)
                   </span>
                   <span className="text-[11px] px-2 py-0.5 rounded-full bg-white/5 text-neutral-300 border border-white/8">
                     확신도 {dim.certaintyScore}%
                   </span>
-                  <span
-                    className={`font-semibold ${
-                      dim.winner === dim.rightType ? 'text-white' : 'text-neutral-500'
-                    }`}
-                  >
+                  <span className={`font-semibold ${dim.winner === dim.rightType ? 'text-white' : 'text-neutral-500'}`}>
                     {dim.rightType} ({dim.rightScore}%)
                   </span>
                 </div>
@@ -672,9 +635,7 @@ export const ResultView: React.FC<ResultViewProps> = ({
 
                 {/* Behavioral Note */}
                 <div className="text-xs text-neutral-400 font-light flex items-start gap-2 bg-neutral-900/60 p-2.5 rounded-xl border border-white/4">
-                  <span className="text-neutral-500 font-mono text-[10px] uppercase shrink-0 mt-0.5">
-                    NOTE
-                  </span>
+                  <span className="text-neutral-500 font-mono text-[10px] uppercase shrink-0 mt-0.5">NOTE</span>
                   <span>{dim.behaviorInsight}</span>
                 </div>
               </div>
@@ -692,7 +653,8 @@ export const ResultView: React.FC<ResultViewProps> = ({
                 QUESTION TELEMETRY REPLAYER ({questionsList.length} ITEMS)
               </h2>
               <p className="text-xs text-neutral-400 mt-1 font-light">
-                검사한 {questionsList.length}개 전체 문항별 마우스 이동 궤적, 선택지 호버 이력, 체류 시간을 직접 확인해보세요.
+                검사한 {questionsList.length}개 전체 문항별 마우스 이동 궤적, 선택지 호버 이력, 체류 시간을 직접
+                확인해보세요.
               </p>
             </div>
 
@@ -740,9 +702,7 @@ export const ResultView: React.FC<ResultViewProps> = ({
                   }`}
                 >
                   <span className="text-[10px] sm:text-[11px] font-bold">Q{idx + 1}</span>
-                  {hasChanges && (
-                    <span className="w-1.5 h-1.5 rounded-full bg-rose-400 absolute top-1 right-1" />
-                  )}
+                  {hasChanges && <span className="w-1.5 h-1.5 rounded-full bg-rose-400 absolute top-1 right-1" />}
                 </button>
               );
             })}
@@ -766,9 +726,7 @@ export const ResultView: React.FC<ResultViewProps> = ({
                     {questionsList[selectedQuestionIdx].changeHistorySummary}
                   </span>
                   <span>·</span>
-                  <span className="text-emerald-400 font-mono">
-                    {questionsList[selectedQuestionIdx].hoverSummary}
-                  </span>
+                  <span className="text-emerald-400 font-mono">{questionsList[selectedQuestionIdx].hoverSummary}</span>
                 </div>
               </div>
 
@@ -792,20 +750,13 @@ export const ResultView: React.FC<ResultViewProps> = ({
       {/* 7. Persona Gap Analysis */}
       {result.personaGap?.detected && (
         <div className="bg-neutral-900/60 border border-white/8 rounded-3xl p-6 sm:p-8 shadow-xl">
-          <h2 className="text-lg font-bold text-white font-mono tracking-tight mb-2">
-            INSTINCT VS PERSONA GAP
-          </h2>
+          <h2 className="text-lg font-bold text-white font-mono tracking-tight mb-2">INSTINCT VS PERSONA GAP</h2>
           <p className="text-xs text-neutral-400 mb-6 font-light">{result.personaGap?.summary}</p>
 
           <div className="space-y-4">
             {(result.personaGap?.items || []).map((item, idx) => (
-              <div
-                key={idx}
-                className="bg-neutral-950/70 border border-white/6 rounded-2xl p-4 sm:p-5"
-              >
-                <h4 className="text-sm font-semibold text-neutral-200 mb-3">
-                  {item.question.title}
-                </h4>
+              <div key={idx} className="bg-neutral-950/70 border border-white/6 rounded-2xl p-4 sm:p-5">
+                <h4 className="text-sm font-semibold text-neutral-200 mb-3">{item.question.title}</h4>
                 <div className="flex items-center gap-2 text-xs mb-3 font-mono">
                   <span className="px-2.5 py-1 rounded-lg bg-neutral-900 border border-white/8 text-neutral-400">
                     첫 직감: {item.initialChoiceText}
@@ -897,11 +848,7 @@ export const ResultView: React.FC<ResultViewProps> = ({
       )}
 
       {/* 9:16 Instagram Story Card Modal */}
-      <StoryCardModal
-        result={result}
-        isOpen={isStoryModalOpen}
-        onClose={() => setIsStoryModalOpen(false)}
-      />
+      <StoryCardModal result={result} isOpen={isStoryModalOpen} onClose={() => setIsStoryModalOpen(false)} />
     </div>
   );
 };

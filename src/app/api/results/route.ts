@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { saveResultToDb, deleteResultFromDb, generateShortId } from '../../../lib/db';
+
+import { deleteResultFromDb, generateShortId, saveResultToDb } from '../../../lib/db';
 import { FullAnalysisResult } from '../../../types';
 
 export async function POST(req: NextRequest) {
@@ -32,7 +33,9 @@ export async function POST(req: NextRequest) {
     const shortId = await saveResultToDb(result);
 
     if (shortId) {
-      console.log(`[API /api/results] ✅ DB 적재 성공: ID=${shortId}, MBTI=${result.mbti}, Persona=${result.behaviorPersona?.code}`);
+      console.log(
+        `[API /api/results] ✅ DB 적재 성공: ID=${shortId}, MBTI=${result.mbti}, Persona=${result.behaviorPersona?.code}`,
+      );
       return NextResponse.json({
         id: shortId,
         shortUrl: `/s/${shortId}`,

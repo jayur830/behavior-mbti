@@ -1,11 +1,12 @@
 'use client';
 
-import React, { Suspense, useMemo } from 'react';
+import { Activity, ArrowRight, Compass } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { decodeResultFromCompressedString } from '@/lib/shareResult';
+import { Suspense, useMemo } from 'react';
+
 import { ResultView } from '@/components/ResultView';
+import { decodeResultFromCompressedString } from '@/lib/shareResult';
 import { FullAnalysisResult } from '@/types';
-import { Compass, ArrowRight, Activity } from 'lucide-react';
 
 function ResultContent() {
   const router = useRouter();

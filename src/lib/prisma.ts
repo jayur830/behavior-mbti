@@ -1,6 +1,7 @@
-import { Pool } from 'pg';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { PrismaClient } from '@prisma/client';
+import { Pool } from 'pg';
+
 import { FullAnalysisResult } from '../types';
 
 const globalForPrisma = globalThis as unknown as {
@@ -40,10 +41,7 @@ if (process.env.NODE_ENV !== 'production' && prisma) {
 /**
  * Prisma ORM을 통해 mbti_results 테이블에 진단서 저장
  */
-export async function saveResultWithPrisma(
-  id: string,
-  result: FullAnalysisResult
-): Promise<boolean> {
+export async function saveResultWithPrisma(id: string, result: FullAnalysisResult): Promise<boolean> {
   if (!prisma) return false;
   try {
     await prisma.mbtiResult.create({

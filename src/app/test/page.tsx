@@ -1,13 +1,13 @@
 'use client';
 
-import React, { useState } from 'react';
+import { Activity, Compass } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { getRandomQuestions } from '@/data/questions';
-import { Question, QuestionBehaviorLog } from '@/types';
-import { analyzeBehaviorAndMBTI } from '@/lib/analyzer';
-import { encodeResultToCompressedString } from '@/lib/shareResult';
+import { useState } from 'react';
+
 import { QuestionCard } from '@/components/QuestionCard';
-import { Compass, Activity } from 'lucide-react';
+import { getRandomQuestions } from '@/data/questions';
+import { analyzeBehaviorAndMBTI } from '@/lib/analyzer';
+import { Question, QuestionBehaviorLog } from '@/types';
 
 export default function TestPage() {
   const router = useRouter();
@@ -107,9 +107,7 @@ export default function TestPage() {
             <div className="w-12 h-12 rounded-full border border-white/[0.1] bg-neutral-900 flex items-center justify-center mb-6 shadow-inner">
               <Activity className="w-5 h-5 text-emerald-400 animate-pulse" />
             </div>
-            <h3 className="text-base font-bold text-white mb-1.5 font-mono">
-              ANALYZING TELEMETRY...
-            </h3>
+            <h3 className="text-base font-bold text-white mb-1.5 font-mono">ANALYZING TELEMETRY...</h3>
             <p className="text-xs text-neutral-400 font-light leading-relaxed">
               마우스 궤적, 문항별 체류 시간, 세부 상호작용 데이터를 종합하여 무의식적 성향을 분석하고 있습니다.
             </p>
@@ -132,9 +130,7 @@ export default function TestPage() {
       <footer className="w-full border-t border-white/[0.04] py-6 text-center text-xs text-neutral-500 font-mono">
         <div className="max-w-4xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
           <span>© 2026 BEHAVIOR MBTI RESEARCH</span>
-          <span className="text-neutral-400 text-[11px]">
-            MICRO-INTERACTION BEHAVIORAL PSYCHOMETRICS
-          </span>
+          <span className="text-neutral-400 text-[11px]">MICRO-INTERACTION BEHAVIORAL PSYCHOMETRICS</span>
         </div>
       </footer>
     </div>

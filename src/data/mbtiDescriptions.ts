@@ -128,7 +128,8 @@ export const BEHAVIOR_PERSONAS: Record<string, BehaviorPersona> = {
     code: 'THE_DECISIVE',
     title: '초고속 직진 결단파 (The Decisive Sniper)',
     subtitle: '질문을 보자마자 1초의 망설임 없이 직선으로 클릭',
-    description: '자기 확신이 매우 강하고 자기 인식이 명확합니다. 선택지를 바꾼 횟수가 거의 없으며 마우스 궤적이 군더더기 없이 목표 선택지로 직진했습니다.',
+    description:
+      '자기 확신이 매우 강하고 자기 인식이 명확합니다. 선택지를 바꾼 횟수가 거의 없으며 마우스 궤적이 군더더기 없이 목표 선택지로 직진했습니다.',
     iconName: 'Zap',
     tags: ['#강철확신', '#칼같은결정', '#직진마우스', '#후회제로'],
   },
@@ -136,7 +137,8 @@ export const BEHAVIOR_PERSONAS: Record<string, BehaviorPersona> = {
     code: 'THE_DELIBERATOR',
     title: '심사숙고 장고파 (The Deep Deliberator)',
     subtitle: '한 번 누를 때도 모든 경우의 수를 곱씹는 신중함',
-    description: '질문의 맥락과 자신의 과거 경험을 세심하게 반추한 뒤 신중하게 답변을 확정했습니다. 평균 체류 시간이 길고 집중도가 높습니다.',
+    description:
+      '질문의 맥락과 자신의 과거 경험을 세심하게 반추한 뒤 신중하게 답변을 확정했습니다. 평균 체류 시간이 길고 집중도가 높습니다.',
     iconName: 'Brain',
     tags: ['#진중한고민', '#디테일장인', '#깊은생각', '#신중모드'],
   },
@@ -144,7 +146,8 @@ export const BEHAVIOR_PERSONAS: Record<string, BehaviorPersona> = {
     code: 'THE_VACILLATOR',
     title: '갈팡질팡 갈대형 (The Dilemma Juggler)',
     subtitle: '"이것도 나고 저것도 나인데..." 내면의 치열한 배틀',
-    description: '답변을 선택했다가 다른 쪽으로 바꾼 횟수가 많습니다. 상황에 따라 유연하게 대처하는 다채로운 페르소나를 지닌 입체적인 사람입니다.',
+    description:
+      '답변을 선택했다가 다른 쪽으로 바꾼 횟수가 많습니다. 상황에 따라 유연하게 대처하는 다채로운 페르소나를 지닌 입체적인 사람입니다.',
     iconName: 'Compass',
     tags: ['#치열한고민', '#선택지유턴', '#다각도검토', '#입체적성격'],
   },
@@ -152,7 +155,8 @@ export const BEHAVIOR_PERSONAS: Record<string, BehaviorPersona> = {
     code: 'THE_EXPLORER',
     title: '마우스 춤추는 탐색형 (The Free Explorer)',
     subtitle: '선택지 전체를 리드미컬하게 훑어보며 탐색',
-    description: '선택지를 결정하기 전 마우스로 여러 옵션을 고르게 호버하며 화면 전체를 탐색했습니다. 호기심과 관찰력이 풍부합니다.',
+    description:
+      '선택지를 결정하기 전 마우스로 여러 옵션을 고르게 호버하며 화면 전체를 탐색했습니다. 호기심과 관찰력이 풍부합니다.',
     iconName: 'Sparkles',
     tags: ['#호기심가득', '#화면스캔', '#리드미컬', '#탐험가'],
   },
@@ -160,7 +164,8 @@ export const BEHAVIOR_PERSONAS: Record<string, BehaviorPersona> = {
     code: 'THE_STEALTH',
     title: '미니멀 스텔스형 (The Stealth Minimalist)',
     subtitle: '최소한의 에너지 소모로 깔끔하고 담백하게 완료',
-    description: '마우스 이동 거리와 방황이 매우 적고, 필요한 순간에만 정밀하게 타격하듯 검사를 끝마쳤습니다. 에너지 효율의 극치입니다.',
+    description:
+      '마우스 이동 거리와 방황이 매우 적고, 필요한 순간에만 정밀하게 타격하듯 검사를 끝마쳤습니다. 에너지 효율의 극치입니다.',
     iconName: 'Target',
     tags: ['#효율극대화', '#미니멀무브', '#군더더기제로', '#담백함'],
   },

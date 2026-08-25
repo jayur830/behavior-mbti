@@ -1,10 +1,11 @@
+import { Activity, ArrowRight, Compass } from 'lucide-react';
 import { Metadata } from 'next';
-import { decodeResultFromCompressedString } from '../../../lib/shareResult';
-import { getResultFromDb } from '../../../lib/db';
-import { FullAnalysisResult } from '../../../types';
-import { ResultView } from '../../../components/ResultView';
-import { Compass, ArrowRight, Activity } from 'lucide-react';
 import Link from 'next/link';
+
+import { ResultView } from '../../../components/ResultView';
+import { getResultFromDb } from '../../../lib/db';
+import { decodeResultFromCompressedString } from '../../../lib/shareResult';
+import { FullAnalysisResult } from '../../../types';
 
 interface Props {
   params: Promise<{ hash: string }>;

@@ -1,15 +1,16 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
-import { QuestionBehaviorLog } from '../types';
-import { Play, Pause, RotateCcw, Smartphone, Clock, Fingerprint, ArrowRight } from 'lucide-react';
+import { ArrowRight, Clock, Fingerprint, Pause, Play, RotateCcw, Smartphone } from 'lucide-react';
+import { FC, useEffect, useRef, useState } from 'react';
+
 import { getOptionLabel } from '../data/questions';
+import { QuestionBehaviorLog } from '../types';
 
 interface TouchTimelinePlayerProps {
   behaviorLog: QuestionBehaviorLog;
 }
 
-export const TouchTimelinePlayer: React.FC<TouchTimelinePlayerProps> = ({ behaviorLog }) => {
+export const TouchTimelinePlayer: FC<TouchTimelinePlayerProps> = ({ behaviorLog }) => {
   const [isPlaying, setIsPlaying] = useState<boolean>(true);
   const [progress, setProgress] = useState<number>(0);
   const animRef = useRef<number | null>(null);
@@ -119,8 +120,7 @@ export const TouchTimelinePlayer: React.FC<TouchTimelinePlayerProps> = ({ behavi
         <div className="grid grid-cols-3 gap-2 text-center text-xs font-mono">
           <div className="bg-white/[0.03] border border-white/[0.06] p-2.5 rounded-xl flex flex-col items-center">
             <span className="text-[10px] text-neutral-500 flex items-center gap-1 mb-1">
-              <Clock className="w-3 h-3 text-sky-400" />
-              첫 터치 잠복기
+              <Clock className="w-3 h-3 text-sky-400" />첫 터치 잠복기
             </span>
             <span className="text-sm font-bold text-sky-400">{latencySec}초</span>
             <span className="text-[9px] text-neutral-500 mt-0.5">질문 숙고 시간</span>
@@ -132,9 +132,7 @@ export const TouchTimelinePlayer: React.FC<TouchTimelinePlayerProps> = ({ behavi
               터치 프레스 시간
             </span>
             <span className="text-sm font-bold text-emerald-400">{pressMs}ms</span>
-            <span className="text-[9px] text-neutral-500 mt-0.5">
-              {pressMs < 120 ? '단호한 탭' : '신중한 롱터치'}
-            </span>
+            <span className="text-[9px] text-neutral-500 mt-0.5">{pressMs < 120 ? '단호한 탭' : '신중한 롱터치'}</span>
           </div>
 
           <div className="bg-white/[0.03] border border-white/[0.06] p-2.5 rounded-xl flex flex-col items-center">
@@ -191,7 +189,10 @@ export const TouchTimelinePlayer: React.FC<TouchTimelinePlayerProps> = ({ behavi
         </div>
 
         <div className="text-[11px] text-neutral-400">
-          최종 결정: <strong className="text-emerald-400">{behaviorLog.finalValue !== null ? getOptionLabel(behaviorLog.finalValue) : '미선택'}</strong>
+          최종 결정:{' '}
+          <strong className="text-emerald-400">
+            {behaviorLog.finalValue !== null ? getOptionLabel(behaviorLog.finalValue) : '미선택'}
+          </strong>
         </div>
       </div>
     </div>

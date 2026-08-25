@@ -1,6 +1,7 @@
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
+
 import { FullAnalysisResult } from '../types';
-import { saveResultWithPrisma, getResultWithPrisma, deleteResultWithPrisma } from './prisma';
+import { deleteResultWithPrisma, getResultWithPrisma, saveResultWithPrisma } from './prisma';
 
 /**
  * 런타임 환경변수로부터 Supabase 클라이언트를 동적으로 초기화합니다.
@@ -8,9 +9,7 @@ import { saveResultWithPrisma, getResultWithPrisma, deleteResultWithPrisma } fro
 export function getSupabaseClient(): SupabaseClient | null {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
   const supabaseKey =
-    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ||
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
-    '';
+    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
 
   if (!supabaseUrl || !supabaseKey) {
     return null;
@@ -34,10 +33,7 @@ export function generateShortId(length = 10): string {
 /**
  * 검사 결과를 Prisma ORM 또는 Supabase REST Client(public/persona 스키마)를 통해 저장하고 10자리 단축 ID를 반환합니다.
  */
-export async function saveResultToSupabase(
-  result: FullAnalysisResult,
-  customId?: string
-): Promise<string | null> {
+export async function saveResultToSupabase(result: FullAnalysisResult, customId?: string): Promise<string | null> {
   const shortId = customId || generateShortId(10);
 
   // 1. Prisma ORM 우선 시도
@@ -72,13 +68,16 @@ export async function saveResultToSupabase(
 
     // 2-2. persona 스키마 시도
     try {
-      const { error: personaErr } = await client.schema('persona').from('mbti_results').insert({
-        id: shortId,
-        mbti: result.mbti,
-        persona_code: result.behaviorPersona?.code || 'THE_DECISIVE',
-        overall_certainty: result.overallCertainty,
-        result_data: result,
-      });
+      const { error: personaErr } = await client
+        .schema('persona')
+        .from('mbti_results')
+        .insert({
+          id: shortId,
+          mbti: result.mbti,
+          persona_code: result.behaviorPersona?.code || 'THE_DECISIVE',
+          overall_certainty: result.overallCertainty,
+          result_data: result,
+        });
 
       if (!personaErr) {
         return shortId;

@@ -1,51 +1,48 @@
-import {
-  QuestionBehaviorLog,
-  FullAnalysisResult,
-  DimensionAnalysis,
-  DilemmaQuestionDetail,
-  HoverPsychologyAnalysis,
-  PersonaGapAnalysis,
-  MBTIType,
-  Dimension,
-  InputDevice,
-} from '../types';
-import { QUESTIONS_POOL, getOptionLabel } from '../data/questions';
-import { MBTI_PROFILES, BEHAVIOR_PERSONAS } from '../data/mbtiDescriptions';
 import { calculateUserBenchmark } from '../data/benchmarkStats';
+import { BEHAVIOR_PERSONAS, MBTI_PROFILES } from '../data/mbtiDescriptions';
+import { getOptionLabel, QUESTIONS_POOL } from '../data/questions';
+import {
+  DilemmaQuestionDetail,
+  Dimension,
+  DimensionAnalysis,
+  FullAnalysisResult,
+  HoverPsychologyAnalysis,
+  InputDevice,
+  MBTIType,
+  PersonaGapAnalysis,
+  QuestionBehaviorLog,
+} from '../types';
 
 export function analyzeBehaviorAndMBTI(
   logs: QuestionBehaviorLog[],
-  activeQuestions?: import('../types').Question[]
+  activeQuestions?: import('../types').Question[],
 ): FullAnalysisResult {
   const currentPool = activeQuestions && activeQuestions.length > 0 ? activeQuestions : QUESTIONS_POOL;
   // Ensure safe fallback if logs are incomplete
-  const safeLogs: QuestionBehaviorLog[] = (logs && logs.length > 0 ? logs : currentPool.slice(0, 12).map((q) => ({
-    questionId: q.id,
-    startTime: Date.now() - 2000,
-    endTime: Date.now(),
-    totalDwellTime: 2000,
-    firstInteractionTime: 1000,
-    finalValue: 0,
-    selectionHistory: [{ value: 0, timestamp: 1000 }],
-    changeCount: 0,
-    hoverLogs: [],
-    mouseTrajectory: [],
-    directionChanges: 0,
-    hesitationScore: 20,
-    tabBlurCount: 0,
-    primaryDevice: 'mouse' as const,
-    keyStrokeCount: 0,
-  })));
+  const safeLogs: QuestionBehaviorLog[] =
+    logs && logs.length > 0
+      ? logs
+      : currentPool.slice(0, 12).map((q) => ({
+          questionId: q.id,
+          startTime: Date.now() - 2000,
+          endTime: Date.now(),
+          totalDwellTime: 2000,
+          firstInteractionTime: 1000,
+          finalValue: 0,
+          selectionHistory: [{ value: 0, timestamp: 1000 }],
+          changeCount: 0,
+          hoverLogs: [],
+          mouseTrajectory: [],
+          directionChanges: 0,
+          hesitationScore: 20,
+          tabBlurCount: 0,
+          primaryDevice: 'mouse' as const,
+          keyStrokeCount: 0,
+        }));
 
   // 1. Total stats calculation
-  const totalTestDuration = safeLogs.reduce(
-    (acc, l) => acc + (l.totalDwellTime || 0),
-    0
-  );
-  const totalAnswerChanges = safeLogs.reduce(
-    (acc, l) => acc + (l.changeCount || 0),
-    0
-  );
+  const totalTestDuration = safeLogs.reduce((acc, l) => acc + (l.totalDwellTime || 0), 0);
+  const totalAnswerChanges = safeLogs.reduce((acc, l) => acc + (l.changeCount || 0), 0);
 
   // 2. Hover Analytics
   let totalHoverCount = 0;
@@ -139,11 +136,7 @@ export function analyzeBehaviorAndMBTI(
     dimensionScores[dim].count += 1;
   });
 
-  const analyzeDimension = (
-    dimKey: Dimension,
-    leftType: MBTIType,
-    rightType: MBTIType
-  ): DimensionAnalysis => {
+  const analyzeDimension = (dimKey: Dimension, leftType: MBTIType, rightType: MBTIType): DimensionAnalysis => {
     const data = dimensionScores[dimKey];
     const totalScore = data.positiveScore + data.negativeScore || 1;
     const leftRatio = data.positiveScore / totalScore;
@@ -204,7 +197,7 @@ export function analyzeBehaviorAndMBTI(
       dimensions.SN.certaintyScore +
       dimensions.TF.certaintyScore +
       dimensions.JP.certaintyScore) /
-      4
+      4,
   );
 
   // 6. Behavior Persona Profiling
@@ -252,9 +245,9 @@ export function analyzeBehaviorAndMBTI(
       insight:
         log.changeCount > 0
           ? '선택지를 바꾸며 본능적 직감과 이성적 판단 사이에서 깊이 고민했습니다.'
-          : (log.totalDwellTime > 5000
-          ? '선택을 바꾸지는 않았으나 충분한 시간 동안 질문을 심사숙고했습니다.'
-          : '자신의 성향을 명확하게 파악하여 직관적이고 빠르게 결정했습니다.'),
+          : log.totalDwellTime > 5000
+            ? '선택을 바꾸지는 않았으나 충분한 시간 동안 질문을 심사숙고했습니다.'
+            : '자신의 성향을 명확하게 파악하여 직관적이고 빠르게 결정했습니다.',
       hoverSummary,
       longestHoveredOption,
     };
@@ -317,13 +310,11 @@ export function analyzeBehaviorAndMBTI(
     hoverAnalysis,
     personaGap,
     mouseTrajectoryStats: {
-      totalDistanceNormalized: Math.round(
-        safeLogs.reduce((acc, l) => acc + (l.mouseTrajectory?.length || 0), 0) * 0.4
-      ),
+      totalDistanceNormalized: Math.round(safeLogs.reduce((acc, l) => acc + (l.mouseTrajectory?.length || 0), 0) * 0.4),
       averageSpeed: 48.5,
       indecisivenessIndex: Math.min(
         100,
-        Math.round(totalAnswerChanges * 20 + totalHoverCount * 4 + (totalTestDuration / 1000) * 1.5)
+        Math.round(totalAnswerChanges * 20 + totalHoverCount * 4 + (totalTestDuration / 1000) * 1.5),
       ),
       primaryDevice,
       keyStrokeCount: safeLogs.reduce((acc, l) => acc + (l.keyStrokeCount || 0), 0),

@@ -22,7 +22,7 @@ export const GLOBAL_BENCHMARK_BASE = {
 
 export function calculateUserBenchmark(totalDurationMs: number, totalChanges: number): BenchmarkStats {
   const durationSec = totalDurationMs / 1000;
-  
+
   // Percentile calculation for duration (lower = faster = higher percentile)
   let speedPercentile = 50;
   if (durationSec < 25) speedPercentile = 96;

@@ -1,12 +1,13 @@
 'use client';
 
-import { useState, useRef, useEffect, useCallback } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
+
 import {
+  AnswerSelectionEvent,
+  InputDevice,
   MousePoint,
   OptionHoverLog,
-  AnswerSelectionEvent,
   QuestionBehaviorLog,
-  InputDevice,
   TouchMetrics,
 } from '../types';
 
@@ -26,14 +27,12 @@ export function useBehaviorTracker({
   onAutoSubmit,
 }: UseBehaviorTrackerProps) {
   const [selectedVal, setSelectedVal] = useState<number | null>(
-    initialValue !== undefined ? initialValue : (existingLog?.finalValue ?? null)
+    initialValue !== undefined ? initialValue : (existingLog?.finalValue ?? null),
   );
   const [changeCountState, setChangeCountState] = useState<number>(
-    Math.max(0, (existingLog?.selectionHistory?.length || 1) - 1)
+    Math.max(0, (existingLog?.selectionHistory?.length || 1) - 1),
   );
-  const [primaryDeviceState, setPrimaryDeviceState] = useState<InputDevice>(
-    existingLog?.primaryDevice || 'mouse'
-  );
+  const [primaryDeviceState, setPrimaryDeviceState] = useState<InputDevice>(existingLog?.primaryDevice || 'mouse');
   const [prevQuestionId, setPrevQuestionId] = useState<number>(questionId);
   if (prevQuestionId !== questionId) {
     setPrevQuestionId(questionId);
@@ -46,7 +45,9 @@ export function useBehaviorTracker({
   const startTimeRef = useRef<number>(0);
   const firstInteractionTimeRef = useRef<number | null>(existingLog?.firstInteractionTime || null);
   const accumulatedDwellTimeRef = useRef<number>(existingLog?.totalDwellTime || 0);
-  const selectionHistoryRef = useRef<AnswerSelectionEvent[]>(existingLog?.selectionHistory ? [...existingLog.selectionHistory] : []);
+  const selectionHistoryRef = useRef<AnswerSelectionEvent[]>(
+    existingLog?.selectionHistory ? [...existingLog.selectionHistory] : [],
+  );
   const hoverLogsRef = useRef<OptionHoverLog[]>(existingLog?.hoverLogs ? [...existingLog.hoverLogs] : []);
   const currentHoverRef = useRef<{ optionValue: number; enterTime: number } | null>(null);
   const mouseTrajectoryRef = useRef<MousePoint[]>(existingLog?.mouseTrajectory ? [...existingLog.mouseTrajectory] : []);
@@ -146,7 +147,7 @@ export function useBehaviorTracker({
         lastPointRef.current = { x: clampedX, y: clampedY, t: timeOffset, dx: 0, dy: 0 };
       }
     },
-    [containerRef]
+    [containerRef],
   );
 
   // Mouse trajectory tracking
@@ -204,33 +205,30 @@ export function useBehaviorTracker({
   }, [containerRef, recordPoint]);
 
   // Selection Handler
-  const handleSelectOption = useCallback(
-    (val: number, device: InputDevice = 'mouse') => {
-      const now = Date.now() - startTimeRef.current;
-      if (firstInteractionTimeRef.current === null) {
-        firstInteractionTimeRef.current = now;
-      }
+  const handleSelectOption = useCallback((val: number, device: InputDevice = 'mouse') => {
+    const now = Date.now() - startTimeRef.current;
+    if (firstInteractionTimeRef.current === null) {
+      firstInteractionTimeRef.current = now;
+    }
 
-      const prevEvent = selectionHistoryRef.current[selectionHistoryRef.current.length - 1];
-      const timeSinceLast = prevEvent ? now - prevEvent.timestamp : now;
-      const lastPress = touchPressDurationsRef.current[touchPressDurationsRef.current.length - 1] || 80;
+    const prevEvent = selectionHistoryRef.current[selectionHistoryRef.current.length - 1];
+    const timeSinceLast = prevEvent ? now - prevEvent.timestamp : now;
+    const lastPress = touchPressDurationsRef.current[touchPressDurationsRef.current.length - 1] || 80;
 
-      selectionHistoryRef.current.push({
-        value: val,
-        timestamp: now,
-        timeSinceLastChange: timeSinceLast,
-        pressDuration: lastPress,
-        inputDevice: device,
-      });
+    selectionHistoryRef.current.push({
+      value: val,
+      timestamp: now,
+      timeSinceLastChange: timeSinceLast,
+      pressDuration: lastPress,
+      inputDevice: device,
+    });
 
-      setSelectedVal(val);
-      setChangeCountState(Math.max(0, selectionHistoryRef.current.length - 1));
-      if (device) {
-        setPrimaryDeviceState(device);
-      }
-    },
-    []
-  );
+    setSelectedVal(val);
+    setChangeCountState(Math.max(0, selectionHistoryRef.current.length - 1));
+    if (device) {
+      setPrimaryDeviceState(device);
+    }
+  }, []);
 
   // Keyboard navigation
   useEffect(() => {
@@ -299,10 +297,7 @@ export function useBehaviorTracker({
 
     const avgPress =
       touchPressDurationsRef.current.length > 0
-        ? Math.round(
-            touchPressDurationsRef.current.reduce((a, b) => a + b, 0) /
-              touchPressDurationsRef.current.length
-          )
+        ? Math.round(touchPressDurationsRef.current.reduce((a, b) => a + b, 0) / touchPressDurationsRef.current.length)
         : 85;
 
     const touchMetrics: TouchMetrics = {

@@ -1,10 +1,11 @@
 'use client';
 
-import React, { Suspense } from 'react';
+import { Activity, ArrowRight, Compass } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { decodeResultFromCompressedString } from '../../lib/shareResult';
+import { Suspense } from 'react';
+
 import { ResultView } from '../../components/ResultView';
-import { Compass, ArrowRight, Activity } from 'lucide-react';
+import { decodeResultFromCompressedString } from '../../lib/shareResult';
 
 function PreviewContent() {
   const router = useRouter();
@@ -87,9 +88,7 @@ export default function PreviewClient() {
       <footer className="w-full border-t border-white/[0.04] py-6 text-center text-xs text-neutral-500 font-mono">
         <div className="max-w-4xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
           <span>© 2026 BEHAVIOR MBTI RESEARCH</span>
-          <span className="text-neutral-400 text-[11px]">
-            MICRO-INTERACTION BEHAVIORAL PSYCHOMETRICS
-          </span>
+          <span className="text-neutral-400 text-[11px]">MICRO-INTERACTION BEHAVIORAL PSYCHOMETRICS</span>
         </div>
       </footer>
     </div>

@@ -1,10 +1,11 @@
 'use client';
 
-import React, { useRef, useCallback } from 'react';
-import { Question, QuestionBehaviorLog } from '@/types';
+import { ArrowLeft, ArrowRight, Check, Keyboard, Mouse, Smartphone } from 'lucide-react';
+import { FC, useCallback, useRef } from 'react';
+
 import { LIKERT_OPTIONS } from '@/data/questions';
 import { useBehaviorTracker } from '@/hooks/useBehaviorTracker';
-import { ArrowRight, ArrowLeft, Check, Smartphone, Mouse, Keyboard } from 'lucide-react';
+import { Question, QuestionBehaviorLog } from '@/types';
 
 interface QuestionCardProps {
   question: Question;
@@ -16,7 +17,7 @@ interface QuestionCardProps {
   onPrev?: (log: QuestionBehaviorLog) => void;
 }
 
-export const QuestionCard: React.FC<QuestionCardProps> = ({
+export const QuestionCard: FC<QuestionCardProps> = ({
   question,
   currentIndex,
   totalQuestions,
@@ -118,13 +119,9 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
 
         {/* Question Text */}
         <div className="mb-8">
-          <h2 className="text-xl sm:text-2xl font-bold text-white leading-relaxed tracking-tight">
-            {question.title}
-          </h2>
+          <h2 className="text-xl sm:text-2xl font-bold text-white leading-relaxed tracking-tight">{question.title}</h2>
           {question.description && (
-            <p className="text-xs sm:text-sm text-slate-400 leading-relaxed mt-2 font-normal">
-              {question.description}
-            </p>
+            <p className="text-xs sm:text-sm text-slate-400 leading-relaxed mt-2 font-normal">{question.description}</p>
           )}
         </div>
       </div>
@@ -144,10 +141,10 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
               Math.abs(opt.value) === 3
                 ? 'w-12 h-12 sm:w-13 sm:h-13'
                 : Math.abs(opt.value) === 2
-                ? 'w-10 h-10 sm:w-11 sm:h-11'
-                : opt.value === 0
-                ? 'w-8 h-8 sm:w-9 sm:h-9'
-                : 'w-9 h-9 sm:w-10 sm:h-10';
+                  ? 'w-10 h-10 sm:w-11 sm:h-11'
+                  : opt.value === 0
+                    ? 'w-8 h-8 sm:w-9 sm:h-9'
+                    : 'w-9 h-9 sm:w-10 sm:h-10';
 
             return (
               <div

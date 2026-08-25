@@ -1,9 +1,10 @@
 'use client';
 
-import React, { useRef, useEffect, useState, useCallback, useMemo } from 'react';
-import { QuestionBehaviorLog, MousePoint, AnswerSelectionEvent } from '../types';
-import { Play, Pause, RotateCcw, Crosshair } from 'lucide-react';
+import { Crosshair, Pause, Play, RotateCcw } from 'lucide-react';
+import { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+
 import { getOptionLabel } from '../data/questions';
+import { AnswerSelectionEvent, MousePoint, QuestionBehaviorLog } from '../types';
 
 interface MouseReplayCanvasProps {
   behaviorLog: QuestionBehaviorLog;
@@ -11,11 +12,7 @@ interface MouseReplayCanvasProps {
   height?: number;
 }
 
-export const MouseReplayCanvas: React.FC<MouseReplayCanvasProps> = ({
-  behaviorLog,
-  width = 640,
-  height = 320,
-}) => {
+export const MouseReplayCanvas: FC<MouseReplayCanvasProps> = ({ behaviorLog, width = 640, height = 320 }) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [isPlaying, setIsPlaying] = useState<boolean>(true);
   const [playbackProgress, setPlaybackProgress] = useState<number>(0);
@@ -72,7 +69,8 @@ export const MouseReplayCanvas: React.FC<MouseReplayCanvasProps> = ({
 
       optionPositions.forEach((opt) => {
         const cx = opt.x * width;
-        const isCurrentlyHovered = currentPoint && Math.abs(currentPoint.x - opt.x) < 0.055 && Math.abs(currentPoint.y - 0.74) < 0.16;
+        const isCurrentlyHovered =
+          currentPoint && Math.abs(currentPoint.x - opt.x) < 0.055 && Math.abs(currentPoint.y - 0.74) < 0.16;
 
         if (isCurrentlyHovered) {
           ctx.beginPath();
@@ -127,7 +125,7 @@ export const MouseReplayCanvas: React.FC<MouseReplayCanvasProps> = ({
         if (opt) {
           const cx = opt.x * width;
           const clickAge = currentTime - c.timestamp;
-          const pulseRadius = Math.min(26, 12 + (clickAge / 60) % 16);
+          const pulseRadius = Math.min(26, 12 + ((clickAge / 60) % 16));
 
           ctx.beginPath();
           ctx.arc(cx, optionY, pulseRadius, 0, Math.PI * 2);
@@ -165,7 +163,7 @@ export const MouseReplayCanvas: React.FC<MouseReplayCanvasProps> = ({
         ctx.stroke();
       }
     },
-    [trajectory, clicks, width, height]
+    [trajectory, clicks, width, height],
   );
 
   useEffect(() => {
@@ -226,9 +224,7 @@ export const MouseReplayCanvas: React.FC<MouseReplayCanvasProps> = ({
       <div className="flex items-center justify-between w-full mb-3 px-1">
         <div className="flex items-center gap-2">
           <Crosshair className="w-3.5 h-3.5 text-neutral-400" />
-          <span className="text-xs font-mono text-neutral-300 uppercase tracking-wide">
-            Telemetry Cursor Replay
-          </span>
+          <span className="text-xs font-mono text-neutral-300 uppercase tracking-wide">Telemetry Cursor Replay</span>
         </div>
         <div className="text-xs text-neutral-500 font-mono">
           {(playbackProgress * (duration / 1000)).toFixed(1)}s / {(duration / 1000).toFixed(1)}s

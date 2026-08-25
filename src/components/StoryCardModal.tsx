@@ -1,9 +1,10 @@
 'use client';
 
-import React, { useRef, useState } from 'react';
-import { FullAnalysisResult } from '../types';
 import { toPng } from 'html-to-image';
-import { X, Download, Sparkles, Zap, Brain, Compass, Target, ShieldCheck } from 'lucide-react';
+import { Brain, Compass, Download, ShieldCheck, Sparkles, Target, X, Zap } from 'lucide-react';
+import { FC, useRef, useState } from 'react';
+
+import { FullAnalysisResult } from '../types';
 
 interface StoryCardModalProps {
   result: FullAnalysisResult;
@@ -11,11 +12,7 @@ interface StoryCardModalProps {
   onClose: () => void;
 }
 
-export const StoryCardModal: React.FC<StoryCardModalProps> = ({
-  result,
-  isOpen,
-  onClose,
-}) => {
+export const StoryCardModal: FC<StoryCardModalProps> = ({ result, isOpen, onClose }) => {
   const cardRef = useRef<HTMLDivElement>(null);
   const [isExporting, setIsExporting] = useState<boolean>(false);
 
@@ -118,12 +115,8 @@ export const StoryCardModal: React.FC<StoryCardModalProps> = ({
             <h1 className="text-6xl font-black tracking-tight font-mono text-transparent bg-clip-text bg-linear-to-b from-white via-neutral-100 to-neutral-400 drop-shadow-sm">
               {result.mbti}
             </h1>
-            <h2 className="text-base font-bold text-neutral-100 mt-1">
-              {result.mbtiTitle}
-            </h2>
-            <p className="text-[11px] text-neutral-400 font-light mt-0.5 line-clamp-1">
-              {result.mbtiDescription}
-            </p>
+            <h2 className="text-base font-bold text-neutral-100 mt-1">{result.mbtiTitle}</h2>
+            <p className="text-[11px] text-neutral-400 font-light mt-0.5 line-clamp-1">{result.mbtiDescription}</p>
 
             {/* Persona Badge */}
             <div className="mt-3.5 p-3 rounded-2xl bg-white/3 border border-white/8 backdrop-blur-sm text-left flex items-center gap-3">
@@ -131,15 +124,9 @@ export const StoryCardModal: React.FC<StoryCardModalProps> = ({
                 {getPersonaIcon(result.behaviorPersona.iconName)}
               </div>
               <div className="min-w-0">
-                <span className="text-[9px] font-mono text-neutral-500 block uppercase">
-                  행동 페르소나
-                </span>
-                <span className="text-xs font-bold text-white block truncate">
-                  {result.behaviorPersona.title}
-                </span>
-                <span className="text-[10px] text-neutral-400 block truncate">
-                  {result.behaviorPersona.subtitle}
-                </span>
+                <span className="text-[9px] font-mono text-neutral-500 block uppercase">행동 페르소나</span>
+                <span className="text-xs font-bold text-white block truncate">{result.behaviorPersona.title}</span>
+                <span className="text-[10px] text-neutral-400 block truncate">{result.behaviorPersona.subtitle}</span>
               </div>
             </div>
 
@@ -152,10 +139,7 @@ export const StoryCardModal: React.FC<StoryCardModalProps> = ({
                     <span className="text-emerald-400">{dim.winnerPercentage}%</span>
                   </div>
                   <div className="w-full bg-neutral-800 h-1 rounded-full overflow-hidden">
-                    <div
-                      className="h-full bg-emerald-400 rounded-full"
-                      style={{ width: `${dim.certaintyScore}%` }}
-                    />
+                    <div className="h-full bg-emerald-400 rounded-full" style={{ width: `${dim.certaintyScore}%` }} />
                   </div>
                 </div>
               ))}
@@ -166,9 +150,7 @@ export const StoryCardModal: React.FC<StoryCardModalProps> = ({
           <div className="relative z-10 grid grid-cols-3 gap-1.5 p-2 rounded-2xl bg-neutral-950/80 border border-white/6 text-center my-1">
             <div>
               <span className="text-[9px] font-mono text-neutral-500 block">종합 확신도</span>
-              <span className="text-xs font-bold text-amber-400 font-mono">
-                {result.overallCertainty}%
-              </span>
+              <span className="text-xs font-bold text-amber-400 font-mono">{result.overallCertainty}%</span>
             </div>
             <div>
               <span className="text-[9px] font-mono text-neutral-500 block">고민 속도</span>

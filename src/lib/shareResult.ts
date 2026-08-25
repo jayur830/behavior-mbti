@@ -1,17 +1,18 @@
 import LZString from 'lz-string';
+
+import { calculateUserBenchmark } from '../data/benchmarkStats';
+import { BEHAVIOR_PERSONAS, MBTI_PROFILES } from '../data/mbtiDescriptions';
+import { getOptionLabel, QUESTIONS_POOL } from '../data/questions';
 import {
-  FullAnalysisResult,
-  DimensionAnalysis,
-  QuestionBehaviorLog,
-  MousePoint,
   AnswerSelectionEvent,
-  OptionHoverLog,
+  DimensionAnalysis,
+  FullAnalysisResult,
   HoverPsychologyAnalysis,
   MBTIType,
+  MousePoint,
+  OptionHoverLog,
+  QuestionBehaviorLog,
 } from '../types';
-import { MBTI_PROFILES, BEHAVIOR_PERSONAS } from '../data/mbtiDescriptions';
-import { calculateUserBenchmark } from '../data/benchmarkStats';
-import { QUESTIONS_POOL, getOptionLabel } from '../data/questions';
 
 const INTEGRITY_SALT = 'BM_CRYPTO_TAMPER_PROOF_SALT_2026_@!';
 
@@ -77,9 +78,7 @@ interface SecurePayloadEnvelope {
  */
 export function encodeResultToCompressedString(result: FullAnalysisResult): string {
   const questionsToEncode =
-    result.allQuestionDetails && result.allQuestionDetails.length > 0
-      ? result.allQuestionDetails
-      : result.topDilemmas;
+    result.allQuestionDetails && result.allQuestionDetails.length > 0 ? result.allQuestionDetails : result.topDilemmas;
 
   const payload: CompactSharePayload = {
     m: result.mbti,
@@ -96,26 +95,21 @@ export function encodeResultToCompressedString(result: FullAnalysisResult): stri
       const rawPts = d.behavior.mouseTrajectory || [];
       const shouldSaveFullPts = dIdx < 10 || d.behavior.changeCount > 0 || d.hesitationTime > 4500;
       const step = rawPts.length > 25 ? Math.ceil(rawPts.length / 25) : 1;
-      const sampledPts = shouldSaveFullPts && rawPts.length > 0
-        ? rawPts
-            .filter((_, idx) => idx % step === 0 || idx === rawPts.length - 1)
-            .map((p): [number, number, number, number] => [
-              Math.round(p.x * 1000),
-              Math.round(p.y * 1000),
-              p.timestamp,
-              Math.round((p.speed || 0) * 1000),
-            ])
-        : undefined;
+      const sampledPts =
+        shouldSaveFullPts && rawPts.length > 0
+          ? rawPts
+              .filter((_, idx) => idx % step === 0 || idx === rawPts.length - 1)
+              .map((p): [number, number, number, number] => [
+                Math.round(p.x * 1000),
+                Math.round(p.y * 1000),
+                p.timestamp,
+                Math.round((p.speed || 0) * 1000),
+              ])
+          : undefined;
 
-      const taps = (d.behavior.selectionHistory || []).map((s): [number, number] => [
-        s.value,
-        s.timestamp,
-      ]);
+      const taps = (d.behavior.selectionHistory || []).map((s): [number, number] => [s.value, s.timestamp]);
 
-      const hov = (d.behavior.hoverLogs || []).map((h): [number, number] => [
-        h.optionValue,
-        h.duration,
-      ]);
+      const hov = (d.behavior.hoverLogs || []).map((h): [number, number] => [h.optionValue, h.duration]);
 
       return {
         qid: d.question.id,
@@ -149,9 +143,7 @@ export function encodeResultToCompressedString(result: FullAnalysisResult): stri
 /**
  * 압축 문자열로부터 디지털 서명을 검증하고 위변조가 감지되면 null을 반환합니다.
  */
-export function decodeResultFromCompressedString(
-  compressedStr: string
-): FullAnalysisResult | null {
+export function decodeResultFromCompressedString(compressedStr: string): FullAnalysisResult | null {
   if (!compressedStr) return null;
 
   try {
@@ -185,7 +177,7 @@ export function decodeResultFromCompressedString(
       dimKey: 'EI' | 'SN' | 'TF' | 'JP',
       leftType: MBTIType,
       rightType: MBTIType,
-      data: [number, number, number]
+      data: [number, number, number],
     ): DimensionAnalysis => {
       const leftScore = data[0];
       const rightScore = data[1];
@@ -233,15 +225,14 @@ export function decodeResultFromCompressedString(
       behaviorAdvice: '자신의 본능적 선택 패턴을 탐색해보세요.',
     };
 
-    const behaviorPersona =
-      BEHAVIOR_PERSONAS[payload.p] || BEHAVIOR_PERSONAS.THE_DECISIVE;
+    const behaviorPersona = BEHAVIOR_PERSONAS[payload.p] || BEHAVIOR_PERSONAS.THE_DECISIVE;
 
     const overallCertainty = Math.round(
       (dimensions.EI.certaintyScore +
         dimensions.SN.certaintyScore +
         dimensions.TF.certaintyScore +
         dimensions.JP.certaintyScore) /
-        4
+        4,
     );
 
     let totalHoverCount = 0;
@@ -253,40 +244,43 @@ export function decodeResultFromCompressedString(
     const allQuestionDetails = (payload.dil || []).map((item) => {
       const q = QUESTIONS_POOL.find((question) => question.id === item.qid) || QUESTIONS_POOL[0];
 
-      const mouseTrajectory: MousePoint[] = (item.pts && item.pts.length > 0)
-        ? item.pts.map((p) => ({
-            x: p[0] / 1000,
-            y: p[1] / 1000,
-            timestamp: p[2],
-            speed: p[3] / 1000,
-            type: 'move',
-          }))
-        : [
-            { x: 0.5, y: 0.8, timestamp: 0, speed: 0 },
-            { x: 0.5, y: 0.5, timestamp: Math.round(item.dwell * 0.5), speed: 0.1 },
-            {
-              x: 0.5 + item.val * 0.12,
-              y: 0.74,
-              timestamp: Math.round(item.dwell * 0.85),
-              speed: 0.2,
-            },
-          ];
+      const mouseTrajectory: MousePoint[] =
+        item.pts && item.pts.length > 0
+          ? item.pts.map((p) => ({
+              x: p[0] / 1000,
+              y: p[1] / 1000,
+              timestamp: p[2],
+              speed: p[3] / 1000,
+              type: 'move',
+            }))
+          : [
+              { x: 0.5, y: 0.8, timestamp: 0, speed: 0 },
+              { x: 0.5, y: 0.5, timestamp: Math.round(item.dwell * 0.5), speed: 0.1 },
+              {
+                x: 0.5 + item.val * 0.12,
+                y: 0.74,
+                timestamp: Math.round(item.dwell * 0.85),
+                speed: 0.2,
+              },
+            ];
 
-      const selectionHistory: AnswerSelectionEvent[] = (item.taps && item.taps.length > 0)
-        ? item.taps.map((t) => ({
-            value: t[0],
-            timestamp: t[1],
-          }))
-        : [{ value: item.val, timestamp: Math.round(item.dwell * 0.7) }];
+      const selectionHistory: AnswerSelectionEvent[] =
+        item.taps && item.taps.length > 0
+          ? item.taps.map((t) => ({
+              value: t[0],
+              timestamp: t[1],
+            }))
+          : [{ value: item.val, timestamp: Math.round(item.dwell * 0.7) }];
 
-      const hoverLogs: OptionHoverLog[] = (item.hov && item.hov.length > 0)
-        ? item.hov.map((h, hIdx) => ({
-            optionValue: h[0],
-            enterTime: hIdx * 200,
-            leaveTime: hIdx * 200 + h[1],
-            duration: h[1],
-          }))
-        : [];
+      const hoverLogs: OptionHoverLog[] =
+        item.hov && item.hov.length > 0
+          ? item.hov.map((h, hIdx) => ({
+              optionValue: h[0],
+              enterTime: hIdx * 200,
+              leaveTime: hIdx * 200 + h[1],
+              duration: h[1],
+            }))
+          : [];
 
       totalHoverCount += hoverLogs.length;
       hoverLogs.forEach((h) => {
@@ -347,9 +341,7 @@ export function decodeResultFromCompressedString(
       };
     });
 
-    const topDilemmas = [...allQuestionDetails]
-      .sort((a, b) => b.hesitationTime - a.hesitationTime)
-      .slice(0, 3);
+    const topDilemmas = [...allQuestionDetails].sort((a, b) => b.hesitationTime - a.hesitationTime).slice(0, 3);
 
     const hoverAnalysis: HoverPsychologyAnalysis = {
       totalHoverCount,
@@ -362,10 +354,7 @@ export function decodeResultFromCompressedString(
       conflictedHoverItems: conflictedHoverItems.slice(0, 3),
     };
 
-    const benchmark = calculateUserBenchmark(
-      payload.t,
-      payload.c
-    );
+    const benchmark = calculateUserBenchmark(payload.t, payload.c);
 
     return {
       mbti,

@@ -1,4 +1,5 @@
 import { Pool } from 'pg';
+
 import { FullAnalysisResult } from '../types';
 
 const globalForPg = globalThis as unknown as {
@@ -12,7 +13,9 @@ const globalForPg = globalThis as unknown as {
 export function getPgPool(): Pool | null {
   const connectionString =
     process.env.DIRECT_URL ||
-    process.env.DATABASE_URL?.replace(':6543', ':5432').replace('?pgbouncer=true&', '?').replace('?pgbouncer=true', '') ||
+    process.env.DATABASE_URL?.replace(':6543', ':5432')
+      .replace('?pgbouncer=true&', '?')
+      .replace('?pgbouncer=true', '') ||
     process.env.DATABASE_URL;
 
   if (!connectionString) return null;
@@ -43,10 +46,7 @@ export function generateShortId(length = 10): string {
 /**
  * persona.mbti_results 테이블에 진단 결과 적재
  */
-export async function saveResultToDb(
-  result: FullAnalysisResult,
-  customId?: string
-): Promise<string | null> {
+export async function saveResultToDb(result: FullAnalysisResult, customId?: string): Promise<string | null> {
   const shortId = customId || generateShortId(10);
   const pool = getPgPool();
 
