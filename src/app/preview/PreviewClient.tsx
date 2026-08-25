@@ -24,7 +24,7 @@ function PreviewContent() {
         <div className="w-12 h-12 rounded-full border border-white/[0.1] bg-neutral-900 flex items-center justify-center mb-6">
           <Activity className="w-5 h-5 text-amber-400" />
         </div>
-        <h2 className="text-xl font-bold text-white mb-2">공유된 진단서 데이터를 찾을 수 없습니다</h2>
+        <h2 className="text-xl font-bold text-white mb-2">공유된 분석 리포트를 찾을 수 없습니다</h2>
         <p className="text-xs text-neutral-400 mb-8 leading-relaxed">
           올바르지 않거나 손상된 결과 링크입니다. 지금 바로 나만의 행동 분석 MBTI 검사를 시작해보세요!
         </p>
@@ -60,7 +60,7 @@ export default function PreviewClient() {
               <Compass className="w-4 h-4 text-emerald-400" />
             </div>
             <span className="font-bold">
-              BEHAVIOR<span className="text-neutral-500">.MBTI</span>
+              PERSONA<span className="text-neutral-500">LENS</span>
             </span>
           </button>
 
@@ -87,8 +87,8 @@ export default function PreviewClient() {
       {/* Minimal Footer */}
       <footer className="w-full border-t border-white/[0.04] py-6 text-center text-xs text-neutral-500 font-mono">
         <div className="max-w-4xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
-          <span>© 2026 BEHAVIOR MBTI RESEARCH</span>
-          <span className="text-neutral-400 text-[11px]">MICRO-INTERACTION BEHAVIORAL PSYCHOMETRICS</span>
+          <span>© 2026 PersonaLens. All rights reserved.</span>
+          <span className="text-neutral-500 text-[11px]">BEHAVIORAL INTERACTION ANALYSIS</span>
         </div>
       </footer>
     </div>

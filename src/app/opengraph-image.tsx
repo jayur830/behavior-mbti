@@ -6,7 +6,7 @@ export const size = {
 };
 
 export const contentType = 'image/png';
-export const alt = 'Behavior MBTI | 마우스 궤적 & 고민 분석 심리검사';
+export const alt = 'PersonaLens | 마우스 궤적 & 고민 분석 심리검사';
 
 export default async function Image() {
   return new ImageResponse(
@@ -19,7 +19,7 @@ export default async function Image() {
         justifyContent: 'space-between',
         backgroundColor: '#07080c',
         backgroundImage:
-          'radial-gradient(circle at 50% 0%, rgba(16, 185, 129, 0.22) 0%, transparent 65%), radial-gradient(circle at 100% 100%, rgba(56, 189, 248, 0.15) 0%, transparent 50%), radial-gradient(circle at 0% 100%, rgba(168, 85, 247, 0.12) 0%, transparent 50%)',
+          'radial-gradient(circle at 50% 0%, rgba(99, 102, 241, 0.22) 0%, transparent 65%), radial-gradient(circle at 100% 100%, rgba(56, 189, 248, 0.15) 0%, transparent 50%), radial-gradient(circle at 0% 100%, rgba(168, 85, 247, 0.12) 0%, transparent 50%)',
         padding: '52px 64px',
         color: '#ffffff',
         fontFamily: 'sans-serif',
@@ -42,20 +42,20 @@ export default async function Image() {
               width: '38px',
               height: '38px',
               borderRadius: '12px',
-              backgroundColor: 'rgba(16, 185, 129, 0.2)',
-              border: '1px solid rgba(16, 185, 129, 0.4)',
+              backgroundColor: 'rgba(99, 102, 241, 0.2)',
+              border: '1px solid rgba(99, 102, 241, 0.4)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              color: '#34d399',
+              color: '#818cf8',
               fontSize: '20px',
               fontWeight: 'bold',
             }}
           >
-            +
+            P
           </div>
           <span style={{ display: 'flex', fontSize: '26px', fontWeight: 800, letterSpacing: '2px' }}>
-            BEHAVIOR<span style={{ color: '#34d399' }}>.MBTI</span>
+            PERSONA<span style={{ color: '#818cf8' }}>LENS</span>
           </span>
         </div>
         <div
@@ -182,8 +182,8 @@ export default async function Image() {
           color: '#71717a',
         }}
       >
-        <span style={{ display: 'flex' }}>© 2026 BEHAVIOR MBTI LAB</span>
-        <span style={{ display: 'flex', color: '#34d399', fontWeight: 700 }}>mbti.opentoyapp.kr</span>
+        <span style={{ display: 'flex' }}>© 2026 PERSONALENS LAB</span>
+        <span style={{ display: 'flex', color: '#34d399', fontWeight: 700 }}>persona.opentoyapp.kr</span>
       </div>
     </div>,
     {

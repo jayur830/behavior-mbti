@@ -376,12 +376,12 @@ export const ResultView: FC<ResultViewProps> = ({ result, isSharedView = false, 
 
           <div className="w-full bg-neutral-900/60 p-4 rounded-2xl border border-white/6 text-left">
             <span className="text-[10px] font-mono text-neutral-400 uppercase block mb-1">행동 프로필</span>
-            <span className="text-sm font-bold text-white block">{result.behaviorPersona?.title || '성격 진단'}</span>
+            <span className="text-sm font-bold text-white block">{result.behaviorPersona?.title || '성향 프로필'}</span>
             <span className="text-xs text-neutral-400 font-light block">{result.behaviorPersona?.subtitle || ''}</span>
           </div>
 
           <div className="text-[10px] font-mono text-neutral-500">
-            © 2026 BEHAVIOR MBTI LAB | https://github.com/jayur830/behavior-mbti
+            © 2026 PersonaLens | Behavioral Interaction Analysis
           </div>
         </div>
       </div>
@@ -393,7 +393,7 @@ export const ResultView: FC<ResultViewProps> = ({ result, isSharedView = false, 
 
         <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-slate-800/80 border border-slate-700/60 text-slate-300 text-xs font-medium mb-6">
           <span className="w-1.5 h-1.5 rounded-full bg-slate-300" />
-          <span>성향 진단 리포트</span>
+          <span>성향 분석 리포트</span>
         </div>
 
         <h1 className="text-6xl sm:text-8xl font-extrabold tracking-tight bg-ilnear-to-r from-white via-slate-100 to-indigo-200 bg-clip-text text-transparent mb-2">
@@ -576,7 +576,7 @@ export const ResultView: FC<ResultViewProps> = ({ result, isSharedView = false, 
           </div>
           <div>
             <h3 className="text-lg sm:text-xl font-bold text-white mb-1">
-              {result.behaviorPersona?.title || '성격 진단'}
+              {result.behaviorPersona?.title || '성향 프로필'}
             </h3>
             <p className="text-xs sm:text-sm font-medium text-neutral-300 mb-2">
               {result.behaviorPersona?.subtitle || ''}

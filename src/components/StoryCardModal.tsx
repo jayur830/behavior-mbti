@@ -33,7 +33,7 @@ export const StoryCardModal: FC<StoryCardModalProps> = ({ result, isOpen, onClos
       });
 
       const link = document.createElement('a');
-      link.download = `behavior_mbti_${result.mbti}_story.png`;
+      link.download = `personalens_${result.mbti}_story.png`;
       link.href = dataUrl;
       link.click();
     } catch (err) {
@@ -83,7 +83,7 @@ export const StoryCardModal: FC<StoryCardModalProps> = ({ result, isOpen, onClos
           className="w-85 h-151 bg-[#07080c] text-white rounded-4xl p-6 border border-white/12 shadow-2xl relative overflow-hidden flex flex-col justify-between selection:bg-none"
           style={{
             backgroundImage: `
-              radial-gradient(circle at 50% 0%, rgba(16, 185, 129, 0.12) 0%, transparent 65%),
+              radial-gradient(circle at 50% 0%, rgba(99, 102, 241, 0.15) 0%, transparent 65%),
               radial-gradient(circle at 100% 100%, rgba(56, 189, 248, 0.08) 0%, transparent 50%),
               radial-gradient(circle at 0% 100%, rgba(168, 85, 247, 0.08) 0%, transparent 50%)
             `,
@@ -95,22 +95,22 @@ export const StoryCardModal: FC<StoryCardModalProps> = ({ result, isOpen, onClos
           {/* Top Brand Header */}
           <div className="relative z-10 flex items-center justify-between border-b border-white/8 pb-3">
             <div className="flex items-center gap-2">
-              <div className="w-6 h-6 rounded-lg bg-white/8 border border-white/12 flex items-center justify-center text-emerald-400">
+              <div className="w-6 h-6 rounded-lg bg-white/8 border border-white/12 flex items-center justify-center text-indigo-400">
                 <Compass className="w-3.5 h-3.5" />
               </div>
               <span className="font-mono text-xs font-bold tracking-wider">
-                BEHAVIOR<span className="text-emerald-400">.MBTI</span>
+                PERSONA<span className="text-indigo-400">LENS</span>
               </span>
             </div>
             <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-white/6 text-neutral-400 border border-white/6">
-              TELEMETRY DOSSIER
+              ANALYSIS REPORT
             </span>
           </div>
 
           {/* Center MBTI Hero */}
           <div className="relative z-10 text-center my-auto py-2">
-            <div className="inline-block px-3 py-0.5 rounded-full bg-emerald-400/10 border border-emerald-400/20 text-emerald-400 text-[10px] font-mono mb-2">
-              무의식 행동 진단 완료
+            <div className="inline-block px-3 py-0.5 rounded-full bg-indigo-400/10 border border-indigo-400/20 text-indigo-300 text-[10px] font-mono mb-2">
+              행동 성향 분석 완료
             </div>
             <h1 className="text-6xl font-black tracking-tight font-mono text-transparent bg-clip-text bg-linear-to-b from-white via-neutral-100 to-neutral-400 drop-shadow-sm">
               {result.mbti}

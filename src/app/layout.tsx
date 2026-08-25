@@ -11,22 +11,32 @@ const plusJakartaSans = Plus_Jakarta_Sans({
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://mbti.opentoyapp.kr'),
-  title: 'Behavior MBTI | 무의식 행동으로 읽는 나만의 성향',
-  description: '선택의 순간, 머뭇거림과 망설임의 궤적을 분석하여 당신의 진짜 내면과 성향을 도출합니다.',
-  keywords: ['MBTI', '행동분석 MBTI', '마우스 궤적 MBTI', '심리테스트', '성격유형검사', 'Behavior MBTI', 'opentoyapp'],
-  authors: [{ name: 'Behavior MBTI' }],
+  title: 'PersonaLens | 무의식 행동으로 읽는 나만의 페르소나',
+  description: '선택의 순간, 머뭇거림과 망설임의 궤적을 분석하여 당신의 진짜 내면과 페르소나를 도출합니다.',
+  keywords: [
+    'PersonaLens',
+    '페르소나렌즈',
+    'MBTI',
+    '행동분석 심리검사',
+    '마우스 궤적 심리검사',
+    '심리테스트',
+    '성격유형검사',
+    '무의식 행동분석',
+    'opentoyapp',
+  ],
+  authors: [{ name: 'PersonaLens' }],
   openGraph: {
-    title: 'Behavior MBTI | 무의식 행동으로 읽는 나만의 성향',
-    description: '선택의 순간, 머뭇거림과 망설임의 궤적을 분석하여 당신의 진짜 내면과 성향을 도출합니다.',
+    title: 'PersonaLens | 무의식 행동으로 읽는 나만의 페르소나',
+    description: '선택의 순간, 머뭇거림과 망설임의 궤적을 분석하여 당신의 진짜 내면과 페르소나를 도출합니다.',
     url: 'https://mbti.opentoyapp.kr',
-    siteName: 'Behavior MBTI',
+    siteName: 'PersonaLens',
     locale: 'ko_KR',
     type: 'website',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Behavior MBTI | 무의식 행동으로 읽는 나만의 성향',
-    description: '선택의 순간, 머뭇거림과 망설임의 궤적을 분석하여 당신의 진짜 내면과 성향을 도출합니다.',
+    title: 'PersonaLens | 무의식 행동으로 읽는 나만의 페르소나',
+    description: '선택의 순간, 머뭇거림과 망설임의 궤적을 분석하여 당신의 진짜 내면과 페르소나를 도출합니다.',
   },
 };
 

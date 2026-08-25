@@ -49,7 +49,7 @@ function ResultContent() {
         <div className="w-14 h-14 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center mb-6">
           <Activity className="w-6 h-6 text-amber-400" />
         </div>
-        <h2 className="text-xl font-bold text-white mb-2">진단서 데이터를 찾을 수 없습니다</h2>
+        <h2 className="text-xl font-bold text-white mb-2">분석 리포트 데이터를 찾을 수 없습니다</h2>
         <p className="text-xs text-slate-400 mb-8 leading-relaxed">
           올바르지 않거나 만료된 결과 링크입니다. 지금 바로 나만의 행동 분석 MBTI 검사를 시작해보세요.
         </p>
@@ -99,7 +99,7 @@ export default function ResultClient() {
               <Compass className="w-4 h-4" />
             </div>
             <span className="tracking-tight text-base font-bold">
-              Behavior <span className="text-indigo-400 font-normal">MBTI</span>
+              Persona<span className="text-indigo-400 font-normal">Lens</span>
             </span>
           </button>
 
@@ -129,13 +129,11 @@ export default function ResultClient() {
 
       {/* Minimal Footer */}
       <footer className="w-full border-t border-slate-800/50 py-8 text-center text-xs text-slate-500">
-        <div className="max-w-5xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p>© 2026 Behavior MBTI. Micro-Interaction Psychometrics.</p>
-          <div className="flex items-center gap-6 text-slate-400">
-            <span>정밀 궤적 분석</span>
-            <span>·</span>
-            <span>데이터 비저장 안전 검사</span>
-          </div>
+        <div className="max-w-5xl mx-auto px-6 flex flex-col items-center justify-between gap-3 sm:flex-row">
+          <p>© 2026 PersonaLens. All rights reserved.</p>
+          <p className="text-[11px] text-slate-500">
+            본 서비스는 행동 궤적 분석을 통한 흥미 및 자기 탐색용 서비스이며, 공식 MBTI® 검사와는 무관합니다.
+          </p>
         </div>
       </footer>
     </div>

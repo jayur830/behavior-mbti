@@ -8,14 +8,14 @@ export const size = {
 };
 
 export const contentType = 'image/png';
-export const alt = 'Behavior MBTI | 나의 진단서';
+export const alt = 'PersonaLens | 나의 성향 분석 리포트';
 
 export default async function Image({ searchParams }: { searchParams?: Promise<{ data?: string; r?: string }> }) {
   const resolvedParams = searchParams ? await searchParams : {};
   const data = resolvedParams?.data || resolvedParams?.r;
 
   let mbti = 'MBTI';
-  let title = '행동 심리 텔레메트리 진단서';
+  let title = '행동 인터랙션 성향 리포트';
   let persona = '초고속 직진 결단파';
   let certainty = '85%';
   let speed = '상위 15%';
@@ -47,7 +47,7 @@ export default async function Image({ searchParams }: { searchParams?: Promise<{
         justifyContent: 'space-between',
         backgroundColor: '#07080c',
         backgroundImage:
-          'radial-gradient(circle at 50% 0%, rgba(16, 185, 129, 0.22) 0%, transparent 65%), radial-gradient(circle at 100% 100%, rgba(56, 189, 248, 0.15) 0%, transparent 50%), radial-gradient(circle at 0% 100%, rgba(168, 85, 247, 0.12) 0%, transparent 50%)',
+          'radial-gradient(circle at 50% 0%, rgba(99, 102, 241, 0.22) 0%, transparent 65%), radial-gradient(circle at 100% 100%, rgba(56, 189, 248, 0.15) 0%, transparent 50%), radial-gradient(circle at 0% 100%, rgba(168, 85, 247, 0.12) 0%, transparent 50%)',
         padding: '48px 56px',
         color: '#ffffff',
         fontFamily: 'sans-serif',
@@ -70,20 +70,20 @@ export default async function Image({ searchParams }: { searchParams?: Promise<{
               width: '36px',
               height: '36px',
               borderRadius: '10px',
-              backgroundColor: 'rgba(16, 185, 129, 0.2)',
-              border: '1px solid rgba(16, 185, 129, 0.4)',
+              backgroundColor: 'rgba(99, 102, 241, 0.2)',
+              border: '1px solid rgba(99, 102, 241, 0.4)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              color: '#34d399',
+              color: '#818cf8',
               fontSize: '20px',
               fontWeight: 'bold',
             }}
           >
-            +
+            P
           </div>
           <span style={{ display: 'flex', fontSize: '24px', fontWeight: 800, letterSpacing: '2px' }}>
-            BEHAVIOR<span style={{ color: '#34d399' }}>.MBTI</span>
+            PERSONA<span style={{ color: '#818cf8' }}>LENS</span>
           </span>
         </div>
         <div
@@ -99,7 +99,7 @@ export default async function Image({ searchParams }: { searchParams?: Promise<{
             letterSpacing: '1px',
           }}
         >
-          OFFICIAL PSYCHOMETRIC DOSSIER
+          BEHAVIORAL ANALYSIS REPORT
         </div>
       </div>
 
@@ -125,7 +125,7 @@ export default async function Image({ searchParams }: { searchParams?: Promise<{
               textTransform: 'uppercase',
             }}
           >
-            {isDecoded ? '나의 무의식 행동 진단서' : '200개 문항 기반 실시간 텔레메트리 검사'}
+            {isDecoded ? '나의 무의식 행동 성향 리포트' : '행동 궤적 기반 성향 분석 검사'}
           </div>
           <div
             style={{
@@ -209,7 +209,7 @@ export default async function Image({ searchParams }: { searchParams?: Promise<{
           color: '#71717a',
         }}
       >
-        <span style={{ display: 'flex' }}>마우스 궤적 및 고민 시간 기반 무의식 MBTI 분석</span>
+        <span style={{ display: 'flex' }}>마우스 궤적 및 고민 시간 기반 무의식 행동 성향 분석</span>
         <span style={{ display: 'flex', color: '#34d399', fontWeight: 700 }}>mbti.opentoyapp.kr</span>
       </div>
     </div>,

@@ -30,13 +30,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   if (!decoded) {
     return {
-      title: 'Behavior MBTI | 친구의 무의식 행동 심리 진단서',
-      description: '친구의 마우스 궤적과 고민 시간으로 도출된 무의식 MBTI 결과를 확인해보세요!',
+      title: 'PersonaLens | 친구의 무의식 행동 성향 리포트',
+      description: '친구의 마우스 궤적과 고민 시간으로 도출된 무의식 성향 분석 결과를 확인해보세요!',
     };
   }
 
-  const title = `[${decoded.mbti} · ${decoded.behaviorPersona?.title || '성격 진단'}] 친구의 무의식 행동 MBTI 진단서`;
-  const description = `${decoded.mbtiTitle || 'MBTI 진단'} | 종합 확신도 ${decoded.overallCertainty || 85}% · 고민 속도 상위 ${decoded.benchmark?.dwellTimePercentile || 50}%`;
+  const title = `[${decoded.mbti} · ${decoded.behaviorPersona?.title || '성격 진단'}] 친구의 무의식 행동 MBTI 분석 리포트 | PersonaLens`;
+  const description = `${decoded.mbtiTitle || 'MBTI 분석'} | 종합 확신도 ${decoded.overallCertainty || 85}% · 고민 속도 상위 ${decoded.benchmark?.dwellTimePercentile || 50}%`;
 
   return {
     title,
@@ -45,7 +45,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       title,
       description,
       url: `https://mbti.opentoyapp.kr/s/${hash}`,
-      siteName: 'Behavior MBTI',
+      siteName: 'PersonaLens',
       locale: 'ko_KR',
       type: 'article',
     },
@@ -74,7 +74,7 @@ export default async function ShortLinkPage({ params }: Props) {
                 <Compass className="w-4 h-4 text-emerald-400" />
               </div>
               <span className="font-bold">
-                BEHAVIOR<span className="text-neutral-500">.MBTI</span>
+                PERSONA<span className="text-neutral-500">LENS</span>
               </span>
             </Link>
           </div>
@@ -85,7 +85,7 @@ export default async function ShortLinkPage({ params }: Props) {
             <div className="w-12 h-12 rounded-full border border-white/[0.1] bg-neutral-900 flex items-center justify-center mb-6">
               <Activity className="w-5 h-5 text-amber-400" />
             </div>
-            <h2 className="text-xl font-bold text-white mb-2">진단서 데이터를 찾을 수 없습니다</h2>
+            <h2 className="text-xl font-bold text-white mb-2">분석 리포트 데이터를 찾을 수 없습니다</h2>
             <p className="text-xs text-neutral-400 mb-8 leading-relaxed">
               만료되었거나 유효하지 않은 결과 링크입니다. 지금 바로 나만의 행동 분석 MBTI 검사를 시작해보세요!
             </p>
@@ -110,11 +110,11 @@ export default async function ShortLinkPage({ params }: Props) {
             href="/"
             className="flex items-center gap-3 font-semibold text-slate-100 hover:text-white transition-colors"
           >
-            <div className="w-8 h-8 rounded-xl bg-slate-800 border border-slate-700/80 flex items-center justify-center text-slate-200 font-bold text-sm tracking-tighter">
-              B
+            <div className="w-8 h-8 rounded-xl bg-slate-800 border border-slate-700/80 flex items-center justify-center text-indigo-400 font-bold text-sm tracking-tighter shadow-xs">
+              P
             </div>
             <span className="tracking-tight text-base font-bold">
-              Behavior <span className="text-slate-400 font-normal">MBTI</span>
+              Persona<span className="text-indigo-400 font-normal">Lens</span>
             </span>
           </Link>
 
@@ -132,13 +132,11 @@ export default async function ShortLinkPage({ params }: Props) {
       </main>
 
       <footer className="w-full border-t border-slate-800/50 py-8 text-center text-xs text-slate-500">
-        <div className="max-w-5xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p>© 2026 Behavior MBTI. Micro-Interaction Psychometrics.</p>
-          <div className="flex items-center gap-6 text-slate-400">
-            <span>정밀 궤적 분석</span>
-            <span>·</span>
-            <span>데이터 비저장 안전 검사</span>
-          </div>
+        <div className="max-w-5xl mx-auto px-6 flex flex-col items-center justify-between gap-3 sm:flex-row">
+          <p>© 2026 PersonaLens. All rights reserved.</p>
+          <p className="text-[11px] text-slate-500">
+            본 서비스는 행동 궤적 분석을 통한 흥미 및 자기 탐색용 서비스이며, 공식 MBTI® 검사와는 무관합니다.
+          </p>
         </div>
       </footer>
     </div>

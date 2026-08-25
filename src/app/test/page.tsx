@@ -89,7 +89,7 @@ export default function TestPage() {
               <Compass className="w-4 h-4" />
             </div>
             <span className="tracking-tight text-base font-bold">
-              Behavior <span className="text-indigo-400 font-normal">MBTI</span>
+              Persona<span className="text-indigo-400 font-normal">Lens</span>
             </span>
           </button>
 
@@ -129,8 +129,8 @@ export default function TestPage() {
       {/* Minimal Footer */}
       <footer className="w-full border-t border-white/[0.04] py-6 text-center text-xs text-neutral-500 font-mono">
         <div className="max-w-4xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
-          <span>© 2026 BEHAVIOR MBTI RESEARCH</span>
-          <span className="text-neutral-400 text-[11px]">MICRO-INTERACTION BEHAVIORAL PSYCHOMETRICS</span>
+          <span>© 2026 PersonaLens. All rights reserved.</span>
+          <span className="text-neutral-500 text-[11px]">BEHAVIORAL INTERACTION ANALYSIS</span>
         </div>
       </footer>
     </div>
