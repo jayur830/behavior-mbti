@@ -5,15 +5,16 @@ import { FC } from 'react';
 
 interface TestIntroProps {
   onStart: () => void;
+  onExploreCatalog?: () => void;
 }
 
-export const TestIntro: FC<TestIntroProps> = ({ onStart }) => {
+export const TestIntro: FC<TestIntroProps> = ({ onStart, onExploreCatalog }) => {
   return (
     <div className="w-full max-w-3xl mx-auto px-4 py-8 sm:py-16 flex flex-col items-center text-center">
       {/* Top Tag */}
       <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-slate-900 border border-slate-800 text-slate-400 text-xs font-medium mb-8">
         <span className="w-1.5 h-1.5 rounded-full bg-indigo-400" />
-        <span>무의식 궤적 기반 MBTI 성향 검사</span>
+        <span>[TEST 01] 무의식 궤적 기반 MBTI 성향 검사</span>
       </div>
 
       {/* Main Title */}
@@ -74,15 +75,27 @@ export const TestIntro: FC<TestIntroProps> = ({ onStart }) => {
         </div>
       </div>
 
-      {/* Start Button with Dynamic Hover */}
-      <button
-        type="button"
-        onClick={onStart}
-        className="group relative inline-flex items-center justify-center gap-2.5 px-8 py-4 text-sm sm:text-base font-semibold text-slate-950 bg-white hover:bg-slate-100 active:bg-slate-200 hover:shadow-lg hover:shadow-white/10 hover:-translate-y-0.5 active:translate-y-0 rounded-full transition-all duration-200 cursor-pointer touch-manipulation select-none"
-      >
-        <span>MBTI 성향 검사 시작하기</span>
-        <ArrowRight className="w-4 h-4 transition-transform duration-200 group-hover:translate-x-1" />
-      </button>
+      {/* Buttons */}
+      <div className="flex flex-col sm:flex-row items-center gap-3.5">
+        <button
+          type="button"
+          onClick={onStart}
+          className="group relative inline-flex items-center justify-center gap-2.5 px-8 py-4 text-sm sm:text-base font-semibold text-slate-950 bg-white hover:bg-slate-100 active:bg-slate-200 hover:shadow-lg hover:shadow-white/10 hover:-translate-y-0.5 active:translate-y-0 rounded-full transition-all duration-200 cursor-pointer touch-manipulation select-none"
+        >
+          <span>MBTI 성향 검사 시작하기</span>
+          <ArrowRight className="w-4 h-4 transition-transform duration-200 group-hover:translate-x-1" />
+        </button>
+
+        {onExploreCatalog && (
+          <button
+            type="button"
+            onClick={onExploreCatalog}
+            className="inline-flex items-center justify-center px-6 py-4 text-sm font-medium text-slate-400 hover:text-white bg-slate-900/60 hover:bg-slate-800/80 border border-slate-800 hover:border-slate-700 rounded-full transition-all duration-200 cursor-pointer touch-manipulation select-none"
+          >
+            <span>전체 검사 목록 보기</span>
+          </button>
+        )}
+      </div>
 
       {/* Privacy Notice */}
       <div className="mt-8 flex items-center gap-2 text-xs text-slate-500">
