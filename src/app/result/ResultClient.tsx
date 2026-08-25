@@ -2,8 +2,9 @@
 
 import React, { Suspense, useMemo } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { decodeResultFromCompressedString } from '../../lib/shareResult';
-import { ResultView } from '../../components/ResultView';
+import { decodeResultFromCompressedString } from '@/lib/shareResult';
+import { ResultView } from '@/components/ResultView';
+import { FullAnalysisResult } from '@/types';
 import { Compass, ArrowRight, Activity } from 'lucide-react';
 
 function ResultContent() {
@@ -12,7 +13,19 @@ function ResultContent() {
   const compressedData = searchParams.get('data') || searchParams.get('r');
 
   const result = useMemo(() => {
-    return compressedData ? decodeResultFromCompressedString(compressedData) : null;
+    if (compressedData) {
+      const decoded = decodeResultFromCompressedString(compressedData);
+      if (decoded) return decoded;
+    }
+    if (typeof window !== 'undefined') {
+      try {
+        const cached = sessionStorage.getItem('current_mbti_result');
+        if (cached) {
+          return JSON.parse(cached) as FullAnalysisResult;
+        }
+      } catch {}
+    }
+    return null;
   }, [compressedData]);
 
   const handleRestart = () => {
@@ -31,18 +44,18 @@ function ResultContent() {
 
   if (!result) {
     return (
-      <div className="flex flex-col items-center justify-center text-center p-8 max-w-md mx-auto my-auto">
-        <div className="w-12 h-12 rounded-full border border-white/[0.1] bg-neutral-900 flex items-center justify-center mb-6">
-          <Activity className="w-5 h-5 text-amber-400" />
+      <div className="flex flex-col items-center justify-center text-center p-8 max-w-md mx-auto my-auto glass-card rounded-3xl">
+        <div className="w-14 h-14 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center mb-6">
+          <Activity className="w-6 h-6 text-amber-400" />
         </div>
         <h2 className="text-xl font-bold text-white mb-2">진단서 데이터를 찾을 수 없습니다</h2>
-        <p className="text-xs text-neutral-400 mb-8 leading-relaxed">
+        <p className="text-xs text-slate-400 mb-8 leading-relaxed">
           올바르지 않거나 만료된 결과 링크입니다. 지금 바로 나만의 행동 분석 MBTI 검사를 시작해보세요.
         </p>
         <button
           type="button"
           onClick={handleRestart}
-          className="inline-flex items-center gap-2 px-6 py-3 rounded-full font-semibold text-xs sm:text-sm bg-neutral-100 hover:bg-white text-neutral-950 shadow-md transition-all cursor-pointer touch-manipulation"
+          className="inline-flex items-center gap-2 px-6 py-3 rounded-full font-semibold text-xs sm:text-sm bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white shadow-lg shadow-indigo-500/25 transition-all cursor-pointer touch-manipulation"
         >
           <span>MBTI 검사 시작하기</span>
           <ArrowRight className="w-4 h-4" />
@@ -72,36 +85,40 @@ export default function ResultClient() {
   };
 
   return (
-    <div className="min-h-screen bg-[#090a0f] text-neutral-100 flex flex-col justify-between selection:bg-neutral-200 selection:text-neutral-900 bg-grid-pattern relative">
+    <div className="min-h-screen flex flex-col justify-between selection:bg-indigo-500/20 selection:text-indigo-200 relative">
       {/* Navigation Header */}
-      <header className="w-full border-b border-white/[0.06] backdrop-blur-md sticky top-0 z-40 bg-[#090a0f]/80">
-        <div className="max-w-4xl mx-auto px-4 h-16 flex items-center justify-between">
+      <header className="w-full border-b border-slate-800/60 backdrop-blur-xl sticky top-0 z-40 bg-[#0b0f17]/70">
+        <div className="max-w-5xl mx-auto px-6 h-16 flex items-center justify-between">
           <button
             type="button"
             onClick={handleHome}
-            className="flex items-center gap-2.5 font-mono text-sm tracking-widest text-neutral-200 hover:text-white transition-colors cursor-pointer touch-manipulation"
+            className="flex items-center gap-3 font-semibold text-slate-100 hover:text-white transition-colors cursor-pointer touch-manipulation"
           >
-            <div className="w-7 h-7 rounded-lg bg-white/[0.08] border border-white/[0.1] flex items-center justify-center text-neutral-100">
-              <Compass className="w-4 h-4 text-emerald-400" />
+            <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-indigo-600 to-violet-500 flex items-center justify-center text-white shadow-lg shadow-indigo-500/20">
+              <Compass className="w-4 h-4" />
             </div>
-            <span className="font-bold">
-              BEHAVIOR<span className="text-neutral-500">.MBTI</span>
+            <span className="tracking-tight text-base font-bold">
+              Behavior <span className="text-indigo-400 font-normal">MBTI</span>
             </span>
           </button>
 
-          <div className="flex items-center gap-2 text-xs font-mono text-neutral-400">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-            <span className="hidden sm:inline">TELEMETRY ONLINE</span>
-          </div>
+          <button
+            type="button"
+            onClick={handleHome}
+            className="px-4 py-2 rounded-full text-xs font-semibold bg-slate-800/80 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700/60 transition-all cursor-pointer touch-manipulation"
+          >
+            홈으로 이동
+          </button>
         </div>
       </header>
 
-      {/* Main Content Area */}
-      <main className="flex-1 flex flex-col justify-center items-center px-4 py-8">
+      {/* Result Main View */}
+      <main className="flex-1 flex flex-col items-center justify-center px-4 py-10">
         <Suspense
           fallback={
-            <div className="flex items-center justify-center p-12 text-xs font-mono text-neutral-400">
-              LOADING RESULT REPORT...
+            <div className="flex flex-col items-center justify-center gap-4 text-xs font-medium text-slate-400 my-auto py-20">
+              <Activity className="w-6 h-6 text-indigo-400 animate-spin" />
+              <span>진단 결과 리포트를 불러오는 중입니다...</span>
             </div>
           }
         >
@@ -110,12 +127,14 @@ export default function ResultClient() {
       </main>
 
       {/* Minimal Footer */}
-      <footer className="w-full border-t border-white/[0.04] py-6 text-center text-xs text-neutral-500 font-mono">
-        <div className="max-w-4xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
-          <span>© 2026 BEHAVIOR MBTI RESEARCH</span>
-          <span className="text-neutral-400 text-[11px]">
-            MICRO-INTERACTION BEHAVIORAL PSYCHOMETRICS
-          </span>
+      <footer className="w-full border-t border-slate-800/50 py-8 text-center text-xs text-slate-500">
+        <div className="max-w-5xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <p>© 2026 Behavior MBTI. Micro-Interaction Psychometrics.</p>
+          <div className="flex items-center gap-6 text-slate-400">
+            <span>정밀 궤적 분석</span>
+            <span>·</span>
+            <span>데이터 비저장 안전 검사</span>
+          </div>
         </div>
       </footer>
     </div>

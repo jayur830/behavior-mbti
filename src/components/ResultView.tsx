@@ -343,9 +343,9 @@ export const ResultView: React.FC<ResultViewProps> = ({
       <div className="overflow-hidden h-0 w-0">
         <div
           ref={cardExportRef}
-          className="w-[600px] p-8 bg-[#090a0f] text-neutral-100 border border-white/[0.1] rounded-3xl flex flex-col items-center text-center font-sans space-y-6"
+          className="w-150 p-8 bg-[#090a0f] text-neutral-100 border border-white/10 rounded-3xl flex flex-col items-center text-center font-sans space-y-6"
         >
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/[0.05] border border-white/[0.1] text-neutral-400 text-xs font-mono">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-neutral-400 text-xs font-mono">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
             BEHAVIORAL MBTI PSYCHOMETRICS
           </div>
@@ -359,7 +359,7 @@ export const ResultView: React.FC<ResultViewProps> = ({
             {result.mbtiDescription}
           </p>
 
-          <div className="grid grid-cols-4 gap-2 w-full bg-neutral-900/90 p-3 rounded-2xl border border-white/[0.08]">
+          <div className="grid grid-cols-4 gap-2 w-full bg-neutral-900/90 p-3 rounded-2xl border border-white/8">
             <div className="p-1">
               <span className="text-[10px] font-mono text-neutral-500 block">종합 확신도</span>
               <span className="text-base font-bold text-amber-400 font-mono">
@@ -386,7 +386,7 @@ export const ResultView: React.FC<ResultViewProps> = ({
             </div>
           </div>
 
-          <div className="w-full bg-neutral-900/60 p-4 rounded-2xl border border-white/[0.06] text-left">
+          <div className="w-full bg-neutral-900/60 p-4 rounded-2xl border border-white/6 text-left">
             <span className="text-[10px] font-mono text-neutral-400 uppercase block mb-1">
               행동 프로필
             </span>
@@ -405,48 +405,51 @@ export const ResultView: React.FC<ResultViewProps> = ({
       </div>
 
       {/* 1. Top Dossier Hero */}
-      <div className="relative overflow-hidden bg-neutral-900/80 border border-white/[0.08] rounded-3xl p-6 sm:p-12 shadow-2xl flex flex-col items-center text-center">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/[0.04] border border-white/[0.08] text-neutral-400 text-xs font-mono mb-6">
-          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-          DIAGNOSIS REPORT
+      <div className="relative overflow-hidden glass-card rounded-3xl p-6 sm:p-12 shadow-2xl flex flex-col items-center text-center">
+        {/* Glow ambient background in card */}
+        <div className="absolute -top-24 left-1/2 -translate-x-1/2 w-96 h-48 bg-ilnear-to-b from-indigo-500/20 to-transparent blur-3xl pointer-events-none" />
+
+        <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-slate-800/80 border border-slate-700/60 text-slate-300 text-xs font-medium mb-6">
+          <span className="w-1.5 h-1.5 rounded-full bg-slate-300" />
+          <span>성향 진단 리포트</span>
         </div>
 
-        <h1 className="text-5xl sm:text-7xl font-black tracking-tight text-white mb-2 font-mono">
+        <h1 className="text-6xl sm:text-8xl font-extrabold tracking-tight bg-ilnear-to-r from-white via-slate-100 to-indigo-200 bg-clip-text text-transparent mb-2">
           {result.mbti}
         </h1>
-        <div className="text-xl sm:text-2xl font-bold text-neutral-200 mb-4">{result.mbtiTitle}</div>
-        <p className="text-sm sm:text-base text-neutral-400 max-w-lg mb-8 leading-relaxed font-light">
+        <div className="text-2xl sm:text-3xl font-bold text-slate-100 mb-4">{result.mbtiTitle}</div>
+        <p className="text-sm sm:text-base text-slate-400 max-w-lg mb-8 leading-relaxed font-normal">
           {result.mbtiDescription}
         </p>
 
         {/* Global Key Metrics Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 w-full max-w-2xl bg-neutral-950/60 p-4 rounded-2xl border border-white/[0.06]">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 w-full max-w-2xl bg-slate-900/60 p-4 rounded-2xl border border-slate-800/80 backdrop-blur-md">
           <div className="flex flex-col items-center p-2">
-            <span className="text-[11px] font-mono text-neutral-500 mb-1 flex items-center gap-1">
-              <Zap className="w-3 h-3 text-amber-400" />
+            <span className="text-xs text-slate-400 mb-1 flex items-center gap-1.5 font-medium">
+              <Zap className="w-3.5 h-3.5 text-amber-400" />
               종합 확신도
             </span>
-            <span className="text-lg sm:text-xl font-bold text-neutral-100 font-mono">
+            <span className="text-lg sm:text-xl font-bold text-slate-100">
               {result.overallCertainty}%
             </span>
           </div>
 
           <div className="flex flex-col items-center p-2">
-            <span className="text-[11px] font-mono text-neutral-500 mb-1 flex items-center gap-1">
-              <Clock className="w-3 h-3 text-sky-400" />
+            <span className="text-xs text-slate-400 mb-1 flex items-center gap-1.5 font-medium">
+              <Clock className="w-3.5 h-3.5 text-indigo-400" />
               총 소요 시간
             </span>
-            <span className="text-lg sm:text-xl font-bold text-neutral-100 font-mono">
-              {(result.totalTestDuration / 1000).toFixed(1)}s
+            <span className="text-lg sm:text-xl font-bold text-slate-100">
+              {(result.totalTestDuration / 1000).toFixed(1)}초
             </span>
           </div>
 
           <div className="flex flex-col items-center p-2">
-            <span className="text-[11px] font-mono text-neutral-500 mb-1 flex items-center gap-1">
-              <Eye className="w-3 h-3 text-rose-400" />
-              선택지 호버 탐색
+            <span className="text-xs text-slate-400 mb-1 flex items-center gap-1.5 font-medium">
+              <Eye className="w-3.5 h-3.5 text-pink-400" />
+              선택지 탐색
             </span>
-            <span className="text-lg sm:text-xl font-bold text-neutral-100 font-mono">
+            <span className="text-lg sm:text-xl font-bold text-slate-100">
               {result.hoverAnalysis?.totalHoverCount ?? 0}회
             </span>
           </div>
@@ -464,7 +467,7 @@ export const ResultView: React.FC<ResultViewProps> = ({
       </div>
 
       {/* 2. Global Benchmark Stats & Percentiles */}
-      <div className="bg-neutral-900/60 border border-white/[0.08] rounded-3xl p-6 sm:p-8 shadow-xl space-y-6">
+      <div className="bg-neutral-900/60 border border-white/8 rounded-3xl p-6 sm:p-8 shadow-xl space-y-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2 text-xs font-mono text-neutral-400 uppercase tracking-wide">
             <BarChart3 className="w-3.5 h-3.5 text-emerald-400" />
@@ -476,7 +479,7 @@ export const ResultView: React.FC<ResultViewProps> = ({
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div className="bg-neutral-950/70 border border-white/[0.06] p-4 rounded-2xl flex flex-col justify-between">
+          <div className="bg-neutral-950/70 border border-white/6 p-4 rounded-2xl flex flex-col justify-between">
             <div>
               <span className="text-xs text-neutral-400 block mb-1">고민 속도 랭킹</span>
               <div className="flex items-baseline gap-2">
@@ -494,7 +497,7 @@ export const ResultView: React.FC<ResultViewProps> = ({
             </p>
           </div>
 
-          <div className="bg-neutral-950/70 border border-white/[0.06] p-4 rounded-2xl flex flex-col justify-between">
+          <div className="bg-neutral-950/70 border border-white/6 p-4 rounded-2xl flex flex-col justify-between">
             <div>
               <span className="text-xs text-neutral-400 block mb-1">자기 인식 일관성 랭킹</span>
               <div className="flex items-baseline gap-2">
@@ -513,7 +516,7 @@ export const ResultView: React.FC<ResultViewProps> = ({
         </div>
 
         {/* Global Persona Distribution Bar */}
-        <div className="bg-neutral-950/60 border border-white/[0.06] p-4 rounded-2xl">
+        <div className="bg-neutral-950/60 border border-white/6 p-4 rounded-2xl">
           <span className="text-xs font-mono text-neutral-400 block mb-3">
             전체 참여자 행동 페르소나 분포
           </span>
@@ -545,13 +548,13 @@ export const ResultView: React.FC<ResultViewProps> = ({
       </div>
 
       {/* 3. Micro-Hover Attention & Gaze Analysis */}
-      <div className="bg-neutral-900/60 border border-white/[0.08] rounded-3xl p-6 sm:p-8 shadow-xl">
+      <div className="bg-neutral-900/60 border border-white/8 rounded-3xl p-6 sm:p-8 shadow-xl">
         <div className="flex items-center gap-2 text-xs font-mono text-neutral-400 uppercase tracking-wide mb-4">
           <Eye className="w-3.5 h-3.5 text-amber-400" />
           <span>Micro-Hover Attention Analysis</span>
         </div>
 
-        <div className="bg-neutral-950/70 border border-white/[0.06] p-5 rounded-2xl mb-4">
+        <div className="bg-neutral-950/70 border border-white/6 p-5 rounded-2xl mb-4">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
             <h3 className="text-sm font-bold text-white">
               선택지 호버 체류 및 시선 망설임 지표
@@ -574,7 +577,7 @@ export const ResultView: React.FC<ResultViewProps> = ({
             {(result.hoverAnalysis?.conflictedHoverItems || []).map((item, idx) => (
               <div
                 key={idx}
-                className="bg-neutral-950/50 border border-white/[0.04] p-3.5 rounded-xl flex flex-col gap-1 text-xs"
+                className="bg-neutral-950/50 border border-white/4 p-3.5 rounded-xl flex flex-col gap-1 text-xs"
               >
                 <div className="text-neutral-300 font-medium">{item.questionTitle}</div>
                 <div className="text-neutral-400 font-light leading-relaxed">{item.interpretation}</div>
@@ -585,14 +588,14 @@ export const ResultView: React.FC<ResultViewProps> = ({
       </div>
 
       {/* 4. Behavior Profile Card */}
-      <div className="bg-neutral-900/60 border border-white/[0.08] rounded-3xl p-6 sm:p-8 shadow-xl">
+      <div className="bg-neutral-900/60 border border-white/8 rounded-3xl p-6 sm:p-8 shadow-xl">
         <div className="flex items-center gap-2 text-xs font-mono text-neutral-400 uppercase tracking-wide mb-4">
           <Activity className="w-3.5 h-3.5" />
           <span>Behavior Dynamics Profile</span>
         </div>
 
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-5">
-          <div className="w-12 h-12 rounded-2xl bg-white/[0.08] border border-white/[0.1] flex items-center justify-center shrink-0">
+          <div className="w-12 h-12 rounded-2xl bg-white/8 border border-white/10 flex items-center justify-center shrink-0">
             {getPersonaIcon(result.behaviorPersona?.iconName || 'Zap')}
           </div>
           <div>
@@ -609,7 +612,7 @@ export const ResultView: React.FC<ResultViewProps> = ({
               {(result.behaviorPersona?.tags || []).map((tag: string) => (
                 <span
                   key={tag}
-                  className="px-2.5 py-1 rounded-lg bg-neutral-950 border border-white/[0.06] text-neutral-400 text-xs font-mono"
+                  className="px-2.5 py-1 rounded-lg bg-neutral-950 border border-white/6 text-neutral-400 text-xs font-mono"
                 >
                   {tag}
                 </span>
@@ -620,7 +623,7 @@ export const ResultView: React.FC<ResultViewProps> = ({
       </div>
 
       {/* 5. 4 MBTI Dimensions */}
-      <div className="bg-neutral-900/60 border border-white/[0.08] rounded-3xl p-6 sm:p-8 shadow-xl">
+      <div className="bg-neutral-900/60 border border-white/8 rounded-3xl p-6 sm:p-8 shadow-xl">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-lg font-bold text-white font-mono tracking-tight">
             4-AXIS PREFERENCE & CERTAINTY
@@ -633,7 +636,7 @@ export const ResultView: React.FC<ResultViewProps> = ({
             return (
               <div
                 key={key}
-                className="bg-neutral-950/70 border border-white/[0.06] rounded-2xl p-4 sm:p-5"
+                className="bg-neutral-950/70 border border-white/6 rounded-2xl p-4 sm:p-5"
               >
                 <div className="flex justify-between items-center mb-2.5 text-xs font-mono">
                   <span
@@ -643,7 +646,7 @@ export const ResultView: React.FC<ResultViewProps> = ({
                   >
                     {dim.leftType} ({dim.leftScore}%)
                   </span>
-                  <span className="text-[11px] px-2 py-0.5 rounded-full bg-white/[0.05] text-neutral-300 border border-white/[0.08]">
+                  <span className="text-[11px] px-2 py-0.5 rounded-full bg-white/5 text-neutral-300 border border-white/8">
                     확신도 {dim.certaintyScore}%
                   </span>
                   <span
@@ -668,7 +671,7 @@ export const ResultView: React.FC<ResultViewProps> = ({
                 </div>
 
                 {/* Behavioral Note */}
-                <div className="text-xs text-neutral-400 font-light flex items-start gap-2 bg-neutral-900/60 p-2.5 rounded-xl border border-white/[0.04]">
+                <div className="text-xs text-neutral-400 font-light flex items-start gap-2 bg-neutral-900/60 p-2.5 rounded-xl border border-white/4">
                   <span className="text-neutral-500 font-mono text-[10px] uppercase shrink-0 mt-0.5">
                     NOTE
                   </span>
@@ -682,7 +685,7 @@ export const ResultView: React.FC<ResultViewProps> = ({
 
       {/* 6. All 12 Questions Full Telemetry & Trajectory Replayer */}
       {questionsList.length > 0 && (
-        <div className="bg-neutral-900/60 border border-white/[0.08] rounded-3xl p-6 sm:p-8 shadow-xl">
+        <div className="bg-neutral-900/60 border border-white/8 rounded-3xl p-6 sm:p-8 shadow-xl">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
             <div>
               <h2 className="text-lg font-bold text-white font-mono tracking-tight">
@@ -694,7 +697,7 @@ export const ResultView: React.FC<ResultViewProps> = ({
             </div>
 
             {/* Replayer View Mode Switcher */}
-            <div className="flex bg-neutral-950 p-1 rounded-xl border border-white/[0.06] text-xs font-mono self-start sm:self-auto">
+            <div className="flex bg-neutral-950 p-1 rounded-xl border border-white/6 text-xs font-mono self-start sm:self-auto">
               <button
                 type="button"
                 onClick={() => setReplayerMode('canvas')}
@@ -721,7 +724,7 @@ export const ResultView: React.FC<ResultViewProps> = ({
           </div>
 
           {/* 40-Question Responsive Grid Selector Pills */}
-          <div className="flex flex-wrap gap-1.5 mb-6 p-3 bg-neutral-950/80 rounded-2xl border border-white/[0.06] max-h-[175px] overflow-y-auto">
+          <div className="flex flex-wrap gap-1.5 mb-6 p-3 bg-neutral-950/80 rounded-2xl border border-white/6 max-h-43.75 overflow-y-auto">
             {questionsList.map((qDetail, idx) => {
               const isSelected = selectedQuestionIdx === idx;
               const hasChanges = qDetail.behavior.changeCount > 0;
@@ -730,10 +733,10 @@ export const ResultView: React.FC<ResultViewProps> = ({
                   key={qDetail.question.id}
                   type="button"
                   onClick={() => setSelectedQuestionIdx(idx)}
-                  className={`w-[42px] h-[34px] sm:w-[48px] sm:h-[38px] rounded-xl text-xs font-mono font-medium transition-all cursor-pointer touch-manipulation flex flex-col items-center justify-center relative shrink-0 ${
+                  className={`w-10.5 h-8.5 sm:w-12 sm:h-9.5 rounded-xl text-xs font-mono font-medium transition-all cursor-pointer touch-manipulation flex flex-col items-center justify-center relative shrink-0 ${
                     isSelected
                       ? 'bg-neutral-100 text-neutral-950 shadow-md scale-105 z-10'
-                      : 'bg-neutral-900/90 border border-white/[0.04] text-neutral-400 hover:text-white hover:border-white/[0.15]'
+                      : 'bg-neutral-900/90 border border-white/4 text-neutral-400 hover:text-white hover:border-white/15'
                   }`}
                 >
                   <span className="text-[10px] sm:text-[11px] font-bold">Q{idx + 1}</span>
@@ -748,7 +751,7 @@ export const ResultView: React.FC<ResultViewProps> = ({
           {/* Active Question Telemetry Card */}
           {questionsList[selectedQuestionIdx] && (
             <div className="space-y-4">
-              <div className="bg-neutral-950/80 border border-white/[0.06] p-4 rounded-2xl">
+              <div className="bg-neutral-950/80 border border-white/6 p-4 rounded-2xl">
                 <div className="flex items-center justify-between text-xs font-mono text-neutral-500 mb-1">
                   <span>QUESTION #{questionsList[selectedQuestionIdx].question.id}</span>
                   <span className="text-neutral-400">
@@ -788,7 +791,7 @@ export const ResultView: React.FC<ResultViewProps> = ({
 
       {/* 7. Persona Gap Analysis */}
       {result.personaGap?.detected && (
-        <div className="bg-neutral-900/60 border border-white/[0.08] rounded-3xl p-6 sm:p-8 shadow-xl">
+        <div className="bg-neutral-900/60 border border-white/8 rounded-3xl p-6 sm:p-8 shadow-xl">
           <h2 className="text-lg font-bold text-white font-mono tracking-tight mb-2">
             INSTINCT VS PERSONA GAP
           </h2>
@@ -798,21 +801,21 @@ export const ResultView: React.FC<ResultViewProps> = ({
             {(result.personaGap?.items || []).map((item, idx) => (
               <div
                 key={idx}
-                className="bg-neutral-950/70 border border-white/[0.06] rounded-2xl p-4 sm:p-5"
+                className="bg-neutral-950/70 border border-white/6 rounded-2xl p-4 sm:p-5"
               >
                 <h4 className="text-sm font-semibold text-neutral-200 mb-3">
                   {item.question.title}
                 </h4>
                 <div className="flex items-center gap-2 text-xs mb-3 font-mono">
-                  <span className="px-2.5 py-1 rounded-lg bg-neutral-900 border border-white/[0.08] text-neutral-400">
+                  <span className="px-2.5 py-1 rounded-lg bg-neutral-900 border border-white/8 text-neutral-400">
                     첫 직감: {item.initialChoiceText}
                   </span>
                   <span className="text-neutral-500">➔</span>
-                  <span className="px-2.5 py-1 rounded-lg bg-white/[0.06] border border-white/[12%] text-neutral-100 font-semibold">
+                  <span className="px-2.5 py-1 rounded-lg bg-white/6 border border-white/12 text-neutral-100 font-semibold">
                     최종 선택: {item.finalChoiceText}
                   </span>
                 </div>
-                <p className="text-xs text-neutral-400 leading-relaxed font-light bg-neutral-900/50 p-3 rounded-xl border border-white/[0.04]">
+                <p className="text-xs text-neutral-400 leading-relaxed font-light bg-neutral-900/50 p-3 rounded-xl border border-white/4">
                   💡 {item.psychologicalInterpretation}
                 </p>
               </div>
@@ -827,7 +830,7 @@ export const ResultView: React.FC<ResultViewProps> = ({
           <button
             type="button"
             onClick={() => setIsStoryModalOpen(true)}
-            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-full font-medium text-xs sm:text-sm bg-gradient-to-r from-emerald-950/80 to-teal-950/80 hover:from-emerald-900/90 hover:to-teal-900/90 text-emerald-300 border border-emerald-500/30 transition-all cursor-pointer shadow-sm touch-manipulation"
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-full font-medium text-xs sm:text-sm bg-linear-to-r from-emerald-950/80 to-teal-950/80 hover:from-emerald-900/90 hover:to-teal-900/90 text-emerald-300 border border-emerald-500/30 transition-all cursor-pointer shadow-sm touch-manipulation"
           >
             <Sparkles className="w-4 h-4 text-emerald-400" />
             <span>📸 인스타 스토리용 카드 (9:16)</span>
@@ -837,7 +840,7 @@ export const ResultView: React.FC<ResultViewProps> = ({
             type="button"
             onClick={handleDownloadCard}
             disabled={isExporting}
-            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-full font-medium text-xs sm:text-sm bg-neutral-900 hover:bg-neutral-800 text-neutral-200 border border-white/[0.1] transition-all cursor-pointer shadow-sm touch-manipulation"
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-full font-medium text-xs sm:text-sm bg-neutral-900 hover:bg-neutral-800 text-neutral-200 border border-white/10 transition-all cursor-pointer shadow-sm touch-manipulation"
           >
             <Download className="w-4 h-4 text-emerald-400" />
             <span>{isExporting ? '이미지 생성 중...' : '결과 카드 저장 (PNG)'}</span>
@@ -849,7 +852,7 @@ export const ResultView: React.FC<ResultViewProps> = ({
             className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-8 py-3.5 rounded-full font-bold text-sm bg-emerald-400 hover:bg-emerald-300 text-neutral-950 shadow-[0_0_25px_rgba(52,211,153,0.3)] hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer touch-manipulation"
           >
             <span>나도 행동 분석 MBTI 검사하기</span>
-            <ArrowRight className="w-4 h-4 stroke-[3]" />
+            <ArrowRight className="w-4 h-4 stroke-3" />
           </button>
         </div>
       ) : (
@@ -857,7 +860,7 @@ export const ResultView: React.FC<ResultViewProps> = ({
           <button
             type="button"
             onClick={() => setIsStoryModalOpen(true)}
-            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-full font-medium text-xs sm:text-sm bg-gradient-to-r from-emerald-950/80 to-teal-950/80 hover:from-emerald-900/90 hover:to-teal-900/90 text-emerald-300 border border-emerald-500/30 transition-all cursor-pointer shadow-sm touch-manipulation"
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-full font-medium text-xs sm:text-sm bg-linear-to-r from-emerald-950/80 to-teal-950/80 hover:from-emerald-900/90 hover:to-teal-900/90 text-emerald-300 border border-emerald-500/30 transition-all cursor-pointer shadow-sm touch-manipulation"
           >
             <Sparkles className="w-4 h-4 text-emerald-400" />
             <span>📸 인스타 스토리용 카드 (9:16)</span>
@@ -867,7 +870,7 @@ export const ResultView: React.FC<ResultViewProps> = ({
             type="button"
             onClick={handleDownloadCard}
             disabled={isExporting}
-            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-full font-medium text-xs sm:text-sm bg-neutral-900 hover:bg-neutral-800 text-neutral-200 border border-white/[0.1] transition-all cursor-pointer shadow-sm touch-manipulation"
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-full font-medium text-xs sm:text-sm bg-neutral-900 hover:bg-neutral-800 text-neutral-200 border border-white/10 transition-all cursor-pointer shadow-sm touch-manipulation"
           >
             <Download className="w-4 h-4 text-emerald-400" />
             <span>{isExporting ? '이미지 생성 중...' : '결과 카드 저장 (PNG)'}</span>
@@ -876,7 +879,7 @@ export const ResultView: React.FC<ResultViewProps> = ({
           <button
             type="button"
             onClick={handleCopyLink}
-            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-full font-medium text-xs sm:text-sm bg-neutral-900 hover:bg-neutral-800 text-neutral-200 border border-white/[0.1] transition-all cursor-pointer touch-manipulation"
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-full font-medium text-xs sm:text-sm bg-neutral-900 hover:bg-neutral-800 text-neutral-200 border border-white/10 transition-all cursor-pointer touch-manipulation"
           >
             {copied ? <Check className="w-4 h-4 text-emerald-400" /> : <Share2 className="w-4 h-4" />}
             <span>{copied ? '공유 링크 복사 완료!' : '결과 공유 링크 복사'}</span>

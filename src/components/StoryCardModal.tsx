@@ -32,7 +32,7 @@ export const StoryCardModal: React.FC<StoryCardModalProps> = ({
         cacheBust: true,
         pixelRatio: 2.5, // Crisp 1080x1920 scale
         quality: 0.95,
-        backgroundColor: '#07080c',
+        backgroundColor: '#0b0f17',
       });
 
       const link = document.createElement('a');
@@ -54,11 +54,11 @@ export const StoryCardModal: React.FC<StoryCardModalProps> = ({
       case 'Brain':
         return <Brain className="w-5 h-5 text-purple-400" />;
       case 'Compass':
-        return <Compass className="w-5 h-5 text-sky-400" />;
+        return <Compass className="w-5 h-5 text-indigo-400" />;
       case 'Sparkles':
-        return <Sparkles className="w-5 h-5 text-emerald-400" />;
+        return <Sparkles className="w-5 h-5 text-pink-400" />;
       default:
-        return <Target className="w-5 h-5 text-rose-400" />;
+        return <Target className="w-5 h-5 text-indigo-400" />;
     }
   };
 
@@ -74,7 +74,7 @@ export const StoryCardModal: React.FC<StoryCardModalProps> = ({
           <button
             type="button"
             onClick={onClose}
-            className="w-8 h-8 rounded-full bg-white/[0.08] hover:bg-white/[0.15] text-white flex items-center justify-center transition-colors cursor-pointer"
+            className="w-8 h-8 rounded-full bg-white/8 hover:bg-white/15 text-white flex items-center justify-center transition-colors cursor-pointer"
           >
             <X className="w-4 h-4" />
           </button>
@@ -83,7 +83,7 @@ export const StoryCardModal: React.FC<StoryCardModalProps> = ({
         {/* 9:16 Card Container (Captured by html-to-image) */}
         <div
           ref={cardRef}
-          className="w-[340px] h-[604px] bg-[#07080c] text-white rounded-[32px] p-6 border border-white/[0.12] shadow-2xl relative overflow-hidden flex flex-col justify-between selection:bg-none"
+          className="w-85 h-151 bg-[#07080c] text-white rounded-4xl p-6 border border-white/12 shadow-2xl relative overflow-hidden flex flex-col justify-between selection:bg-none"
           style={{
             backgroundImage: `
               radial-gradient(circle at 50% 0%, rgba(16, 185, 129, 0.12) 0%, transparent 65%),
@@ -96,16 +96,16 @@ export const StoryCardModal: React.FC<StoryCardModalProps> = ({
           <div className="absolute inset-0 bg-grid-pattern opacity-10 pointer-events-none" />
 
           {/* Top Brand Header */}
-          <div className="relative z-10 flex items-center justify-between border-b border-white/[0.08] pb-3">
+          <div className="relative z-10 flex items-center justify-between border-b border-white/8 pb-3">
             <div className="flex items-center gap-2">
-              <div className="w-6 h-6 rounded-lg bg-white/[0.08] border border-white/[0.12] flex items-center justify-center text-emerald-400">
+              <div className="w-6 h-6 rounded-lg bg-white/8 border border-white/12 flex items-center justify-center text-emerald-400">
                 <Compass className="w-3.5 h-3.5" />
               </div>
               <span className="font-mono text-xs font-bold tracking-wider">
                 BEHAVIOR<span className="text-emerald-400">.MBTI</span>
               </span>
             </div>
-            <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-white/[0.06] text-neutral-400 border border-white/[0.06]">
+            <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-white/6 text-neutral-400 border border-white/6">
               TELEMETRY DOSSIER
             </span>
           </div>
@@ -115,7 +115,7 @@ export const StoryCardModal: React.FC<StoryCardModalProps> = ({
             <div className="inline-block px-3 py-0.5 rounded-full bg-emerald-400/10 border border-emerald-400/20 text-emerald-400 text-[10px] font-mono mb-2">
               무의식 행동 진단 완료
             </div>
-            <h1 className="text-6xl font-black tracking-tight font-mono text-transparent bg-clip-text bg-gradient-to-b from-white via-neutral-100 to-neutral-400 drop-shadow-sm">
+            <h1 className="text-6xl font-black tracking-tight font-mono text-transparent bg-clip-text bg-linear-to-b from-white via-neutral-100 to-neutral-400 drop-shadow-sm">
               {result.mbti}
             </h1>
             <h2 className="text-base font-bold text-neutral-100 mt-1">
@@ -126,8 +126,8 @@ export const StoryCardModal: React.FC<StoryCardModalProps> = ({
             </p>
 
             {/* Persona Badge */}
-            <div className="mt-3.5 p-3 rounded-2xl bg-white/[0.03] border border-white/[0.08] backdrop-blur-sm text-left flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-neutral-900 border border-white/[0.1] flex items-center justify-center shrink-0 shadow-inner">
+            <div className="mt-3.5 p-3 rounded-2xl bg-white/3 border border-white/8 backdrop-blur-sm text-left flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-neutral-900 border border-white/10 flex items-center justify-center shrink-0 shadow-inner">
                 {getPersonaIcon(result.behaviorPersona.iconName)}
               </div>
               <div className="min-w-0">
@@ -146,7 +146,7 @@ export const StoryCardModal: React.FC<StoryCardModalProps> = ({
             {/* 4-Axis Certainty Mini Bars */}
             <div className="mt-3 grid grid-cols-2 gap-1.5 text-left">
               {Object.entries(result.dimensions).map(([key, dim]) => (
-                <div key={key} className="bg-neutral-950/80 p-1.5 px-2.5 rounded-xl border border-white/[0.04]">
+                <div key={key} className="bg-neutral-950/80 p-1.5 px-2.5 rounded-xl border border-white/4">
                   <div className="flex justify-between text-[10px] font-mono mb-1">
                     <span className="text-white font-bold">{dim.winner}</span>
                     <span className="text-emerald-400">{dim.winnerPercentage}%</span>
@@ -163,7 +163,7 @@ export const StoryCardModal: React.FC<StoryCardModalProps> = ({
           </div>
 
           {/* Key Stats Row */}
-          <div className="relative z-10 grid grid-cols-3 gap-1.5 p-2 rounded-2xl bg-neutral-950/80 border border-white/[0.06] text-center my-1">
+          <div className="relative z-10 grid grid-cols-3 gap-1.5 p-2 rounded-2xl bg-neutral-950/80 border border-white/6 text-center my-1">
             <div>
               <span className="text-[9px] font-mono text-neutral-500 block">종합 확신도</span>
               <span className="text-xs font-bold text-amber-400 font-mono">
@@ -185,12 +185,12 @@ export const StoryCardModal: React.FC<StoryCardModalProps> = ({
           </div>
 
           {/* Tags & Domain Footer */}
-          <div className="relative z-10 pt-2 border-t border-white/[0.06] flex flex-col gap-1.5">
+          <div className="relative z-10 pt-2 border-t border-white/6 flex flex-col gap-1.5">
             <div className="flex flex-wrap justify-center gap-1">
               {result.behaviorPersona.tags.slice(0, 3).map((tag) => (
                 <span
                   key={tag}
-                  className="text-[9px] font-mono px-2 py-0.5 rounded-md bg-white/[0.04] text-neutral-300 border border-white/[0.06]"
+                  className="text-[9px] font-mono px-2 py-0.5 rounded-md bg-white/4 text-neutral-300 border border-white/6"
                 >
                   {tag}
                 </span>
@@ -212,7 +212,7 @@ export const StoryCardModal: React.FC<StoryCardModalProps> = ({
           type="button"
           disabled={isExporting}
           onClick={handleDownload}
-          className="mt-4 w-full flex items-center justify-center gap-2 py-3.5 px-6 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 active:scale-[0.98] text-neutral-950 font-bold text-sm shadow-lg shadow-emerald-950/50 transition-all cursor-pointer touch-manipulation disabled:opacity-50"
+          className="mt-4 w-full flex items-center justify-center gap-2 py-3.5 px-6 rounded-2xl bg-linear-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 active:scale-[0.98] text-neutral-950 font-bold text-sm shadow-lg shadow-emerald-950/50 transition-all cursor-pointer touch-manipulation disabled:opacity-50"
         >
           {isExporting ? (
             <>

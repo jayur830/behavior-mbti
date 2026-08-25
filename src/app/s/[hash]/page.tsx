@@ -102,38 +102,42 @@ export default async function ShortLinkPage({ params }: Props) {
   }
 
   return (
-    <div className="min-h-screen bg-[#090a0f] text-neutral-100 flex flex-col justify-between selection:bg-neutral-200 selection:text-neutral-900 bg-grid-pattern relative">
-      <header className="w-full border-b border-white/[0.06] backdrop-blur-md sticky top-0 z-40 bg-[#090a0f]/80">
-        <div className="max-w-4xl mx-auto px-4 h-16 flex items-center justify-between">
+    <div className="min-h-screen flex flex-col justify-between selection:bg-indigo-500/20 selection:text-indigo-200 relative">
+      <header className="w-full border-b border-slate-800/60 backdrop-blur-xl sticky top-0 z-40 bg-[#0b0f17]/70">
+        <div className="max-w-5xl mx-auto px-6 h-16 flex items-center justify-between">
           <Link
             href="/"
-            className="flex items-center gap-2.5 font-mono text-sm tracking-widest text-neutral-200 hover:text-white transition-colors"
+            className="flex items-center gap-3 font-semibold text-slate-100 hover:text-white transition-colors"
           >
-            <div className="w-7 h-7 rounded-lg bg-white/[0.08] border border-white/[0.1] flex items-center justify-center text-neutral-100">
-              <Compass className="w-4 h-4 text-emerald-400" />
+            <div className="w-8 h-8 rounded-xl bg-slate-800 border border-slate-700/80 flex items-center justify-center text-slate-200 font-bold text-sm tracking-tighter">
+              B
             </div>
-            <span className="font-bold">
-              BEHAVIOR<span className="text-neutral-500">.MBTI</span>
+            <span className="tracking-tight text-base font-bold">
+              Behavior <span className="text-slate-400 font-normal">MBTI</span>
             </span>
           </Link>
 
-          <div className="flex items-center gap-2 text-xs font-mono text-neutral-400">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-            <span className="hidden sm:inline">SHARED PREVIEW</span>
-          </div>
+          <Link
+            href="/test"
+            className="px-4 py-2 rounded-full text-xs font-semibold bg-white hover:bg-slate-100 text-slate-950 transition-all cursor-pointer touch-manipulation"
+          >
+            나도 검사하기
+          </Link>
         </div>
       </header>
 
-      <main className="flex-1 flex flex-col justify-center items-center px-4 py-8">
+      <main className="flex-1 flex flex-col justify-center items-center px-4 py-10">
         <ResultView result={decoded} isSharedView={true} />
       </main>
 
-      <footer className="w-full border-t border-white/[0.04] py-6 text-center text-xs text-neutral-500 font-mono">
-        <div className="max-w-4xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
-          <span>© 2026 BEHAVIOR MBTI RESEARCH</span>
-          <span className="text-neutral-400 text-[11px]">
-            MICRO-INTERACTION BEHAVIORAL PSYCHOMETRICS
-          </span>
+      <footer className="w-full border-t border-slate-800/50 py-8 text-center text-xs text-slate-500">
+        <div className="max-w-5xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <p>© 2026 Behavior MBTI. Micro-Interaction Psychometrics.</p>
+          <div className="flex items-center gap-6 text-slate-400">
+            <span>정밀 궤적 분석</span>
+            <span>·</span>
+            <span>데이터 비저장 안전 검사</span>
+          </div>
         </div>
       </footer>
     </div>
