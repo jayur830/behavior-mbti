@@ -448,7 +448,7 @@ export const MouseReplayCanvas: FC<MouseReplayCanvasProps> = ({ behaviorLog, wid
               <button
                 type="button"
                 onClick={handleTogglePlay}
-                className="p-1.5 rounded-lg bg-white/8 hover:bg-white/[0.14] text-white transition-colors flex items-center gap-1.5 px-3 font-sans text-xs cursor-pointer"
+                className="p-1.5 rounded-lg bg-white/8 hover:bg-white/14 text-white transition-colors flex items-center gap-1.5 px-3 font-sans text-xs cursor-pointer"
               >
                 {isPlaying ? (
                   <>

@@ -64,13 +64,13 @@ export default async function ShortLinkPage({ params }: Props) {
   if (!decoded) {
     return (
       <div className="min-h-screen bg-[#090a0f] text-neutral-100 flex flex-col justify-between selection:bg-neutral-200 selection:text-neutral-900 bg-grid-pattern relative">
-        <header className="w-full border-b border-white/[0.06] backdrop-blur-md sticky top-0 z-40 bg-[#090a0f]/80">
+        <header className="w-full border-b border-white/6 backdrop-blur-md sticky top-0 z-40 bg-[#090a0f]/80">
           <div className="max-w-4xl mx-auto px-4 h-16 flex items-center justify-between">
             <Link
               href="/"
               className="flex items-center gap-2.5 font-mono text-sm tracking-widest text-neutral-200 hover:text-white transition-colors"
             >
-              <div className="w-7 h-7 rounded-lg bg-white/[0.08] border border-white/[0.1] flex items-center justify-center text-neutral-100">
+              <div className="w-7 h-7 rounded-lg bg-white/8 border border-white/10 flex items-center justify-center text-neutral-100">
                 <Compass className="w-4 h-4 text-emerald-400" />
               </div>
               <span className="font-bold">
@@ -82,7 +82,7 @@ export default async function ShortLinkPage({ params }: Props) {
 
         <main className="flex-1 flex flex-col justify-center items-center px-4 py-8">
           <div className="flex flex-col items-center justify-center text-center p-8 max-w-md mx-auto my-auto">
-            <div className="w-12 h-12 rounded-full border border-white/[0.1] bg-neutral-900 flex items-center justify-center mb-6">
+            <div className="w-12 h-12 rounded-full border border-white/10 bg-neutral-900 flex items-center justify-center mb-6">
               <Activity className="w-5 h-5 text-amber-400" />
             </div>
             <h2 className="text-xl font-bold text-white mb-2">분석 리포트 데이터를 찾을 수 없습니다</h2>

@@ -71,7 +71,7 @@ export const TouchTimelinePlayer: FC<TouchTimelinePlayerProps> = ({ behaviorLog 
   };
 
   return (
-    <div className="w-full bg-neutral-950 border border-white/[0.08] rounded-2xl p-4 sm:p-5 shadow-xl text-neutral-100 font-sans">
+    <div className="w-full bg-neutral-950 border border-white/8 rounded-2xl p-4 sm:p-5 shadow-xl text-neutral-100 font-sans">
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
@@ -86,7 +86,7 @@ export const TouchTimelinePlayer: FC<TouchTimelinePlayerProps> = ({ behaviorLog 
       </div>
 
       {/* Touch Latency & Timeline Visualization */}
-      <div className="space-y-3 bg-[#07080c] border border-white/[0.06] rounded-xl p-4 mb-4">
+      <div className="space-y-3 bg-[#07080c] border border-white/6 rounded-xl p-4 mb-4">
         {/* Timeline Flow Bar */}
         <div className="relative w-full h-3 bg-neutral-900 rounded-full overflow-hidden mb-3">
           {/* First Tap Latency Zone */}
@@ -97,7 +97,7 @@ export const TouchTimelinePlayer: FC<TouchTimelinePlayerProps> = ({ behaviorLog 
 
           {/* Active playback sweep */}
           <div
-            className="h-full bg-gradient-to-r from-sky-400 via-emerald-400 to-amber-400 transition-all duration-75"
+            className="h-full bg-linear-to-r from-sky-400 via-emerald-400 to-amber-400 transition-all duration-75"
             style={{ width: `${progress * 100}%` }}
           />
 
@@ -118,7 +118,7 @@ export const TouchTimelinePlayer: FC<TouchTimelinePlayerProps> = ({ behaviorLog 
 
         {/* Phase Breakdown Badges */}
         <div className="grid grid-cols-3 gap-2 text-center text-xs font-mono">
-          <div className="bg-white/[0.03] border border-white/[0.06] p-2.5 rounded-xl flex flex-col items-center">
+          <div className="bg-white/3 border border-white/6 p-2.5 rounded-xl flex flex-col items-center">
             <span className="text-[10px] text-neutral-500 flex items-center gap-1 mb-1">
               <Clock className="w-3 h-3 text-sky-400" />첫 터치 잠복기
             </span>
@@ -126,7 +126,7 @@ export const TouchTimelinePlayer: FC<TouchTimelinePlayerProps> = ({ behaviorLog 
             <span className="text-[9px] text-neutral-500 mt-0.5">질문 숙고 시간</span>
           </div>
 
-          <div className="bg-white/[0.03] border border-white/[0.06] p-2.5 rounded-xl flex flex-col items-center">
+          <div className="bg-white/3 border border-white/6 p-2.5 rounded-xl flex flex-col items-center">
             <span className="text-[10px] text-neutral-500 flex items-center gap-1 mb-1">
               <Fingerprint className="w-3 h-3 text-emerald-400" />
               터치 프레스 시간
@@ -135,7 +135,7 @@ export const TouchTimelinePlayer: FC<TouchTimelinePlayerProps> = ({ behaviorLog 
             <span className="text-[9px] text-neutral-500 mt-0.5">{pressMs < 120 ? '단호한 탭' : '신중한 롱터치'}</span>
           </div>
 
-          <div className="bg-white/[0.03] border border-white/[0.06] p-2.5 rounded-xl flex flex-col items-center">
+          <div className="bg-white/3 border border-white/6 p-2.5 rounded-xl flex flex-col items-center">
             <span className="text-[10px] text-neutral-500 flex items-center gap-1 mb-1">
               <ArrowRight className="w-3 h-3 text-amber-400" />
               확정 딜레이
@@ -147,11 +147,11 @@ export const TouchTimelinePlayer: FC<TouchTimelinePlayerProps> = ({ behaviorLog 
 
         {/* Tap Selection Path */}
         {taps.length > 0 && (
-          <div className="pt-2 border-t border-white/[0.04] text-xs flex items-center gap-2 text-neutral-400 font-mono overflow-x-auto">
+          <div className="pt-2 border-t border-white/4 text-xs flex items-center gap-2 text-neutral-400 font-mono overflow-x-auto">
             <span className="text-[11px] text-neutral-500 shrink-0">터치 시퀀스:</span>
             {taps.map((t, idx) => (
               <span key={idx} className="flex items-center gap-1 shrink-0">
-                <span className="px-2 py-0.5 rounded bg-white/[0.06] text-neutral-200 font-semibold text-[11px]">
+                <span className="px-2 py-0.5 rounded bg-white/6 text-neutral-200 font-semibold text-[11px]">
                   #{idx + 1} {getOptionLabel(t.value)}
                 </span>
                 {idx < taps.length - 1 && <span className="text-neutral-600">➔</span>}
@@ -167,7 +167,7 @@ export const TouchTimelinePlayer: FC<TouchTimelinePlayerProps> = ({ behaviorLog 
           <button
             type="button"
             onClick={handleToggle}
-            className="p-1.5 rounded-lg bg-white/[0.08] hover:bg-white/[0.14] text-white transition-colors flex items-center gap-1.5 px-3 font-sans text-xs"
+            className="p-1.5 rounded-lg bg-white/8 hover:bg-white/14 text-white transition-colors flex items-center gap-1.5 px-3 font-sans text-xs"
           >
             {isPlaying ? (
               <>
@@ -182,7 +182,7 @@ export const TouchTimelinePlayer: FC<TouchTimelinePlayerProps> = ({ behaviorLog 
           <button
             type="button"
             onClick={handleRestart}
-            className="p-1.5 rounded-lg bg-transparent hover:bg-white/[0.06] text-neutral-400 hover:text-white transition-colors flex items-center gap-1 px-2 font-sans text-xs"
+            className="p-1.5 rounded-lg bg-transparent hover:bg-white/6 text-neutral-400 hover:text-white transition-colors flex items-center gap-1 px-2 font-sans text-xs"
           >
             <RotateCcw className="w-3 h-3" /> 다시보기
           </button>

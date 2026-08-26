@@ -21,7 +21,7 @@ function PreviewContent() {
   if (!result) {
     return (
       <div className="flex flex-col items-center justify-center text-center p-8 max-w-md mx-auto my-auto">
-        <div className="w-12 h-12 rounded-full border border-white/[0.1] bg-neutral-900 flex items-center justify-center mb-6">
+        <div className="w-12 h-12 rounded-full border border-white/10 bg-neutral-900 flex items-center justify-center mb-6">
           <Activity className="w-5 h-5 text-amber-400" />
         </div>
         <h2 className="text-xl font-bold text-white mb-2">공유된 분석 리포트를 찾을 수 없습니다</h2>
@@ -49,14 +49,14 @@ export default function PreviewClient() {
   return (
     <div className="min-h-screen bg-[#090a0f] text-neutral-100 flex flex-col justify-between selection:bg-neutral-200 selection:text-neutral-900 bg-grid-pattern relative">
       {/* Navigation Header */}
-      <header className="w-full border-b border-white/[0.06] backdrop-blur-md sticky top-0 z-40 bg-[#090a0f]/80">
+      <header className="w-full border-b border-white/6 backdrop-blur-md sticky top-0 z-40 bg-[#090a0f]/80">
         <div className="max-w-4xl mx-auto px-4 h-16 flex items-center justify-between">
           <button
             type="button"
             onClick={() => router.push('/')}
             className="flex items-center gap-2.5 font-mono text-sm tracking-widest text-neutral-200 hover:text-white transition-colors cursor-pointer touch-manipulation"
           >
-            <div className="w-7 h-7 rounded-lg bg-white/[0.08] border border-white/[0.1] flex items-center justify-center text-neutral-100">
+            <div className="w-7 h-7 rounded-lg bg-white/8 border border-white/10 flex items-center justify-center text-neutral-100">
               <Compass className="w-4 h-4 text-emerald-400" />
             </div>
             <span className="font-bold">
@@ -85,7 +85,7 @@ export default function PreviewClient() {
       </main>
 
       {/* Minimal Footer */}
-      <footer className="w-full border-t border-white/[0.04] py-6 text-center text-xs text-neutral-500 font-mono">
+      <footer className="w-full border-t border-white/4 py-6 text-center text-xs text-neutral-500 font-mono">
         <div className="max-w-4xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
           <span>© 2026 PersonaLens. All rights reserved.</span>
           <span className="text-neutral-500 text-[11px]">BEHAVIORAL INTERACTION ANALYSIS</span>
