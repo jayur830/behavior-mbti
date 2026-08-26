@@ -409,6 +409,60 @@ export const MouseReplayCanvas: FC<MouseReplayCanvasProps> = ({
     setIsPlaying(true);
   };
 
+  const scrubberRef = useRef<HTMLDivElement | null>(null);
+  const [isDragging, setIsDragging] = useState<boolean>(false);
+  const wasPlayingBeforeDragRef = useRef<boolean>(false);
+
+  const updateScrubFromClientX = useCallback(
+    (clientX: number) => {
+      const el = scrubberRef.current;
+      if (!el) return;
+      const rect = el.getBoundingClientRect();
+      const clickX = clientX - rect.left;
+      const ratio = Math.max(0, Math.min(1, clickX / rect.width));
+      const targetTime = ratio * duration;
+
+      pausedTimeOffsetRef.current = targetTime;
+      setPlaybackProgress(ratio);
+      drawFrame(targetTime);
+    },
+    [duration, drawFrame],
+  );
+
+  const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    try {
+      e.currentTarget.setPointerCapture?.(e.pointerId);
+    } catch {
+      // ignore in test env
+    }
+    setIsDragging(true);
+    wasPlayingBeforeDragRef.current = isPlaying;
+    setIsPlaying(false);
+    updateScrubFromClientX(e.clientX);
+  };
+
+  const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!isDragging) return;
+    updateScrubFromClientX(e.clientX);
+  };
+
+  const handlePointerUp = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!isDragging) return;
+    try {
+      e.currentTarget.releasePointerCapture?.(e.pointerId);
+    } catch {
+      // ignore
+    }
+    setIsDragging(false);
+    if (wasPlayingBeforeDragRef.current && playbackProgress < 1) {
+      playStartTimeRef.current = performance.now();
+      setIsPlaying(true);
+    }
+  };
+
+  const currentTimeSec = ((playbackProgress * duration) / 1000).toFixed(1);
+  const totalDurationSec = (duration / 1000).toFixed(1);
+
   return (
     <Card className="w-full bg-card dark:bg-neutral-950 border-border rounded-2xl p-4 sm:p-5 shadow-xl text-foreground font-sans">
       {/* Header Bar */}
@@ -418,31 +472,39 @@ export const MouseReplayCanvas: FC<MouseReplayCanvasProps> = ({
           <span className="text-foreground font-semibold uppercase tracking-wider">Mouse Telemetry Canvas</span>
         </div>
 
-        {/* View Mode Toggle */}
-        <div className="flex items-center bg-muted p-0.5 rounded-lg border border-border">
-          <button
-            type="button"
-            onClick={() => handleSwitchViewMode('replay')}
-            className={`px-2.5 py-1 rounded-md transition-all cursor-pointer ${
-              viewMode === 'replay'
-                ? 'bg-indigo-600 text-white font-semibold shadow-xs'
-                : 'text-muted-foreground hover:text-foreground'
-            }`}
-          >
-            궤적 재생
-          </button>
-          <button
-            type="button"
-            onClick={() => handleSwitchViewMode('heatmap')}
-            className={`px-2.5 py-1 rounded-md flex items-center gap-1 transition-all cursor-pointer ${
-              viewMode === 'heatmap'
-                ? 'bg-amber-600 text-white font-semibold shadow-xs'
-                : 'text-muted-foreground hover:text-foreground'
-            }`}
-          >
-            <Flame className="w-3 h-3 text-amber-300" />
-            히트맵
-          </button>
+        <div className="flex items-center gap-3">
+          {viewMode === 'replay' && (
+            <span className="text-xs font-mono font-medium text-indigo-600 dark:text-indigo-400 bg-indigo-500/10 px-2 py-0.5 rounded-md">
+              {currentTimeSec}s / {totalDurationSec}s
+            </span>
+          )}
+
+          {/* View Mode Toggle */}
+          <div className="flex items-center bg-muted p-0.5 rounded-lg border border-border">
+            <button
+              type="button"
+              onClick={() => handleSwitchViewMode('replay')}
+              className={`px-2.5 py-1 rounded-md transition-all cursor-pointer ${
+                viewMode === 'replay'
+                  ? 'bg-indigo-600 text-white font-semibold shadow-xs'
+                  : 'text-muted-foreground hover:text-foreground'
+              }`}
+            >
+              궤적 재생
+            </button>
+            <button
+              type="button"
+              onClick={() => handleSwitchViewMode('heatmap')}
+              className={`px-2.5 py-1 rounded-md flex items-center gap-1 transition-all cursor-pointer ${
+                viewMode === 'heatmap'
+                  ? 'bg-amber-600 text-white font-semibold shadow-xs'
+                  : 'text-muted-foreground hover:text-foreground'
+              }`}
+            >
+              <Flame className="w-3 h-3 text-amber-300" />
+              히트맵
+            </button>
+          </div>
         </div>
       </div>
 
@@ -463,9 +525,64 @@ export const MouseReplayCanvas: FC<MouseReplayCanvasProps> = ({
         )}
       </div>
 
+      {/* Replay Timeline Progress Scrubber Gauge Bar (Click & Drag Supported) */}
+      {viewMode === 'replay' && (
+        <div className="mt-3.5 space-y-1.5 select-none">
+          <div
+            ref={scrubberRef}
+            role="progressbar"
+            aria-valuenow={Math.round(playbackProgress * 100)}
+            aria-valuemin={0}
+            aria-valuemax={100}
+            onPointerDown={handlePointerDown}
+            onPointerMove={handlePointerMove}
+            onPointerUp={handlePointerUp}
+            onPointerCancel={handlePointerUp}
+            className={`group relative w-full h-3 bg-muted rounded-full cursor-grab active:cursor-grabbing overflow-visible touch-none transition-all ${
+              isDragging ? 'ring-2 ring-indigo-500/50' : ''
+            }`}
+          >
+            {/* Active playback sweep gauge */}
+            <div className="relative w-full h-full rounded-full overflow-hidden">
+              <div
+                className="h-full bg-linear-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-full"
+                style={{ width: `${playbackProgress * 100}%` }}
+              />
+            </div>
+
+            {/* Drag Handle Thumb */}
+            <div
+              className={`absolute top-1/2 -translate-y-1/2 w-4 h-4 bg-white dark:bg-slate-100 rounded-full border-2 border-indigo-600 shadow-md transition-transform pointer-events-none -ml-2 ${
+                isDragging ? 'scale-125' : 'group-hover:scale-110'
+              }`}
+              style={{ left: `${playbackProgress * 100}%` }}
+            />
+
+            {/* Click Event Markers on Timeline */}
+            {clicks.map((c, idx) => {
+              const clickRatio = Math.min(1, c.timestamp / duration);
+              return (
+                <div
+                  key={idx}
+                  title={`#${idx + 1} 선택 클릭: ${(c.timestamp / 1000).toFixed(1)}s`}
+                  className="absolute top-0 bottom-0 w-1.5 -ml-0.75 bg-amber-400 shadow-[0_0_6px_rgba(245,158,11,0.9)] rounded-full pointer-events-none"
+                  style={{ left: `${clickRatio * 100}%` }}
+                />
+              );
+            })}
+          </div>
+
+          <div className="flex items-center justify-between text-[11px] font-mono text-muted-foreground px-0.5">
+            <span>0.0s</span>
+            <span className="font-semibold text-foreground">{currentTimeSec}s</span>
+            <span>{totalDurationSec}s</span>
+          </div>
+        </div>
+      )}
+
       {/* Replay Controls & Stats */}
       {viewMode === 'replay' ? (
-        <div className="mt-4 flex flex-col sm:flex-row items-center justify-between gap-3 pt-3 border-t border-border text-xs">
+        <div className="mt-3 flex flex-col sm:flex-row items-center justify-between gap-3 pt-3 border-t border-border text-xs">
           <div className="flex items-center gap-2 w-full sm:w-auto">
             <Button
               type="button"

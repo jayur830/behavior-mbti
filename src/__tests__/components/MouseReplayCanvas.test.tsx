@@ -62,4 +62,15 @@ describe('MouseReplayCanvas 컴포넌트 테스트', () => {
     expect(screen.getByRole('button', { name: /^(일시정지|재생)$/i })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /처음부터/i })).toBeInTheDocument();
   });
+
+  it('궤적 재생 모드에서 프로그레스 게이지 바와 타임 인디케이터가 정상 렌더링되어야 한다', () => {
+    render(<MouseReplayCanvas behaviorLog={mockBehaviorLog} />);
+
+    // progressbar 게이지 렌더링 확인
+    expect(screen.getByRole('progressbar')).toBeInTheDocument();
+
+    // 0.0s 및 총 소요 시간(2.5s) 확인
+    expect(screen.getAllByText(/0\.0s/).length).toBeGreaterThanOrEqual(1);
+    expect(screen.getAllByText(/2\.5s/).length).toBeGreaterThanOrEqual(1);
+  });
 });
