@@ -18,7 +18,7 @@ export default async function Image({ searchParams }: { searchParams?: Promise<{
   let title = '행동 인터랙션 성향 리포트';
   let persona = '초고속 직진 결단파';
   let certainty = '85%';
-  let speed = '상위 15%';
+  let duration = '45.0s';
   let isDecoded = false;
 
   if (data) {
@@ -29,7 +29,7 @@ export default async function Image({ searchParams }: { searchParams?: Promise<{
         title = decoded.mbtiTitle;
         persona = decoded.behaviorPersona.title;
         certainty = `${decoded.overallCertainty}%`;
-        speed = `상위 ${decoded.benchmark.dwellTimePercentile}%`;
+        duration = `${(decoded.totalTestDuration / 1000).toFixed(1)}s`;
         isDecoded = true;
       }
     } catch (err) {
@@ -185,8 +185,8 @@ export default async function Image({ searchParams }: { searchParams?: Promise<{
               <span style={{ fontSize: '20px', fontWeight: 800, color: '#fbbf24' }}>{certainty}</span>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column' }}>
-              <span style={{ fontSize: '12px', color: '#71717a' }}>고민 속도</span>
-              <span style={{ fontSize: '20px', fontWeight: 800, color: '#34d399' }}>{speed}</span>
+              <span style={{ fontSize: '12px', color: '#71717a' }}>총 소요 시간</span>
+              <span style={{ fontSize: '20px', fontWeight: 800, color: '#34d399' }}>{duration}</span>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column' }}>
               <span style={{ fontSize: '12px', color: '#71717a' }}>문항 수</span>

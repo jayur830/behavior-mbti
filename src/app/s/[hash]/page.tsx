@@ -36,7 +36,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 
   const title = `[${decoded.mbti} · ${decoded.behaviorPersona?.title || '성격 진단'}] 친구의 무의식 행동 MBTI 분석 리포트 | PersonaLens`;
-  const description = `${decoded.mbtiTitle || 'MBTI 분석'} | 종합 확신도 ${decoded.overallCertainty || 85}% · 고민 속도 상위 ${decoded.benchmark?.dwellTimePercentile || 50}%`;
+  const description = `${decoded.mbtiTitle || 'MBTI 분석'} | 종합 확신도 ${decoded.overallCertainty || 85}% · 총 소요 시간 ${((decoded.totalTestDuration || 45000) / 1000).toFixed(1)}초`;
 
   return {
     title,

@@ -124,7 +124,7 @@ export const StoryCardModal: FC<StoryCardModalProps> = ({ result, isOpen, onClos
                 {getPersonaIcon(result.behaviorPersona.iconName)}
               </div>
               <div className="min-w-0">
-                <span className="text-[9px] font-mono text-neutral-500 block uppercase">행동 페르소나</span>
+                <span className="text-[9px] text-neutral-400 font-medium block">행동 페르소나</span>
                 <span className="text-xs font-bold text-white block truncate">{result.behaviorPersona.title}</span>
                 <span className="text-[10px] text-neutral-400 block truncate">{result.behaviorPersona.subtitle}</span>
               </div>
@@ -149,20 +149,18 @@ export const StoryCardModal: FC<StoryCardModalProps> = ({ result, isOpen, onClos
           {/* Key Stats Row */}
           <div className="relative z-10 grid grid-cols-3 gap-1.5 p-2 rounded-2xl bg-neutral-950/80 border border-white/6 text-center my-1">
             <div>
-              <span className="text-[9px] font-mono text-neutral-500 block">종합 확신도</span>
+              <span className="text-[9px] text-neutral-400 font-medium block">종합 확신도</span>
               <span className="text-xs font-bold text-amber-400 font-mono">{result.overallCertainty}%</span>
             </div>
             <div>
-              <span className="text-[9px] font-mono text-neutral-500 block">고민 속도</span>
+              <span className="text-[9px] text-neutral-400 font-medium block">총 소요 시간</span>
               <span className="text-xs font-bold text-sky-400 font-mono">
-                상위 {result.benchmark.dwellTimePercentile}%
+                {(result.totalTestDuration / 1000).toFixed(1)}s
               </span>
             </div>
             <div>
-              <span className="text-[9px] font-mono text-neutral-500 block">일관성 순위</span>
-              <span className="text-xs font-bold text-emerald-400 font-mono">
-                상위 {result.benchmark.changeCountPercentile}%
-              </span>
+              <span className="text-[9px] text-neutral-400 font-medium block">선택 번복</span>
+              <span className="text-xs font-bold text-emerald-400 font-mono">{result.totalAnswerChanges || 0}회</span>
             </div>
           </div>
 
@@ -172,19 +170,19 @@ export const StoryCardModal: FC<StoryCardModalProps> = ({ result, isOpen, onClos
               {result.behaviorPersona.tags.slice(0, 3).map((tag) => (
                 <span
                   key={tag}
-                  className="text-[9px] font-mono px-2 py-0.5 rounded-md bg-white/4 text-neutral-300 border border-white/6"
+                  className="text-[9px] px-2 py-0.5 rounded-md bg-white/4 text-neutral-300 border border-white/6 font-medium"
                 >
-                  {tag}
+                  #{tag}
                 </span>
               ))}
             </div>
 
-            <div className="flex items-center justify-between text-[10px] font-mono text-neutral-500 pt-1">
-              <span className="text-neutral-400 font-semibold flex items-center gap-1">
+            <div className="flex items-center justify-between text-[10px] text-neutral-400 pt-1">
+              <span className="text-neutral-300 font-semibold flex items-center gap-1">
                 <ShieldCheck className="w-3 h-3 text-emerald-400" />
                 mbti.opentoyapp.kr
               </span>
-              <span>나도 검사하기 ➔</span>
+              <span className="font-medium">나도 검사하기 ➔</span>
             </div>
           </div>
         </div>

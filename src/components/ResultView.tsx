@@ -353,36 +353,34 @@ export const ResultView: FC<ResultViewProps> = ({ result, isSharedView = false, 
 
           <div className="grid grid-cols-4 gap-2 w-full bg-neutral-900/90 p-3 rounded-2xl border border-white/8">
             <div className="p-1">
-              <span className="text-[10px] font-mono text-neutral-500 block">종합 확신도</span>
+              <span className="text-[10px] text-neutral-400 font-medium block">종합 확신도</span>
               <span className="text-base font-bold text-amber-400 font-mono">{result.overallCertainty}%</span>
             </div>
             <div className="p-1">
-              <span className="text-[10px] font-mono text-neutral-500 block">총 고민 시간</span>
+              <span className="text-[10px] text-neutral-400 font-medium block">총 소요 시간</span>
               <span className="text-base font-bold text-sky-400 font-mono">
                 {(result.totalTestDuration / 1000).toFixed(1)}s
               </span>
             </div>
             <div className="p-1">
-              <span className="text-[10px] font-mono text-neutral-500 block">선택 조정</span>
+              <span className="text-[10px] text-neutral-400 font-medium block">선택 번복</span>
               <span className="text-base font-bold text-rose-400 font-mono">{result.totalAnswerChanges}회</span>
             </div>
             <div className="p-1">
-              <span className="text-[10px] font-mono text-neutral-500 block">일관성 순위</span>
+              <span className="text-[10px] text-neutral-400 font-medium block">문항당 평균</span>
               <span className="text-base font-bold text-emerald-400 font-mono">
-                상위 {result.benchmark?.changeCountPercentile ?? 20}%
+                {(result.totalTestDuration / 1000 / 40).toFixed(1)}s
               </span>
             </div>
           </div>
 
           <div className="w-full bg-neutral-900/60 p-4 rounded-2xl border border-white/6 text-left">
-            <span className="text-[10px] font-mono text-neutral-400 uppercase block mb-1">행동 프로필</span>
+            <span className="text-[10px] text-neutral-400 font-medium block mb-1">행동 프로필</span>
             <span className="text-sm font-bold text-white block">{result.behaviorPersona?.title || '성향 프로필'}</span>
             <span className="text-xs text-neutral-400 font-light block">{result.behaviorPersona?.subtitle || ''}</span>
           </div>
 
-          <div className="text-[10px] font-mono text-neutral-500">
-            © 2026 PersonaLens | Behavioral Interaction Analysis
-          </div>
+          <div className="text-[10px] text-neutral-500">© 2026 PersonaLens | Behavioral Interaction Analysis</div>
         </div>
       </div>
 
@@ -411,14 +409,14 @@ export const ResultView: FC<ResultViewProps> = ({ result, isSharedView = false, 
               <Zap className="w-3.5 h-3.5 text-amber-400" />
               종합 확신도
             </span>
-            <span className="text-lg sm:text-xl font-bold text-slate-100">{result.overallCertainty}%</span>
+            <span className="text-lg sm:text-xl font-bold text-slate-100 font-mono">{result.overallCertainty}%</span>
           </div>
 
           <div className="flex flex-col items-center p-2">
             <span className="text-xs text-slate-400 mb-1 flex items-center gap-1.5 font-medium">
               <Clock className="w-3.5 h-3.5 text-indigo-400" />총 소요 시간
             </span>
-            <span className="text-lg sm:text-xl font-bold text-slate-100">
+            <span className="text-lg sm:text-xl font-bold text-slate-100 font-mono">
               {(result.totalTestDuration / 1000).toFixed(1)}초
             </span>
           </div>
@@ -428,113 +426,123 @@ export const ResultView: FC<ResultViewProps> = ({ result, isSharedView = false, 
               <Eye className="w-3.5 h-3.5 text-pink-400" />
               선택지 탐색
             </span>
-            <span className="text-lg sm:text-xl font-bold text-slate-100">
+            <span className="text-lg sm:text-xl font-bold text-slate-100 font-mono">
               {result.hoverAnalysis?.totalHoverCount ?? 0}회
             </span>
           </div>
 
           <div className="flex flex-col items-center p-2">
-            <span className="text-[11px] font-mono text-neutral-500 mb-1 flex items-center gap-1">
-              <MousePointer className="w-3 h-3 text-emerald-400" />주 입력 수단
+            <span className="text-xs text-slate-400 mb-1 flex items-center gap-1.5 font-medium">
+              <MousePointer className="w-3.5 h-3.5 text-emerald-400" />주 입력 수단
             </span>
             <span className="text-xs font-semibold text-neutral-200 mt-1">{getDeviceLabel()}</span>
           </div>
         </div>
       </div>
 
-      {/* 2. Global Benchmark Stats & Percentiles */}
+      {/* 2. Personal Telemetry Metrics */}
       <div className="bg-neutral-900/60 border border-white/8 rounded-3xl p-6 sm:p-8 shadow-xl space-y-6">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2 text-xs font-mono text-neutral-400 uppercase tracking-wide">
-            <BarChart3 className="w-3.5 h-3.5 text-emerald-400" />
-            <span>Global Benchmark Analysis</span>
+          <div className="flex items-center gap-2 text-sm font-bold text-white">
+            <BarChart3 className="w-4 h-4 text-emerald-400" />
+            <span>나의 행동 데이터 요약</span>
           </div>
-          <span className="text-[11px] font-mono text-neutral-500">참여자 12,000+ 샘플 기준</span>
+          <span className="text-xs text-indigo-400 font-medium">실시간 인터랙션 측정 데이터</span>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div className="bg-neutral-950/70 border border-white/6 p-4 rounded-2xl flex flex-col justify-between">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="bg-neutral-950/70 border border-white/6 p-4.5 rounded-2xl flex flex-col justify-between">
             <div>
-              <span className="text-xs text-neutral-400 block mb-1">고민 속도 랭킹</span>
+              <span className="text-xs text-neutral-400 block mb-1">총 검사 소요 시간</span>
               <div className="flex items-baseline gap-2">
                 <span className="text-2xl sm:text-3xl font-black font-mono text-sky-400">
-                  상위 {result.benchmark?.dwellTimePercentile ?? 15}%
+                  {(result.totalTestDuration / 1000).toFixed(1)}s
                 </span>
                 <span className="text-xs text-neutral-500">
-                  (평균 {(result.benchmark?.globalAverageDwellSec ?? 3.2).toFixed(1)}초 대비{' '}
-                  {(
-                    (result.totalTestDuration || 30000) / 1000 -
-                    (result.benchmark?.globalAverageDwellSec ?? 3.2)
-                  ).toFixed(1)}
-                  초)
+                  (문항당 평균 {(result.totalTestDuration / 1000 / 40).toFixed(1)}초)
                 </span>
               </div>
             </div>
             <p className="text-[11px] text-neutral-400 mt-3 font-light">
-              전체 응답자 대비 평균보다 신속하고 직관적으로 결정을 완료했습니다.
+              문항을 읽고 최종 클릭을 완료하기까지의 순수 인터랙션 소요 시간입니다.
             </p>
           </div>
 
-          <div className="bg-neutral-950/70 border border-white/6 p-4 rounded-2xl flex flex-col justify-between">
+          <div className="bg-neutral-950/70 border border-white/6 p-4.5 rounded-2xl flex flex-col justify-between">
             <div>
-              <span className="text-xs text-neutral-400 block mb-1">자기 인식 일관성 랭킹</span>
+              <span className="text-xs text-neutral-400 block mb-1">선택지 번복 / 고민</span>
               <div className="flex items-baseline gap-2">
-                <span className="text-2xl sm:text-3xl font-black font-mono text-emerald-400">
-                  상위 {result.benchmark?.changeCountPercentile ?? 20}%
+                <span className="text-2xl sm:text-3xl font-black font-mono text-rose-400">
+                  {result.totalAnswerChanges || 0}회
                 </span>
                 <span className="text-xs text-neutral-500">
-                  (평균 {result.benchmark?.globalAverageChanges ?? 2.1}회 재숙고 대비 {result.totalAnswerChanges || 0}
-                  회)
+                  (번복률 {(((result.totalAnswerChanges || 0) / 40) * 100).toFixed(0)}%)
                 </span>
               </div>
             </div>
             <p className="text-[11px] text-neutral-400 mt-3 font-light">
-              자신의 생각과 가치관을 명확하게 파악하여 일관성 있게 답변했습니다.
+              첫 번째 선택지를 클릭한 후 다른 보기를 다시 누르며 생각을 조정한 횟수입니다.
+            </p>
+          </div>
+
+          <div className="bg-neutral-950/70 border border-white/6 p-4.5 rounded-2xl flex flex-col justify-between">
+            <div>
+              <span className="text-xs text-neutral-400 block mb-1">종합 결정 확신도</span>
+              <div className="flex items-baseline gap-2">
+                <span className="text-2xl sm:text-3xl font-black font-mono text-amber-400">
+                  {result.overallCertainty}%
+                </span>
+                <span className="text-xs text-neutral-500">
+                  {result.overallCertainty >= 80
+                    ? '매우 단호함'
+                    : result.overallCertainty >= 60
+                      ? '안정적'
+                      : '신중한 고민'}
+                </span>
+              </div>
+            </div>
+            <p className="text-[11px] text-neutral-400 mt-3 font-light">
+              마우스 커서의 떨림, 머뭇거림, 체류 시간 패턴을 종합하여 산출된 내면의 확신도입니다.
             </p>
           </div>
         </div>
 
-        {/* Global Persona Distribution Bar */}
-        <div className="bg-neutral-950/60 border border-white/6 p-4 rounded-2xl">
-          <span className="text-xs font-mono text-neutral-400 block mb-3">전체 참여자 행동 페르소나 분포</span>
-          <div className="w-full bg-neutral-800 h-3 rounded-full overflow-hidden flex mb-3">
-            {(result.benchmark?.personaDistribution || []).map((item, idx) => {
-              const isUserPersona = item.personaCode === result.behaviorPersona?.code;
-              const bgColors = ['bg-amber-400', 'bg-sky-400', 'bg-rose-400', 'bg-emerald-400', 'bg-purple-400'];
-              return (
-                <div
-                  key={item.personaCode}
-                  className={`h-full ${bgColors[idx % bgColors.length]} ${isUserPersona ? 'ring-2 ring-white scale-105' : 'opacity-70'}`}
-                  style={{ width: `${item.percentage}%` }}
-                  title={`${item.name} (${item.percentage}%)`}
-                />
-              );
-            })}
+        {/* Behavior Persona Summary Box */}
+        {result.behaviorPersona && (
+          <div className="bg-neutral-950/60 border border-white/6 p-5 rounded-2xl">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-xs text-neutral-400 font-medium">행동 패턴 유형 분석</span>
+              <span className="text-xs font-semibold text-indigo-400">{result.behaviorPersona.title}</span>
+            </div>
+            <p className="text-xs sm:text-sm text-neutral-200 font-medium mb-1">{result.behaviorPersona.subtitle}</p>
+            <p className="text-xs text-neutral-400 font-light leading-relaxed mb-4">
+              {result.behaviorPersona.description}
+            </p>
+            <div className="flex flex-wrap gap-1.5">
+              {result.behaviorPersona.tags.map((tag) => (
+                <span
+                  key={tag}
+                  className="text-[11px] px-2.5 py-1 rounded-lg bg-slate-900 border border-slate-800 text-slate-300 font-medium"
+                >
+                  #{tag}
+                </span>
+              ))}
+            </div>
           </div>
-          <div className="flex flex-wrap gap-x-4 gap-y-1 text-[11px] text-neutral-400 font-mono">
-            {(result.benchmark?.personaDistribution || []).map((item) => (
-              <span
-                key={item.personaCode}
-                className={item.personaCode === result.behaviorPersona?.code ? 'text-white font-bold' : ''}
-              >
-                {item.name}: {item.percentage}%
-              </span>
-            ))}
-          </div>
-        </div>
+        )}
       </div>
 
       {/* 3. Micro-Hover Attention & Gaze Analysis */}
       <div className="bg-neutral-900/60 border border-white/8 rounded-3xl p-6 sm:p-8 shadow-xl">
-        <div className="flex items-center gap-2 text-xs font-mono text-neutral-400 uppercase tracking-wide mb-4">
-          <Eye className="w-3.5 h-3.5 text-amber-400" />
-          <span>Micro-Hover Attention Analysis</span>
+        <div className="flex items-center gap-2 text-sm font-bold text-white mb-4">
+          <Eye className="w-4 h-4 text-amber-400" />
+          <span>선택지 망설임 & 탐색 분석</span>
         </div>
 
         <div className="bg-neutral-950/70 border border-white/6 p-5 rounded-2xl mb-4">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
-            <h3 className="text-sm font-bold text-white">선택지 호버 체류 및 시선 망설임 지표</h3>
-            <span className="text-xs font-mono text-amber-400">
+            <h3 className="text-sm font-bold text-white">선택지 탐색 및 고민 체류 시간</h3>
+            <span className="text-xs font-mono text-amber-400 font-semibold">
               총 {result.hoverAnalysis?.totalHoverCount ?? 0}회 탐색 (
               {((result.hoverAnalysis?.totalHoverDurationMs ?? 0) / 1000).toFixed(1)}초 체류)
             </span>
@@ -547,9 +555,7 @@ export const ResultView: FC<ResultViewProps> = ({ result, isSharedView = false, 
         {/* Conflicted Hovers if present */}
         {(result.hoverAnalysis?.conflictedHoverItems || []).length > 0 && (
           <div className="space-y-3">
-            <span className="text-xs font-mono text-neutral-500 uppercase block">
-              시선이 머물렀던 잠재적 갈등 선택지
-            </span>
+            <span className="text-xs text-neutral-400 font-medium block">가장 오래 망설였던 갈등 문항</span>
             {(result.hoverAnalysis?.conflictedHoverItems || []).map((item, idx) => (
               <div
                 key={idx}
@@ -565,9 +571,9 @@ export const ResultView: FC<ResultViewProps> = ({ result, isSharedView = false, 
 
       {/* 4. Behavior Profile Card */}
       <div className="bg-neutral-900/60 border border-white/8 rounded-3xl p-6 sm:p-8 shadow-xl">
-        <div className="flex items-center gap-2 text-xs font-mono text-neutral-400 uppercase tracking-wide mb-4">
-          <Activity className="w-3.5 h-3.5" />
-          <span>Behavior Dynamics Profile</span>
+        <div className="flex items-center gap-2 text-sm font-bold text-white mb-4">
+          <Activity className="w-4 h-4 text-indigo-400" />
+          <span>나의 행동 페르소나 프로필</span>
         </div>
 
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-5">
@@ -588,9 +594,9 @@ export const ResultView: FC<ResultViewProps> = ({ result, isSharedView = false, 
               {(result.behaviorPersona?.tags || []).map((tag: string) => (
                 <span
                   key={tag}
-                  className="px-2.5 py-1 rounded-lg bg-neutral-950 border border-white/6 text-neutral-400 text-xs font-mono"
+                  className="px-2.5 py-1 rounded-lg bg-neutral-950 border border-white/6 text-neutral-300 text-xs font-medium"
                 >
-                  {tag}
+                  #{tag}
                 </span>
               ))}
             </div>
@@ -601,22 +607,26 @@ export const ResultView: FC<ResultViewProps> = ({ result, isSharedView = false, 
       {/* 5. 4 MBTI Dimensions */}
       <div className="bg-neutral-900/60 border border-white/8 rounded-3xl p-6 sm:p-8 shadow-xl">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-lg font-bold text-white font-mono tracking-tight">4-AXIS PREFERENCE & CERTAINTY</h2>
-          <span className="text-xs text-neutral-500 font-mono">성향 선호도 및 확신 지표</span>
+          <h2 className="text-lg font-bold text-white">4대 성향 축 선호도 및 확신도 분석</h2>
+          <span className="text-xs text-neutral-400">E/I · S/N · T/F · J/P 축별 확신 지표</span>
         </div>
 
         <div className="space-y-4">
           {Object.entries(result.dimensions || {}).map(([key, dim]) => {
             return (
               <div key={key} className="bg-neutral-950/70 border border-white/6 rounded-2xl p-4 sm:p-5">
-                <div className="flex justify-between items-center mb-2.5 text-xs font-mono">
-                  <span className={`font-semibold ${dim.winner === dim.leftType ? 'text-white' : 'text-neutral-500'}`}>
+                <div className="flex justify-between items-center mb-2.5 text-xs">
+                  <span
+                    className={`font-semibold font-mono ${dim.winner === dim.leftType ? 'text-white' : 'text-neutral-500'}`}
+                  >
                     {dim.leftType} ({dim.leftScore}%)
                   </span>
-                  <span className="text-[11px] px-2 py-0.5 rounded-full bg-white/5 text-neutral-300 border border-white/8">
+                  <span className="text-[11px] px-2 py-0.5 rounded-full bg-white/5 text-neutral-300 border border-white/8 font-mono">
                     확신도 {dim.certaintyScore}%
                   </span>
-                  <span className={`font-semibold ${dim.winner === dim.rightType ? 'text-white' : 'text-neutral-500'}`}>
+                  <span
+                    className={`font-semibold font-mono ${dim.winner === dim.rightType ? 'text-white' : 'text-neutral-500'}`}
+                  >
                     {dim.rightType} ({dim.rightScore}%)
                   </span>
                 </div>
@@ -635,7 +645,7 @@ export const ResultView: FC<ResultViewProps> = ({ result, isSharedView = false, 
 
                 {/* Behavioral Note */}
                 <div className="text-xs text-neutral-400 font-light flex items-start gap-2 bg-neutral-900/60 p-2.5 rounded-xl border border-white/4">
-                  <span className="text-neutral-500 font-mono text-[10px] uppercase shrink-0 mt-0.5">NOTE</span>
+                  <span className="text-indigo-400 text-xs font-semibold shrink-0 mt-0.5">행동 분석</span>
                   <span>{dim.behaviorInsight}</span>
                 </div>
               </div>
@@ -644,13 +654,13 @@ export const ResultView: FC<ResultViewProps> = ({ result, isSharedView = false, 
         </div>
       </div>
 
-      {/* 6. All 12 Questions Full Telemetry & Trajectory Replayer */}
+      {/* 6. All Questions Full Telemetry & Trajectory Replayer */}
       {questionsList.length > 0 && (
         <div className="bg-neutral-900/60 border border-white/8 rounded-3xl p-6 sm:p-8 shadow-xl">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
             <div>
-              <h2 className="text-lg font-bold text-white font-mono tracking-tight">
-                QUESTION TELEMETRY REPLAYER ({questionsList.length} ITEMS)
+              <h2 className="text-lg font-bold text-white">
+                문항별 마우스 궤적 & 히트맵 리플레이 ({questionsList.length}문항)
               </h2>
               <p className="text-xs text-neutral-400 mt-1 font-light">
                 검사한 {questionsList.length}개 전체 문항별 마우스 이동 궤적, 머뭇거림 히트맵, 체류 시간을 직접
@@ -659,7 +669,7 @@ export const ResultView: FC<ResultViewProps> = ({ result, isSharedView = false, 
             </div>
 
             {/* Replayer View Mode Switcher */}
-            <div className="flex bg-neutral-950 p-1 rounded-xl border border-white/6 text-xs font-mono self-start sm:self-auto">
+            <div className="flex bg-neutral-950 p-1 rounded-xl border border-white/6 text-xs self-start sm:self-auto">
               <button
                 type="button"
                 onClick={() => setReplayerMode('canvas')}
@@ -695,13 +705,13 @@ export const ResultView: FC<ResultViewProps> = ({ result, isSharedView = false, 
                   key={qDetail.question.id}
                   type="button"
                   onClick={() => setSelectedQuestionIdx(idx)}
-                  className={`w-10.5 h-8.5 sm:w-12 sm:h-9.5 rounded-xl text-xs font-mono font-medium transition-all cursor-pointer touch-manipulation flex flex-col items-center justify-center relative shrink-0 ${
+                  className={`w-10.5 h-8.5 sm:w-12 sm:h-9.5 rounded-xl text-xs font-semibold transition-all cursor-pointer touch-manipulation flex flex-col items-center justify-center relative shrink-0 ${
                     isSelected
                       ? 'bg-neutral-100 text-neutral-950 shadow-md scale-105 z-10'
                       : 'bg-neutral-900/90 border border-white/4 text-neutral-400 hover:text-white hover:border-white/15'
                   }`}
                 >
-                  <span className="text-[10px] sm:text-[11px] font-bold">Q{idx + 1}</span>
+                  <span className="text-[10px] sm:text-[11px] font-bold font-mono">Q{idx + 1}</span>
                   {hasChanges && <span className="w-1.5 h-1.5 rounded-full bg-rose-400 absolute top-1 right-1" />}
                 </button>
               );
@@ -712,9 +722,9 @@ export const ResultView: FC<ResultViewProps> = ({ result, isSharedView = false, 
           {questionsList[selectedQuestionIdx] && (
             <div className="space-y-4">
               <div className="bg-neutral-950/80 border border-white/6 p-4 rounded-2xl">
-                <div className="flex items-center justify-between text-xs font-mono text-neutral-500 mb-1">
-                  <span>QUESTION #{questionsList[selectedQuestionIdx].question.id}</span>
-                  <span className="text-neutral-400">
+                <div className="flex items-center justify-between text-xs text-neutral-400 mb-1">
+                  <span className="font-medium">문항 #{questionsList[selectedQuestionIdx].question.id}</span>
+                  <span className="font-mono text-neutral-300">
                     체류: {(questionsList[selectedQuestionIdx].hesitationTime / 1000).toFixed(1)}초
                   </span>
                 </div>
@@ -722,11 +732,13 @@ export const ResultView: FC<ResultViewProps> = ({ result, isSharedView = false, 
                   {questionsList[selectedQuestionIdx].question.title}
                 </h4>
                 <div className="flex flex-wrap items-center gap-2 text-xs text-neutral-400 font-light">
-                  <span className="text-amber-400 font-mono">
+                  <span className="text-amber-400 font-medium">
                     {questionsList[selectedQuestionIdx].changeHistorySummary}
                   </span>
                   <span>·</span>
-                  <span className="text-emerald-400 font-mono">{questionsList[selectedQuestionIdx].hoverSummary}</span>
+                  <span className="text-emerald-400 font-medium">
+                    {questionsList[selectedQuestionIdx].hoverSummary}
+                  </span>
                 </div>
               </div>
 
@@ -750,14 +762,14 @@ export const ResultView: FC<ResultViewProps> = ({ result, isSharedView = false, 
       {/* 7. Persona Gap Analysis */}
       {result.personaGap?.detected && (
         <div className="bg-neutral-900/60 border border-white/8 rounded-3xl p-6 sm:p-8 shadow-xl">
-          <h2 className="text-lg font-bold text-white font-mono tracking-tight mb-2">INSTINCT VS PERSONA GAP</h2>
+          <h2 className="text-lg font-bold text-white mb-2">본능 vs 사회적 페르소나 갭 분석</h2>
           <p className="text-xs text-neutral-400 mb-6 font-light">{result.personaGap?.summary}</p>
 
           <div className="space-y-4">
             {(result.personaGap?.items || []).map((item, idx) => (
               <div key={idx} className="bg-neutral-950/70 border border-white/6 rounded-2xl p-4 sm:p-5">
                 <h4 className="text-sm font-semibold text-neutral-200 mb-3">{item.question.title}</h4>
-                <div className="flex items-center gap-2 text-xs mb-3 font-mono">
+                <div className="flex items-center gap-2 text-xs mb-3">
                   <span className="px-2.5 py-1 rounded-lg bg-neutral-900 border border-white/8 text-neutral-400">
                     첫 직감: {item.initialChoiceText}
                   </span>
