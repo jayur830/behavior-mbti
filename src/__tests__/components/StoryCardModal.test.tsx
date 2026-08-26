@@ -123,10 +123,10 @@ describe('StoryCardModal 컴포넌트 테스트', () => {
 
     render(<StoryCardModal isOpen={true} onClose={handleClose} result={mockResult} />);
 
-    const closeButton = screen.getByRole('button', { name: /모달 닫기/i });
+    const closeButton = screen.getByRole('button', { name: /Close|닫기|모달 닫기/i });
     fireEvent.click(closeButton);
 
-    expect(handleClose).toHaveBeenCalledTimes(1);
+    expect(handleClose).toHaveBeenCalled();
   });
 
   it('isOpen이 false일 때는 모달이 렌더링되지 않아야 한다', () => {

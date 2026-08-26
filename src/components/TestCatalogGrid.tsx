@@ -4,6 +4,8 @@ import { ArrowRight, Clock, HelpCircle, Lock, Sparkles } from 'lucide-react';
 import Link from 'next/link';
 import type { FC } from 'react';
 
+import { Badge } from '@/components/ui/badge';
+import { Card } from '@/components/ui/card';
 import type { TestCatalogItem } from '@/data/tests';
 import { TEST_CATALOG } from '@/data/tests';
 
@@ -17,10 +19,10 @@ export const TestCatalogGrid: FC<TestCatalogGridProps> = () => {
       {/* Section Header */}
       <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-8 pb-4 border-b border-slate-800/80 gap-4">
         <div>
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-xs font-semibold mb-2">
+          <Badge variant="indigo" className="mb-2 font-semibold">
             <Sparkles className="w-3.5 h-3.5" />
             <span>PersonaLens Test Series</span>
-          </div>
+          </Badge>
           <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
             무의식 행동 분석 검사 카탈로그
           </h2>
@@ -36,8 +38,8 @@ export const TestCatalogGrid: FC<TestCatalogGridProps> = () => {
           const isActive = test.status === 'active';
 
           const cardContent = (
-            <div
-              className={`group relative h-full flex flex-col justify-between p-6 sm:p-7 rounded-3xl bg-slate-900/60 border transition-all duration-300 overflow-hidden ${
+            <Card
+              className={`group relative h-full flex flex-col justify-between p-6 sm:p-7 rounded-3xl transition-all duration-300 overflow-hidden ${
                 isActive
                   ? `${test.borderColor} hover:-translate-y-1 hover:shadow-2xl hover:shadow-indigo-500/10 cursor-pointer bg-linear-to-b ${test.gradient}`
                   : 'border-slate-800/80 opacity-75 hover:opacity-90 bg-slate-900/30'
@@ -76,12 +78,13 @@ export const TestCatalogGrid: FC<TestCatalogGridProps> = () => {
                 {/* Tags */}
                 <div className="flex flex-wrap gap-1.5 mb-6">
                   {test.tags.map((tag) => (
-                    <span
+                    <Badge
                       key={tag}
-                      className="text-[11px] px-2.5 py-1 rounded-lg bg-slate-800/80 border border-slate-700/50 text-slate-400 font-medium"
+                      variant="outline"
+                      className="text-[11px] px-2.5 py-1 rounded-lg bg-slate-800/80 border-slate-700/50 text-slate-400 font-medium"
                     >
                       #{tag}
-                    </span>
+                    </Badge>
                   ))}
                 </div>
               </div>
@@ -112,7 +115,7 @@ export const TestCatalogGrid: FC<TestCatalogGridProps> = () => {
                   </div>
                 )}
               </div>
-            </div>
+            </Card>
           );
 
           if (isActive) {

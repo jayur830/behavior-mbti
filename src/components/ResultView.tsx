@@ -22,6 +22,7 @@ import {
 import type { FC } from 'react';
 import { useEffect, useRef, useState } from 'react';
 
+import { Button } from '@/components/ui/button';
 import { encodeResultToCompressedString } from '@/lib/shareResult';
 import type { FullAnalysisResult } from '@/types';
 
@@ -796,74 +797,87 @@ export const ResultView: FC<ResultViewProps> = ({ result, isSharedView = false, 
       )}
 
       {/* 8. Action Controls: Image Download, Story Card, Share & Restart */}
+      {/* 8. Action Controls: Image Download, Story Card, Share & Restart */}
       {isSharedView ? (
         <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-6">
-          <button
+          <Button
             type="button"
+            variant="outline"
+            size="lg"
             onClick={() => setIsStoryModalOpen(true)}
-            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-full font-medium text-xs sm:text-sm bg-linear-to-r from-emerald-950/80 to-teal-950/80 hover:from-emerald-900/90 hover:to-teal-900/90 text-emerald-300 border border-emerald-500/30 transition-all cursor-pointer shadow-sm touch-manipulation"
+            className="w-full sm:w-auto rounded-full bg-linear-to-r from-emerald-950/80 to-teal-950/80 hover:from-emerald-900/90 hover:to-teal-900/90 text-emerald-300 border-emerald-500/30"
           >
             <Sparkles className="w-4 h-4 text-emerald-400" />
             <span>📸 인스타 스토리용 카드 (9:16)</span>
-          </button>
+          </Button>
 
-          <button
+          <Button
             type="button"
+            variant="outline"
+            size="lg"
             onClick={handleDownloadCard}
             disabled={isExporting}
-            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-full font-medium text-xs sm:text-sm bg-neutral-900 hover:bg-neutral-800 text-neutral-200 border border-white/10 transition-all cursor-pointer shadow-sm touch-manipulation"
+            className="w-full sm:w-auto rounded-full bg-neutral-900 hover:bg-neutral-800 text-neutral-200 border-white/10"
           >
             <Download className="w-4 h-4 text-emerald-400" />
             <span>{isExporting ? '이미지 생성 중...' : '결과 카드 저장 (PNG)'}</span>
-          </button>
+          </Button>
 
-          <button
+          <Button
             type="button"
+            size="lg"
             onClick={onRestart}
-            className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-8 py-3.5 rounded-full font-bold text-sm bg-emerald-400 hover:bg-emerald-300 text-neutral-950 shadow-[0_0_25px_rgba(52,211,153,0.3)] hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer touch-manipulation"
+            className="w-full sm:w-auto rounded-full font-bold text-sm bg-emerald-400 hover:bg-emerald-300 text-neutral-950 shadow-[0_0_25px_rgba(52,211,153,0.3)] hover:scale-[1.02] active:scale-[0.98]"
           >
             <span>나도 행동 분석 MBTI 검사하기</span>
             <ArrowRight className="w-4 h-4 stroke-3" />
-          </button>
+          </Button>
         </div>
       ) : (
         <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-6">
-          <button
+          <Button
             type="button"
+            variant="outline"
+            size="lg"
             onClick={() => setIsStoryModalOpen(true)}
-            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-full font-medium text-xs sm:text-sm bg-linear-to-r from-emerald-950/80 to-teal-950/80 hover:from-emerald-900/90 hover:to-teal-900/90 text-emerald-300 border border-emerald-500/30 transition-all cursor-pointer shadow-sm touch-manipulation"
+            className="w-full sm:w-auto rounded-full bg-linear-to-r from-emerald-950/80 to-teal-950/80 hover:from-emerald-900/90 hover:to-teal-900/90 text-emerald-300 border-emerald-500/30"
           >
             <Sparkles className="w-4 h-4 text-emerald-400" />
             <span>📸 인스타 스토리용 카드 (9:16)</span>
-          </button>
+          </Button>
 
-          <button
+          <Button
             type="button"
+            variant="outline"
+            size="lg"
             onClick={handleDownloadCard}
             disabled={isExporting}
-            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-full font-medium text-xs sm:text-sm bg-neutral-900 hover:bg-neutral-800 text-neutral-200 border border-white/10 transition-all cursor-pointer shadow-sm touch-manipulation"
+            className="w-full sm:w-auto rounded-full bg-neutral-900 hover:bg-neutral-800 text-neutral-200 border-white/10"
           >
             <Download className="w-4 h-4 text-emerald-400" />
             <span>{isExporting ? '이미지 생성 중...' : '결과 카드 저장 (PNG)'}</span>
-          </button>
+          </Button>
 
-          <button
+          <Button
             type="button"
+            variant="outline"
+            size="lg"
             onClick={handleCopyLink}
-            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-full font-medium text-xs sm:text-sm bg-neutral-900 hover:bg-neutral-800 text-neutral-200 border border-white/10 transition-all cursor-pointer touch-manipulation"
+            className="w-full sm:w-auto rounded-full bg-neutral-900 hover:bg-neutral-800 text-neutral-200 border-white/10"
           >
             {copied ? <Check className="w-4 h-4 text-emerald-400" /> : <Share2 className="w-4 h-4" />}
             <span>{copied ? '공유 링크 복사 완료!' : '결과 공유 링크 복사'}</span>
-          </button>
+          </Button>
 
-          <button
+          <Button
             type="button"
+            size="lg"
             onClick={onRestart}
-            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-full font-semibold text-xs sm:text-sm bg-neutral-100 hover:bg-white text-neutral-950 shadow-md hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer touch-manipulation"
+            className="w-full sm:w-auto rounded-full font-semibold text-xs sm:text-sm bg-neutral-100 hover:bg-white text-neutral-950 shadow-md hover:scale-[1.02] active:scale-[0.98]"
           >
             <RotateCcw className="w-4 h-4" />
             <span>다시 검사하기</span>
-          </button>
+          </Button>
         </div>
       )}
 

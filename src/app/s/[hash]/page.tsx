@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 
 import { ResultView } from '@/components/ResultView';
+import { Button } from '@/components/ui/button';
 import { getResultFromDb } from '@/lib/db';
 import { decodeResultFromCompressedString } from '@/lib/shareResult';
 import type { FullAnalysisResult, PageProps } from '@/types';
@@ -68,12 +69,11 @@ export default async function Page({ params }: Props) {
         <p className="text-sm text-slate-400 max-w-md mb-8">
           링크가 만료되었거나 올바르지 않은 주소입니다. 지금 나만의 무의식 행동 MBTI를 직접 검사해보세요!
         </p>
-        <Link
-          href="/test"
-          className="inline-flex items-center gap-2 px-6 py-3 rounded-full font-semibold text-sm bg-linear-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white shadow-lg shadow-indigo-500/25 transition-all"
-        >
-          <span>내 성향 직접 검사해보기</span>
-        </Link>
+        <Button asChild variant="gradient" size="lg" className="rounded-full px-6 py-3 font-semibold text-sm">
+          <Link href="/test">
+            <span>내 성향 직접 검사해보기</span>
+          </Link>
+        </Button>
       </div>
     );
   }
@@ -95,12 +95,11 @@ export default async function Page({ params }: Props) {
             </span>
           </Link>
 
-          <Link
-            href="/test"
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-semibold bg-linear-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white shadow-md shadow-indigo-500/20 transition-all cursor-pointer touch-manipulation"
-          >
-            <span>나도 검사하기</span>
-          </Link>
+          <Button asChild variant="gradient" size="sm" className="rounded-full px-4 py-2 text-xs font-semibold">
+            <Link href="/test">
+              <span>나도 검사하기</span>
+            </Link>
+          </Button>
         </div>
       </header>
 

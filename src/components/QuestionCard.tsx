@@ -4,7 +4,9 @@ import { ArrowLeft, ArrowRight, Check, Keyboard, Mouse, Smartphone } from 'lucid
 import type { FC } from 'react';
 import { useCallback, useRef } from 'react';
 
-import { LIKERT_OPTIONS } from '@/data/questions';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Progress } from '@/components/ui/progress';
 import { useBehaviorTracker } from '@/hooks/useBehaviorTracker';
 import type { Question, QuestionBehaviorLog } from '@/types';
 
@@ -12,20 +14,30 @@ export interface QuestionCardProps {
   question: Question;
   currentIndex: number;
   totalQuestions: number;
-  initialValue?: number | null;
-  existingLog?: QuestionBehaviorLog | null;
   onNext: (log: QuestionBehaviorLog) => void;
   onPrev?: (log: QuestionBehaviorLog) => void;
+  initialValue?: number | null;
+  existingLog?: QuestionBehaviorLog | null;
 }
+
+const LIKERT_OPTIONS = [
+  { value: -3, label: '매우 아니다' },
+  { value: -2, label: '아니다' },
+  { value: -1, label: '약간 아니다' },
+  { value: 0, label: '보통 / 중립' },
+  { value: 1, label: '약간 그렇다' },
+  { value: 2, label: '그렇다' },
+  { value: 3, label: '매우 그렇다' },
+];
 
 export const QuestionCard: FC<QuestionCardProps> = ({
   question,
   currentIndex,
   totalQuestions,
-  initialValue = null,
-  existingLog = null,
   onNext,
   onPrev,
+  initialValue = null,
+  existingLog = null,
 }) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
 
@@ -95,14 +107,14 @@ export const QuestionCard: FC<QuestionCardProps> = ({
       {/* Top Header: Progress & Category */}
       <div>
         <div className="flex items-center justify-between text-xs text-slate-400 mb-4 font-medium">
-          <span className="text-indigo-400 bg-indigo-500/10 px-3 py-1 rounded-full border border-indigo-500/20">
+          <Badge variant="indigo" className="font-medium">
             {getCategoryLabel(question.category)}
-          </span>
+          </Badge>
           <div className="flex items-center gap-2">
-            <span className="flex items-center gap-1.5 text-xs text-slate-300 bg-slate-800/80 px-3 py-1 rounded-full border border-slate-700/60">
+            <Badge variant="secondary" className="flex items-center gap-1.5 text-xs text-slate-300 font-normal">
               {getDeviceIcon()}
               <span>{primaryDevice === 'touch' ? '터치 감지' : '움직임 분석 중'}</span>
-            </span>
+            </Badge>
             <span className="text-slate-300 font-semibold text-sm">
               <span className="text-white">{currentIndex + 1}</span>
               <span className="text-slate-500 font-normal"> / {totalQuestions}</span>
@@ -111,11 +123,8 @@ export const QuestionCard: FC<QuestionCardProps> = ({
         </div>
 
         {/* Smooth Modern Progress Bar */}
-        <div className="w-full bg-slate-800/60 h-1.5 rounded-full mb-8 overflow-hidden">
-          <div
-            className="bg-linear-to-r from-indigo-500 to-purple-500 h-full rounded-full transition-all duration-300 ease-out"
-            style={{ width: `${progressPercent}%` }}
-          />
+        <div className="mb-8">
+          <Progress value={progressPercent} className="h-1.5 bg-slate-800/60" />
         </div>
 
         {/* Question Text */}
@@ -190,32 +199,30 @@ export const QuestionCard: FC<QuestionCardProps> = ({
       {/* Footer Navigation Controls */}
       <div className="flex items-center justify-between pt-6 border-t border-slate-800/60 mt-6">
         {currentIndex > 0 ? (
-          <button
+          <Button
             type="button"
+            variant="ghost"
             onClick={onGoBack}
-            className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-medium text-slate-400 hover:text-white hover:bg-slate-800/50 transition-colors cursor-pointer touch-manipulation"
+            className="flex items-center gap-2 text-xs sm:text-sm font-medium text-slate-400 hover:text-white"
           >
             <ArrowLeft className="w-4 h-4" />
             <span>이전 문항</span>
-          </button>
+          </Button>
         ) : (
           <div />
         )}
 
         <div className="flex items-center gap-3">
-          <button
+          <Button
             type="button"
             disabled={selectedVal === null}
             onClick={onSubmit}
-            className={`inline-flex items-center gap-2 px-6 py-3 rounded-full text-xs sm:text-sm font-semibold transition-all duration-200 cursor-pointer touch-manipulation select-none ${
-              selectedVal !== null
-                ? 'bg-linear-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white shadow-lg shadow-indigo-500/25 hover:scale-[1.02] active:scale-[0.98]'
-                : 'bg-slate-800/60 text-slate-500 cursor-not-allowed border border-slate-700/40'
-            }`}
+            variant={selectedVal !== null ? 'gradient' : 'secondary'}
+            className="rounded-full px-6 py-3 text-xs sm:text-sm font-semibold shadow-lg shadow-indigo-500/25"
           >
             <span>{currentIndex + 1 === totalQuestions ? '결과 분석하기' : '다음 문항'}</span>
             <ArrowRight className="w-4 h-4" />
-          </button>
+          </Button>
         </div>
       </div>
     </div>

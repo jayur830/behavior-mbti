@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 
 import { TestCatalogGrid } from '@/components/TestCatalogGrid';
 import { TestIntro } from '@/components/TestIntro';
+import { Button } from '@/components/ui/button';
 
 export default function Page() {
   const router = useRouter();
@@ -33,13 +34,15 @@ export default function Page() {
             </span>
           </div>
 
-          <button
+          <Button
             type="button"
+            variant="outline"
+            size="sm"
             onClick={handleScrollToCatalog}
-            className="text-xs font-semibold text-slate-400 hover:text-white px-3.5 py-1.5 rounded-full bg-slate-800/60 hover:bg-slate-800 border border-slate-700/60 transition-all cursor-pointer touch-manipulation"
+            className="text-xs font-semibold text-slate-400 hover:text-white px-3.5 py-1.5 rounded-full bg-slate-800/60 hover:bg-slate-800 border-slate-700/60"
           >
             검사 목록 둘러보기
-          </button>
+          </Button>
         </div>
       </header>
 

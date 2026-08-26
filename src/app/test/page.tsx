@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
 import { QuestionCard } from '@/components/QuestionCard';
+import { Badge } from '@/components/ui/badge';
 import { getRandomQuestions } from '@/data/questions';
 import { analyzeBehaviorAndMBTI } from '@/lib/analyzer';
 import { Question, QuestionBehaviorLog } from '@/types';
@@ -93,10 +94,10 @@ export default function Page() {
             </span>
           </button>
 
-          <div className="flex items-center gap-2 text-xs font-medium text-slate-400">
+          <Badge variant="secondary" className="flex items-center gap-2 text-xs font-medium text-slate-300">
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
             <span>실시간 측정 중</span>
-          </div>
+          </Badge>
         </div>
       </header>
 

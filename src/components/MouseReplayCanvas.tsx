@@ -4,6 +4,8 @@ import { Crosshair, Flame, Pause, Play, RotateCcw } from 'lucide-react';
 import type { FC } from 'react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
 import { getOptionLabel } from '@/data/questions';
 import type { AnswerSelectionEvent, MousePoint, QuestionBehaviorLog } from '@/types';
 
@@ -371,22 +373,16 @@ export const MouseReplayCanvas: FC<MouseReplayCanvasProps> = ({ behaviorLog, wid
   };
 
   return (
-    <div className="flex flex-col items-center bg-neutral-950 border border-white/8 rounded-2xl p-4 shadow-xl text-neutral-100 max-w-full">
-      {/* Top Header & View Mode Switcher */}
-      <div className="flex items-center justify-between w-full mb-3 px-1">
+    <Card className="w-full bg-neutral-950 border-white/8 rounded-2xl p-4 sm:p-5 shadow-xl text-neutral-100 font-sans">
+      {/* Header Bar */}
+      <div className="flex items-center justify-between mb-3 text-xs font-mono text-neutral-400">
         <div className="flex items-center gap-2">
-          {viewMode === 'replay' ? (
-            <Crosshair className="w-3.5 h-3.5 text-indigo-400" />
-          ) : (
-            <Flame className="w-3.5 h-3.5 text-amber-400" />
-          )}
-          <span className="text-xs font-mono text-neutral-300 uppercase tracking-wide">
-            {viewMode === 'replay' ? 'Telemetry Replay' : 'Hesitation Heatmap'}
-          </span>
+          <Crosshair className="w-3.5 h-3.5 text-indigo-400" />
+          <span className="text-neutral-300 font-semibold uppercase tracking-wider">Mouse Telemetry Canvas</span>
         </div>
 
-        {/* View Mode Toggle Buttons */}
-        <div className="flex items-center gap-1 bg-slate-900/80 p-0.5 rounded-lg border border-slate-800 text-[11px] font-medium">
+        {/* View Mode Toggle */}
+        <div className="flex items-center bg-[#07080c] p-0.5 rounded-lg border border-white/8">
           <button
             type="button"
             onClick={() => setViewMode('replay')}
@@ -446,10 +442,12 @@ export const MouseReplayCanvas: FC<MouseReplayCanvasProps> = ({ behaviorLog, wid
           {/* Controls */}
           <div className="flex items-center justify-between w-full mt-3 text-xs font-mono text-neutral-400">
             <div className="flex items-center gap-2">
-              <button
+              <Button
                 type="button"
+                size="sm"
+                variant="secondary"
                 onClick={handleTogglePlay}
-                className="p-1.5 rounded-lg bg-white/8 hover:bg-white/14 text-white transition-colors flex items-center gap-1.5 px-3 font-sans text-xs cursor-pointer"
+                className="flex items-center gap-1.5 px-3 text-xs"
               >
                 {isPlaying ? (
                   <>
@@ -460,14 +458,16 @@ export const MouseReplayCanvas: FC<MouseReplayCanvasProps> = ({ behaviorLog, wid
                     <Play className="w-3 h-3" /> 재생
                   </>
                 )}
-              </button>
-              <button
+              </Button>
+              <Button
                 type="button"
+                size="sm"
+                variant="ghost"
                 onClick={handleRestart}
-                className="p-1.5 rounded-lg bg-transparent hover:bg-white/6 text-neutral-400 hover:text-white transition-colors flex items-center gap-1 px-2 font-sans text-xs cursor-pointer"
+                className="flex items-center gap-1 px-2 text-xs text-neutral-400 hover:text-white"
               >
                 <RotateCcw className="w-3 h-3" /> 처음부터
-              </button>
+              </Button>
             </div>
 
             <div className="flex items-center gap-4 text-[11px]">
@@ -495,6 +495,6 @@ export const MouseReplayCanvas: FC<MouseReplayCanvasProps> = ({ behaviorLog, wid
           </div>
         </div>
       )}
-    </div>
+    </Card>
   );
 };

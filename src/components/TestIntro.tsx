@@ -3,6 +3,10 @@
 import { ArrowRight, BarChart3, GitBranch, MousePointer2, ShieldCheck } from 'lucide-react';
 import type { FC } from 'react';
 
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+
 export interface TestIntroProps {
   onStart: () => void;
   onExploreCatalog?: () => void;
@@ -12,10 +16,10 @@ export const TestIntro: FC<TestIntroProps> = ({ onStart, onExploreCatalog }) => 
   return (
     <div className="w-full max-w-3xl mx-auto px-4 py-8 sm:py-16 flex flex-col items-center text-center">
       {/* Top Tag */}
-      <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-slate-900 border border-slate-800 text-slate-400 text-xs font-medium mb-8">
+      <Badge variant="indigo" className="mb-8 px-3.5 py-1.5 text-xs font-medium">
         <span className="w-1.5 h-1.5 rounded-full bg-indigo-400" />
         <span>[TEST 01] 무의식 궤적 기반 MBTI 성향 검사</span>
-      </div>
+      </Badge>
 
       {/* Main Title */}
       <h1 className="text-3xl sm:text-5xl font-bold tracking-tight text-white mb-6 leading-tight">
@@ -32,7 +36,7 @@ export const TestIntro: FC<TestIntroProps> = ({ onStart, onExploreCatalog }) => 
 
       {/* Clean Feature List with Smooth Hover Effects */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full mb-14 text-left">
-        <div className="group p-6 rounded-2xl bg-slate-900/50 hover:bg-slate-900/90 border border-slate-800/70 hover:border-slate-600/80 transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-xl hover:shadow-black/40 flex flex-col justify-between cursor-default">
+        <Card className="group p-6 rounded-2xl bg-slate-900/50 hover:bg-slate-900/90 border-slate-800/70 hover:border-slate-600/80 transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-xl hover:shadow-black/40 flex flex-col justify-between cursor-default">
           <div>
             <div className="w-10 h-10 rounded-xl bg-slate-800/80 group-hover:bg-slate-700/80 border border-slate-700/60 group-hover:border-slate-500/60 text-slate-300 group-hover:text-white flex items-center justify-center mb-4 transition-colors duration-300">
               <MousePointer2 className="w-4 h-4 transition-transform duration-300 group-hover:scale-110" />
@@ -44,9 +48,9 @@ export const TestIntro: FC<TestIntroProps> = ({ onStart, onExploreCatalog }) => 
               커서 이동 거리와 방향 전환 횟수를 실시간 캡처하여 결정의 확신도를 측정합니다.
             </p>
           </div>
-        </div>
+        </Card>
 
-        <div className="group p-6 rounded-2xl bg-slate-900/50 hover:bg-slate-900/90 border border-slate-800/70 hover:border-slate-600/80 transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-xl hover:shadow-black/40 flex flex-col justify-between cursor-default">
+        <Card className="group p-6 rounded-2xl bg-slate-900/50 hover:bg-slate-900/90 border-slate-800/70 hover:border-slate-600/80 transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-xl hover:shadow-black/40 flex flex-col justify-between cursor-default">
           <div>
             <div className="w-10 h-10 rounded-xl bg-slate-800/80 group-hover:bg-slate-700/80 border border-slate-700/60 group-hover:border-slate-500/60 text-slate-300 group-hover:text-white flex items-center justify-center mb-4 transition-colors duration-300">
               <GitBranch className="w-4 h-4 transition-transform duration-300 group-hover:scale-110" />
@@ -58,9 +62,9 @@ export const TestIntro: FC<TestIntroProps> = ({ onStart, onExploreCatalog }) => 
               첫 직감으로 향한 답과 고민 후 조정한 최종 답을 비교해 내면의 차이를 분석합니다.
             </p>
           </div>
-        </div>
+        </Card>
 
-        <div className="group p-6 rounded-2xl bg-slate-900/50 hover:bg-slate-900/90 border border-slate-800/70 hover:border-slate-600/80 transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-xl hover:shadow-black/40 flex flex-col justify-between cursor-default">
+        <Card className="group p-6 rounded-2xl bg-slate-900/50 hover:bg-slate-900/90 border-slate-800/70 hover:border-slate-600/80 transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-xl hover:shadow-black/40 flex flex-col justify-between cursor-default">
           <div>
             <div className="w-10 h-10 rounded-xl bg-slate-800/80 group-hover:bg-slate-700/80 border border-slate-700/60 group-hover:border-slate-500/60 text-slate-300 group-hover:text-white flex items-center justify-center mb-4 transition-colors duration-300">
               <BarChart3 className="w-4 h-4 transition-transform duration-300 group-hover:scale-110" />
@@ -72,28 +76,29 @@ export const TestIntro: FC<TestIntroProps> = ({ onStart, onExploreCatalog }) => 
               각 성향 축(E/I, S/N, T/F, J/P)에 대한 확신도 데이터를 정량적으로 제공합니다.
             </p>
           </div>
-        </div>
+        </Card>
       </div>
 
       {/* Buttons */}
       <div className="flex flex-col sm:flex-row items-center gap-3.5">
-        <button
-          type="button"
+        <Button
+          size="lg"
           onClick={onStart}
-          className="group relative inline-flex items-center justify-center gap-2.5 px-8 py-4 text-sm sm:text-base font-semibold text-slate-950 bg-white hover:bg-slate-100 active:bg-slate-200 hover:shadow-lg hover:shadow-white/10 hover:-translate-y-0.5 active:translate-y-0 rounded-full transition-all duration-200 cursor-pointer touch-manipulation select-none"
+          className="group relative px-8 py-4 text-sm sm:text-base font-semibold text-slate-950 bg-white hover:bg-slate-100 rounded-full hover:shadow-lg hover:shadow-white/10 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200"
         >
           <span>MBTI 성향 검사 시작하기</span>
           <ArrowRight className="w-4 h-4 transition-transform duration-200 group-hover:translate-x-1" />
-        </button>
+        </Button>
 
         {onExploreCatalog && (
-          <button
-            type="button"
+          <Button
+            variant="outline"
+            size="lg"
             onClick={onExploreCatalog}
-            className="inline-flex items-center justify-center px-6 py-4 text-sm font-medium text-slate-400 hover:text-white bg-slate-900/60 hover:bg-slate-800/80 border border-slate-800 hover:border-slate-700 rounded-full transition-all duration-200 cursor-pointer touch-manipulation select-none"
+            className="px-6 py-4 text-sm font-medium text-slate-400 hover:text-white bg-slate-900/60 hover:bg-slate-800/80 border-slate-800 hover:border-slate-700 rounded-full"
           >
             <span>전체 검사 목록 보기</span>
-          </button>
+          </Button>
         )}
       </div>
 

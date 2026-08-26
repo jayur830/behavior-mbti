@@ -4,6 +4,8 @@ import { ArrowRight, Clock, Fingerprint, Pause, Play, RotateCcw, Smartphone } fr
 import type { FC } from 'react';
 import { useEffect, useRef, useState } from 'react';
 
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
 import { getOptionLabel } from '@/data/questions';
 import type { QuestionBehaviorLog } from '@/types';
 
@@ -72,7 +74,7 @@ export const TouchTimelinePlayer: FC<TouchTimelinePlayerProps> = ({ behaviorLog 
   };
 
   return (
-    <div className="w-full bg-neutral-950 border border-white/8 rounded-2xl p-4 sm:p-5 shadow-xl text-neutral-100 font-sans">
+    <Card className="w-full bg-neutral-950 border-white/8 rounded-2xl p-4 sm:p-5 shadow-xl text-neutral-100 font-sans">
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
@@ -165,10 +167,12 @@ export const TouchTimelinePlayer: FC<TouchTimelinePlayerProps> = ({ behaviorLog 
       {/* Controls */}
       <div className="flex items-center justify-between text-xs text-neutral-400 font-mono">
         <div className="flex items-center gap-2">
-          <button
+          <Button
             type="button"
+            size="sm"
+            variant="secondary"
             onClick={handleToggle}
-            className="p-1.5 rounded-lg bg-white/8 hover:bg-white/14 text-white transition-colors flex items-center gap-1.5 px-3 font-sans text-xs"
+            className="flex items-center gap-1.5 px-3 text-xs"
           >
             {isPlaying ? (
               <>
@@ -179,14 +183,16 @@ export const TouchTimelinePlayer: FC<TouchTimelinePlayerProps> = ({ behaviorLog 
                 <Play className="w-3 h-3" /> 재생
               </>
             )}
-          </button>
-          <button
+          </Button>
+          <Button
             type="button"
+            size="sm"
+            variant="ghost"
             onClick={handleRestart}
-            className="p-1.5 rounded-lg bg-transparent hover:bg-white/6 text-neutral-400 hover:text-white transition-colors flex items-center gap-1 px-2 font-sans text-xs"
+            className="flex items-center gap-1 px-2 text-xs text-neutral-400 hover:text-white"
           >
             <RotateCcw className="w-3 h-3" /> 다시보기
-          </button>
+          </Button>
         </div>
 
         <div className="text-[11px] text-neutral-400">
@@ -196,6 +202,6 @@ export const TouchTimelinePlayer: FC<TouchTimelinePlayerProps> = ({ behaviorLog 
           </strong>
         </div>
       </div>
-    </div>
+    </Card>
   );
 };

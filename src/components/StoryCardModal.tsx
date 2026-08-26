@@ -1,10 +1,12 @@
 'use client';
 
 import { toPng } from 'html-to-image';
-import { Brain, Compass, Download, ShieldCheck, Sparkles, Target, X, Zap } from 'lucide-react';
+import { Brain, Compass, Download, ShieldCheck, Sparkles, Target, Zap } from 'lucide-react';
 import type { FC } from 'react';
 import { useRef, useState } from 'react';
 
+import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import type { FullAnalysisResult } from '@/types';
 
 export interface StoryCardModalProps {
@@ -16,8 +18,6 @@ export interface StoryCardModalProps {
 export const StoryCardModal: FC<StoryCardModalProps> = ({ result, isOpen, onClose }) => {
   const cardRef = useRef<HTMLDivElement>(null);
   const [isExporting, setIsExporting] = useState<boolean>(false);
-
-  if (!isOpen) return null;
 
   const handleDownload = async () => {
     if (!cardRef.current) return;
@@ -61,28 +61,19 @@ export const StoryCardModal: FC<StoryCardModalProps> = ({ result, isOpen, onClos
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fade-in overflow-y-auto">
-      <div className="relative w-full max-w-sm flex flex-col items-center my-auto">
-        {/* Modal Controls Header */}
-        <div className="w-full flex items-center justify-between mb-3 text-xs font-mono text-neutral-400">
-          <div className="flex items-center gap-1.5">
+    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+      <DialogContent className="max-w-md bg-black/85 backdrop-blur-xl border-slate-800 p-6 flex flex-col items-center">
+        <DialogHeader className="w-full flex flex-row items-center justify-between text-xs font-mono text-neutral-400 space-y-0">
+          <DialogTitle className="flex items-center gap-1.5 text-xs font-mono text-neutral-400 font-normal">
             <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
             <span>9:16 STORY CARD PREVIEW</span>
-          </div>
-          <button
-            type="button"
-            onClick={onClose}
-            aria-label="모달 닫기"
-            className="w-8 h-8 rounded-full bg-white/8 hover:bg-white/15 text-white flex items-center justify-center transition-colors cursor-pointer"
-          >
-            <X className="w-4 h-4" />
-          </button>
-        </div>
+          </DialogTitle>
+        </DialogHeader>
 
         {/* 9:16 Card Container (Captured by html-to-image) */}
         <div
           ref={cardRef}
-          className="w-85 h-151 bg-[#07080c] text-white rounded-4xl p-6 border border-white/12 shadow-2xl relative overflow-hidden flex flex-col justify-between selection:bg-none"
+          className="w-80 sm:w-85 h-151 bg-[#07080c] text-white rounded-4xl p-6 border border-white/12 shadow-2xl relative overflow-hidden flex flex-col justify-between selection:bg-none my-2"
           style={{
             backgroundImage: `
               radial-gradient(circle at 50% 0%, rgba(99, 102, 241, 0.15) 0%, transparent 65%),
@@ -190,25 +181,24 @@ export const StoryCardModal: FC<StoryCardModalProps> = ({ result, isOpen, onClos
         </div>
 
         {/* Action Button */}
-        <button
-          type="button"
+        <Button
           disabled={isExporting}
           onClick={handleDownload}
-          className="mt-4 w-full flex items-center justify-center gap-2 py-3.5 px-6 rounded-2xl bg-linear-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 active:scale-[0.98] text-neutral-950 font-bold text-sm shadow-lg shadow-emerald-950/50 transition-all cursor-pointer touch-manipulation disabled:opacity-50"
+          className="mt-4 w-full py-6 rounded-2xl bg-linear-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-neutral-950 font-bold text-sm shadow-lg shadow-emerald-950/50"
         >
           {isExporting ? (
-            <>
+            <div className="flex items-center gap-2">
               <div className="w-4 h-4 border-2 border-neutral-950 border-t-transparent rounded-full animate-spin" />
               <span>고화질 이미지 생성 중...</span>
-            </>
+            </div>
           ) : (
-            <>
+            <div className="flex items-center gap-2">
               <Download className="w-4 h-4" />
               <span>스토리 카드 이미지 저장 (PNG)</span>
-            </>
+            </div>
           )}
-        </button>
-      </div>
-    </div>
+        </Button>
+      </DialogContent>
+    </Dialog>
   );
 };
