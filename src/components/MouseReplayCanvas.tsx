@@ -18,7 +18,7 @@ export interface MouseReplayCanvasProps {
 
 type ViewMode = 'replay' | 'heatmap';
 
-export const MouseReplayCanvas: FC<MouseReplayCanvasProps> = ({ behaviorLog, width = 640, height = 320 }) => {
+export const MouseReplayCanvas: FC<MouseReplayCanvasProps> = ({ behaviorLog, width = 800, height = 400 }) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [viewMode, setViewMode] = useState<ViewMode>('replay');
   const [isPlaying, setIsPlaying] = useState<boolean>(true);
@@ -47,11 +47,35 @@ export const MouseReplayCanvas: FC<MouseReplayCanvasProps> = ({ behaviorLog, wid
     [],
   );
 
+  // Setup HiDPI Canvas
+  const setupCanvas = useCallback(
+    (canvas: HTMLCanvasElement) => {
+      const dpr = typeof window !== 'undefined' ? Math.max(1, window.devicePixelRatio || 2) : 2;
+      const targetWidth = Math.floor(width * dpr);
+      const targetHeight = Math.floor(height * dpr);
+
+      if (canvas.width !== targetWidth || canvas.height !== targetHeight) {
+        canvas.width = targetWidth;
+        canvas.height = targetHeight;
+      }
+
+      const ctx = canvas.getContext('2d');
+      if (ctx) {
+        ctx.setTransform?.(1, 0, 0, 1, 0, 0); // reset transform
+        ctx.scale?.(dpr, dpr);
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = 'high';
+      }
+      return ctx;
+    },
+    [width, height],
+  );
+
   // Draw Heatmap Mode
   const drawHeatmap = useCallback(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-    const ctx = canvas.getContext('2d');
+    const ctx = setupCanvas(canvas);
     if (!ctx) return;
 
     // Base canvas background
@@ -92,8 +116,8 @@ export const MouseReplayCanvas: FC<MouseReplayCanvasProps> = ({ behaviorLog, wid
           const nextPt = trajectory[i + 1];
           const rawDelta = nextPt ? nextPt.timestamp - pt.timestamp : 30;
           const timeDelta = Math.max(0, Math.min(250, Number.isFinite(rawDelta) ? rawDelta : 30));
-          const radius = Math.max(5, Math.min(48, 20 + timeDelta / 6));
-          const alpha = Math.max(0.05, Math.min(0.35, 0.08 + timeDelta / 500));
+          const radius = Math.max(8, Math.min(56, 24 + timeDelta / 5));
+          const alpha = Math.max(0.06, Math.min(0.38, 0.1 + timeDelta / 450));
 
           const grad = heatCtx.createRadialGradient(cx, cy, 0, cx, cy, radius);
           grad.addColorStop(0, `rgba(239, 68, 68, ${alpha})`);
@@ -118,8 +142,8 @@ export const MouseReplayCanvas: FC<MouseReplayCanvasProps> = ({ behaviorLog, wid
       for (let i = 1; i < trajectory.length; i++) {
         ctx.lineTo(trajectory[i].x * width, trajectory[i].y * height);
       }
-      ctx.strokeStyle = isDark ? 'rgba(255, 255, 255, 0.15)' : 'rgba(0, 0, 0, 0.12)';
-      ctx.lineWidth = 1;
+      ctx.strokeStyle = isDark ? 'rgba(255, 255, 255, 0.18)' : 'rgba(0, 0, 0, 0.14)';
+      ctx.lineWidth = 1.5;
       ctx.stroke();
     }
 
@@ -129,25 +153,25 @@ export const MouseReplayCanvas: FC<MouseReplayCanvasProps> = ({ behaviorLog, wid
       const cx = opt.x * width;
       const isHotzone = trajectory.some((pt) => {
         const dist = Math.hypot(pt.x * width - cx, pt.y * height - optionY);
-        return dist < 32;
+        return dist < 36;
       });
 
       ctx.beginPath();
-      ctx.arc(cx, optionY, 12, 0, Math.PI * 2);
+      ctx.arc(cx, optionY, 14, 0, Math.PI * 2);
       ctx.fillStyle = isHotzone
         ? 'rgba(239, 68, 68, 0.3)'
         : isDark
-          ? 'rgba(255, 255, 255, 0.04)'
+          ? 'rgba(255, 255, 255, 0.05)'
           : 'rgba(0, 0, 0, 0.04)';
-      ctx.strokeStyle = isHotzone ? '#f59e0b' : isDark ? 'rgba(255, 255, 255, 0.15)' : 'rgba(0, 0, 0, 0.15)';
+      ctx.strokeStyle = isHotzone ? '#f59e0b' : isDark ? 'rgba(255, 255, 255, 0.18)' : 'rgba(0, 0, 0, 0.16)';
       ctx.lineWidth = 1.5;
       ctx.fill();
       ctx.stroke();
 
       ctx.fillStyle = isHotzone ? (isDark ? '#ffffff' : '#0f172a') : isDark ? '#94a3b8' : '#64748b';
-      ctx.font = '10px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+      ctx.font = '11px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
       ctx.textAlign = 'center';
-      ctx.fillText(opt.label, cx, optionY + 26);
+      ctx.fillText(opt.label, cx, optionY + 30);
     });
 
     // Draw selection clicks
@@ -157,26 +181,27 @@ export const MouseReplayCanvas: FC<MouseReplayCanvasProps> = ({ behaviorLog, wid
         const cx = opt.x * width;
 
         ctx.beginPath();
-        ctx.arc(cx, optionY, 10, 0, Math.PI * 2);
+        ctx.arc(cx, optionY, 12, 0, Math.PI * 2);
         ctx.fillStyle = '#f59e0b';
         ctx.fill();
         ctx.strokeStyle = '#ffffff';
-        ctx.lineWidth = 1.5;
+        ctx.lineWidth = 2;
         ctx.stroke();
 
         ctx.fillStyle = '#ffffff';
-        ctx.font = 'bold 9px sans-serif';
-        ctx.fillText(`${idx + 1}`, cx, optionY + 3);
+        ctx.font = 'bold 10px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(`${idx + 1}`, cx, optionY + 3.5);
       }
     });
-  }, [trajectory, clicks, width, height, optionPositions, isDark]);
+  }, [setupCanvas, trajectory, clicks, width, height, optionPositions, isDark]);
 
   // Draw Replay Frame
   const drawFrame = useCallback(
     (currentTime: number) => {
       const canvas = canvasRef.current;
       if (!canvas) return;
-      const ctx = canvas.getContext('2d');
+      const ctx = setupCanvas(canvas);
       if (!ctx) return;
 
       // Clear Canvas
@@ -205,17 +230,17 @@ export const MouseReplayCanvas: FC<MouseReplayCanvasProps> = ({ behaviorLog, wid
       optionPositions.forEach((opt) => {
         const cx = opt.x * width;
         ctx.beginPath();
-        ctx.arc(cx, optionY, 10, 0, Math.PI * 2);
-        ctx.fillStyle = isDark ? 'rgba(255, 255, 255, 0.03)' : 'rgba(0, 0, 0, 0.03)';
-        ctx.strokeStyle = isDark ? 'rgba(255, 255, 255, 0.12)' : 'rgba(0, 0, 0, 0.12)';
+        ctx.arc(cx, optionY, 12, 0, Math.PI * 2);
+        ctx.fillStyle = isDark ? 'rgba(255, 255, 255, 0.04)' : 'rgba(0, 0, 0, 0.03)';
+        ctx.strokeStyle = isDark ? 'rgba(255, 255, 255, 0.15)' : 'rgba(0, 0, 0, 0.12)';
         ctx.lineWidth = 1.5;
         ctx.fill();
         ctx.stroke();
 
-        ctx.fillStyle = isDark ? '#64748b' : '#94a3b8';
-        ctx.font = '9px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+        ctx.fillStyle = isDark ? '#94a3b8' : '#64748b';
+        ctx.font = '10px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
         ctx.textAlign = 'center';
-        ctx.fillText(opt.label, cx, optionY + 24);
+        ctx.fillText(opt.label, cx, optionY + 28);
       });
 
       // Filter points up to currentTime
@@ -236,11 +261,11 @@ export const MouseReplayCanvas: FC<MouseReplayCanvasProps> = ({ behaviorLog, wid
         gradient.addColorStop(1, '#ec4899');
 
         ctx.strokeStyle = gradient;
-        ctx.lineWidth = 2.5;
+        ctx.lineWidth = 3;
         ctx.lineCap = 'round';
         ctx.lineJoin = 'round';
         ctx.shadowColor = '#6366f1';
-        ctx.shadowBlur = isDark ? 8 : 2;
+        ctx.shadowBlur = isDark ? 10 : 3;
         ctx.stroke();
         ctx.shadowBlur = 0;
       }
@@ -254,14 +279,14 @@ export const MouseReplayCanvas: FC<MouseReplayCanvasProps> = ({ behaviorLog, wid
 
           // Pulse wave ring
           ctx.beginPath();
-          ctx.arc(cx, optionY, 18, 0, Math.PI * 2);
+          ctx.arc(cx, optionY, 20, 0, Math.PI * 2);
           ctx.strokeStyle = 'rgba(245, 158, 11, 0.4)';
           ctx.lineWidth = 2;
           ctx.stroke();
 
           // Solid filled badge
           ctx.beginPath();
-          ctx.arc(cx, optionY, 10, 0, Math.PI * 2);
+          ctx.arc(cx, optionY, 12, 0, Math.PI * 2);
           ctx.fillStyle = '#f59e0b';
           ctx.fill();
           ctx.strokeStyle = '#ffffff';
@@ -269,9 +294,9 @@ export const MouseReplayCanvas: FC<MouseReplayCanvasProps> = ({ behaviorLog, wid
           ctx.stroke();
 
           ctx.fillStyle = '#ffffff';
-          ctx.font = 'bold 9px sans-serif';
+          ctx.font = 'bold 10px sans-serif';
           ctx.textAlign = 'center';
-          ctx.fillText(`${idx + 1}`, cx, optionY + 3);
+          ctx.fillText(`${idx + 1}`, cx, optionY + 3.5);
         }
       });
 
@@ -283,21 +308,21 @@ export const MouseReplayCanvas: FC<MouseReplayCanvasProps> = ({ behaviorLog, wid
 
         // Outer glow
         ctx.beginPath();
-        ctx.arc(cx, cy, 10, 0, Math.PI * 2);
-        ctx.fillStyle = 'rgba(99, 102, 241, 0.25)';
+        ctx.arc(cx, cy, 12, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(99, 102, 241, 0.3)';
         ctx.fill();
 
         // Inner solid cursor
         ctx.beginPath();
-        ctx.arc(cx, cy, 4, 0, Math.PI * 2);
+        ctx.arc(cx, cy, 5, 0, Math.PI * 2);
         ctx.fillStyle = '#ffffff';
         ctx.strokeStyle = '#6366f1';
-        ctx.lineWidth = 2;
+        ctx.lineWidth = 2.5;
         ctx.fill();
         ctx.stroke();
       }
     },
-    [trajectory, clicks, width, height, optionPositions, isDark],
+    [setupCanvas, trajectory, clicks, width, height, optionPositions, isDark],
   );
 
   // Animation Loop for Replay
@@ -395,9 +420,13 @@ export const MouseReplayCanvas: FC<MouseReplayCanvasProps> = ({ behaviorLog, wid
         </div>
       </div>
 
-      {/* Canvas Container with Explicit Dimensions */}
+      {/* Canvas Container with HiDPI Resolution */}
       <div className="relative w-full aspect-2/1 rounded-xl border border-border overflow-hidden bg-muted/30 dark:bg-[#07080c] shadow-inner flex items-center justify-center">
-        <canvas ref={canvasRef} width={width} height={height} className="w-full h-full block object-contain" />
+        <canvas
+          ref={canvasRef}
+          style={{ width: '100%', height: '100%' }}
+          className="w-full h-full block object-contain"
+        />
 
         {/* Empty Trajectory Fallback Notice */}
         {trajectory.length === 0 && (

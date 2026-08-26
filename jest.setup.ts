@@ -24,6 +24,7 @@ if (typeof window !== 'undefined') {
         })),
         save: jest.fn(),
         restore: jest.fn(),
+        scale: jest.fn(),
         setTransform: jest.fn(),
         drawImage: jest.fn(),
         fillText: jest.fn(),
