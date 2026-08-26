@@ -40,7 +40,7 @@ function PreviewContent() {
     );
   }
 
-  return <ResultView result={result} isSharedView={true} onRestart={handleGoTest} />;
+  return <ResultView result={result} isSharedView={true} onRestart={handleGoTest} onHome={() => router.push('/')} />;
 }
 
 export default function PreviewClient() {

@@ -18,7 +18,7 @@ function useClientMounted(): boolean {
   );
 }
 
-function ResultContent() {
+function ResultContent({ onHome }: { onHome?: () => void }) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const compressedData = searchParams.get('data') || searchParams.get('r');
@@ -59,22 +59,24 @@ function ResultContent() {
 
   if (!isMounted) {
     return (
-      <div className="flex flex-col items-center justify-center gap-4 text-xs font-medium text-slate-400 my-auto py-20">
-        <Activity className="w-6 h-6 text-indigo-400 animate-spin" />
-        <span>진단 결과 리포트를 불러오는 중입니다...</span>
+      <div className="flex flex-col items-center justify-center p-12 text-center">
+        <div className="w-12 h-12 rounded-full border border-white/10 bg-neutral-900 flex items-center justify-center mb-6 shadow-inner animate-pulse">
+          <Activity className="w-5 h-5 text-indigo-400" />
+        </div>
+        <h3 className="text-sm font-semibold text-slate-300">리포트 데이터를 불러오는 중입니다...</h3>
       </div>
     );
   }
 
   if (!result) {
     return (
-      <div className="flex flex-col items-center justify-center text-center p-8 max-w-md mx-auto my-auto glass-card rounded-3xl">
-        <div className="w-14 h-14 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center mb-6">
-          <Activity className="w-6 h-6 text-amber-400" />
+      <div className="flex flex-col items-center justify-center p-8 text-center max-w-md mx-auto">
+        <div className="w-16 h-16 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center mb-6">
+          <span className="text-2xl font-black text-amber-400">?</span>
         </div>
-        <h2 className="text-xl font-bold text-white mb-2">분석 리포트 데이터를 찾을 수 없습니다</h2>
-        <p className="text-xs text-slate-400 mb-8 leading-relaxed">
-          올바르지 않거나 만료된 결과 링크입니다. 지금 바로 나만의 행동 분석 MBTI 검사를 시작해보세요.
+        <h2 className="text-xl font-bold text-white mb-2">분석 결과를 찾을 수 없습니다</h2>
+        <p className="text-xs text-slate-400 mb-6 leading-relaxed">
+          저장된 검사 세션이 만료되었거나 올바르지 않은 접근입니다. 새로운 성향 검사를 진행해보세요.
         </p>
         <button
           type="button"
@@ -88,7 +90,7 @@ function ResultContent() {
     );
   }
 
-  return <ResultView result={result} onRestart={handleRestart} />;
+  return <ResultView result={result} onRestart={handleRestart} onHome={onHome} />;
 }
 
 export default function ResultClient() {
@@ -125,14 +127,6 @@ export default function ResultClient() {
               Persona<span className="text-indigo-400 font-normal">Lens</span>
             </span>
           </button>
-
-          <button
-            type="button"
-            onClick={handleHome}
-            className="px-4 py-2 rounded-full text-xs font-semibold bg-slate-800/80 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700/60 transition-all cursor-pointer touch-manipulation"
-          >
-            홈으로 이동
-          </button>
         </div>
       </header>
 
@@ -146,7 +140,7 @@ export default function ResultClient() {
             </div>
           }
         >
-          <ResultContent />
+          <ResultContent onHome={handleHome} />
         </Suspense>
       </main>
 

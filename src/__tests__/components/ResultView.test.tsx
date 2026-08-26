@@ -123,4 +123,15 @@ describe('ResultView 컴포넌트 테스트', () => {
     expect(screen.getAllByText('89%').length).toBeGreaterThanOrEqual(1); // 종합 확신도
     expect(screen.getAllByText('0회').length).toBeGreaterThanOrEqual(1); // 선택 번복
   });
+
+  it('홈으로 이동 버튼 클릭 시 onHome 콜백이 호출되어야 한다', () => {
+    const handleHome = jest.fn();
+
+    render(<ResultView result={mockResult} onHome={handleHome} isSharedView={false} />);
+
+    const homeButton = screen.getByRole('button', { name: /홈으로 이동/i });
+    homeButton.click();
+
+    expect(handleHome).toHaveBeenCalledTimes(1);
+  });
 });

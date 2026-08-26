@@ -1,7 +1,6 @@
 'use client';
 
 import confetti from 'canvas-confetti';
-import { toPng } from 'html-to-image';
 import {
   Activity,
   ArrowRight,
@@ -10,8 +9,8 @@ import {
   Check,
   Clock,
   Compass,
-  Download,
   Eye,
+  Home,
   MousePointer,
   RotateCcw,
   Share2,
@@ -34,14 +33,13 @@ export interface ResultViewProps {
   result: FullAnalysisResult;
   isSharedView?: boolean;
   onRestart?: () => void;
+  onHome?: () => void;
 }
 
-export const ResultView: FC<ResultViewProps> = ({ result, isSharedView = false, onRestart }) => {
+export const ResultView: FC<ResultViewProps> = ({ result, isSharedView = false, onRestart, onHome }) => {
   const [selectedQuestionIdx, setSelectedQuestionIdx] = useState<number>(0);
   const [copied, setCopied] = useState<boolean>(false);
-  const [isExporting, setIsExporting] = useState<boolean>(false);
   const [isStoryModalOpen, setIsStoryModalOpen] = useState<boolean>(false);
-  const cardExportRef = useRef<HTMLDivElement | null>(null);
 
   const isTouchDevice = result.mouseTrajectoryStats?.primaryDevice === 'touch';
   const [replayerMode, setReplayerMode] = useState<'canvas' | 'timeline'>(isTouchDevice ? 'timeline' : 'canvas');
@@ -275,26 +273,6 @@ export const ResultView: FC<ResultViewProps> = ({ result, isSharedView = false, 
     }
   };
 
-  const handleDownloadCard = async () => {
-    if (!cardExportRef.current) return;
-    try {
-      setIsExporting(true);
-      const dataUrl = await toPng(cardExportRef.current, {
-        cacheBust: true,
-        pixelRatio: 2,
-        backgroundColor: '#090a0f',
-      });
-      const link = document.createElement('a');
-      link.download = `BEHAVIOR_MBTI_${result.mbti}_Report.png`;
-      link.href = dataUrl;
-      link.click();
-    } catch (err) {
-      console.error('Failed to export image', err);
-    } finally {
-      setIsExporting(false);
-    }
-  };
-
   const getPersonaIcon = (iconName: string) => {
     switch (iconName) {
       case 'Zap':
@@ -341,57 +319,6 @@ export const ResultView: FC<ResultViewProps> = ({ result, isSharedView = false, 
           </button>
         </div>
       )}
-
-      {/* Hidden Export Card for High-Res PNG Download */}
-      <div className="overflow-hidden h-0 w-0">
-        <div
-          ref={cardExportRef}
-          className="w-150 p-8 bg-[#090a0f] text-neutral-100 border border-white/10 rounded-3xl flex flex-col items-center text-center font-sans space-y-6"
-        >
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-neutral-400 text-xs font-mono">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-            BEHAVIORAL MBTI PSYCHOMETRICS
-          </div>
-
-          <div>
-            <h1 className="text-6xl font-black font-mono text-white mb-1">{result.mbti}</h1>
-            <h2 className="text-2xl font-bold text-neutral-200">{result.mbtiTitle}</h2>
-          </div>
-
-          <p className="text-xs text-neutral-400 max-w-md leading-relaxed">{result.mbtiDescription}</p>
-
-          <div className="grid grid-cols-4 gap-2 w-full bg-neutral-900/90 p-3 rounded-2xl border border-white/8">
-            <div className="p-1">
-              <span className="text-[10px] text-neutral-400 font-medium block">종합 확신도</span>
-              <span className="text-base font-bold text-amber-400 font-mono">{result.overallCertainty}%</span>
-            </div>
-            <div className="p-1">
-              <span className="text-[10px] text-neutral-400 font-medium block">총 소요 시간</span>
-              <span className="text-base font-bold text-sky-400 font-mono">
-                {(result.totalTestDuration / 1000).toFixed(1)}s
-              </span>
-            </div>
-            <div className="p-1">
-              <span className="text-[10px] text-neutral-400 font-medium block">선택 번복</span>
-              <span className="text-base font-bold text-rose-400 font-mono">{result.totalAnswerChanges}회</span>
-            </div>
-            <div className="p-1">
-              <span className="text-[10px] text-neutral-400 font-medium block">문항당 평균</span>
-              <span className="text-base font-bold text-emerald-400 font-mono">
-                {(result.totalTestDuration / 1000 / 40).toFixed(1)}s
-              </span>
-            </div>
-          </div>
-
-          <div className="w-full bg-neutral-900/60 p-4 rounded-2xl border border-white/6 text-left">
-            <span className="text-[10px] text-neutral-400 font-medium block mb-1">행동 프로필</span>
-            <span className="text-sm font-bold text-white block">{result.behaviorPersona?.title || '성향 프로필'}</span>
-            <span className="text-xs text-neutral-400 font-light block">{result.behaviorPersona?.subtitle || ''}</span>
-          </div>
-
-          <div className="text-[10px] text-neutral-500">© 2026 PersonaLens | Behavioral Interaction Analysis</div>
-        </div>
-      </div>
 
       {/* 1. Top Dossier Hero */}
       <div className="relative overflow-hidden glass-card rounded-3xl p-6 sm:p-12 shadow-2xl flex flex-col items-center text-center">
@@ -797,7 +724,7 @@ export const ResultView: FC<ResultViewProps> = ({ result, isSharedView = false, 
       )}
 
       {/* 8. Action Controls: Image Download, Story Card, Share & Restart */}
-      {/* 8. Action Controls: Image Download, Story Card, Share & Restart */}
+      {/* 8. Action Controls: Story Card, Home, Share & Restart */}
       {isSharedView ? (
         <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-6">
           <Button
@@ -811,17 +738,18 @@ export const ResultView: FC<ResultViewProps> = ({ result, isSharedView = false, 
             <span>📸 인스타 스토리용 카드 (9:16)</span>
           </Button>
 
-          <Button
-            type="button"
-            variant="outline"
-            size="lg"
-            onClick={handleDownloadCard}
-            disabled={isExporting}
-            className="w-full sm:w-auto rounded-full bg-neutral-900 hover:bg-neutral-800 text-neutral-200 border-white/10"
-          >
-            <Download className="w-4 h-4 text-emerald-400" />
-            <span>{isExporting ? '이미지 생성 중...' : '결과 카드 저장 (PNG)'}</span>
-          </Button>
+          {onHome && (
+            <Button
+              type="button"
+              variant="outline"
+              size="lg"
+              onClick={onHome}
+              className="w-full sm:w-auto rounded-full bg-neutral-900 hover:bg-neutral-800 text-neutral-200 border-white/10"
+            >
+              <Home className="w-4 h-4 text-emerald-400" />
+              <span>홈으로 이동</span>
+            </Button>
+          )}
 
           <Button
             type="button"
@@ -846,17 +774,18 @@ export const ResultView: FC<ResultViewProps> = ({ result, isSharedView = false, 
             <span>📸 인스타 스토리용 카드 (9:16)</span>
           </Button>
 
-          <Button
-            type="button"
-            variant="outline"
-            size="lg"
-            onClick={handleDownloadCard}
-            disabled={isExporting}
-            className="w-full sm:w-auto rounded-full bg-neutral-900 hover:bg-neutral-800 text-neutral-200 border-white/10"
-          >
-            <Download className="w-4 h-4 text-emerald-400" />
-            <span>{isExporting ? '이미지 생성 중...' : '결과 카드 저장 (PNG)'}</span>
-          </Button>
+          {onHome && (
+            <Button
+              type="button"
+              variant="outline"
+              size="lg"
+              onClick={onHome}
+              className="w-full sm:w-auto rounded-full bg-neutral-900 hover:bg-neutral-800 text-neutral-200 border-white/10"
+            >
+              <Home className="w-4 h-4 text-emerald-400" />
+              <span>홈으로 이동</span>
+            </Button>
+          )}
 
           <Button
             type="button"
