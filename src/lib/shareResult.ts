@@ -1,8 +1,8 @@
 import LZString from 'lz-string';
 
-import { calculateUserBenchmark } from '../data/benchmarkStats';
-import { BEHAVIOR_PERSONAS, MBTI_PROFILES } from '../data/mbtiDescriptions';
-import { getOptionLabel, QUESTIONS_POOL } from '../data/questions';
+import { calculateUserBenchmark } from '@/data/benchmarkStats';
+import { BEHAVIOR_PERSONAS, MBTI_PROFILES } from '@/data/mbtiDescriptions';
+import { getOptionLabel, QUESTIONS_POOL } from '@/data/questions';
 import {
   AnswerSelectionEvent,
   DimensionAnalysis,
@@ -12,7 +12,7 @@ import {
   MousePoint,
   OptionHoverLog,
   QuestionBehaviorLog,
-} from '../types';
+} from '@/types';
 
 const INTEGRITY_SALT = 'BM_CRYPTO_TAMPER_PROOF_SALT_2026_@!';
 

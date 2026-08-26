@@ -1,4 +1,4 @@
-import { getOptionLabel, getRandomQuestions, QUESTIONS, QUESTIONS_POOL } from '../data/questions';
+import { getOptionLabel, getRandomQuestions, QUESTIONS, QUESTIONS_POOL } from '@/data/questions';
 
 describe('질문 데이터 무결성 테스트 (Questions Integrity)', () => {
   it('전체 질문 풀(QUESTIONS_POOL)은 정확히 200문항으로 구성되어야 한다', () => {

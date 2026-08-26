@@ -4,7 +4,7 @@ import { ArrowRight, Clock, HelpCircle, Lock, Sparkles } from 'lucide-react';
 import Link from 'next/link';
 import { FC } from 'react';
 
-import { TEST_CATALOG, TestCatalogItem } from '../data/tests';
+import { TEST_CATALOG, TestCatalogItem } from '@/data/tests';
 
 interface TestCatalogGridProps {
   onSelectTest?: (test: TestCatalogItem) => void;

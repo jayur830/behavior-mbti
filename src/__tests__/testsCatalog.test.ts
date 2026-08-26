@@ -1,4 +1,4 @@
-import { TEST_CATALOG } from '../data/tests';
+import { TEST_CATALOG } from '@/data/tests';
 
 describe('다중 검사 카탈로그 데이터 테스트 (Test Catalog)', () => {
   it('카탈로그에는 최소 1개 이상의 활성(active) 검사가 포함되어야 한다', () => {

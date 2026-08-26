@@ -1,4 +1,5 @@
-import { BenchmarkStats } from '../types';
+import { BenchmarkStats } from '@/types';
+
 import { QUESTIONS } from './questions';
 
 export const GLOBAL_BENCHMARK_BASE = {

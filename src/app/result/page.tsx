@@ -1,6 +1,7 @@
 import { Metadata } from 'next';
 
-import { decodeResultFromCompressedString } from '../../lib/shareResult';
+import { decodeResultFromCompressedString } from '@/lib/shareResult';
+
 import ResultClient from './ResultClient';
 
 interface Props {

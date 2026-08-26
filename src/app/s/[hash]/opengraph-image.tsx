@@ -1,8 +1,8 @@
 import { ImageResponse } from 'next/og';
 
-import { getResultFromDb } from '../../../lib/db';
-import { decodeResultFromCompressedString } from '../../../lib/shareResult';
-import { FullAnalysisResult } from '../../../types';
+import { getResultFromDb } from '@/lib/db';
+import { decodeResultFromCompressedString } from '@/lib/shareResult';
+import { FullAnalysisResult } from '@/types';
 
 export const size = {
   width: 1200,

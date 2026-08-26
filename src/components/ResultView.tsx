@@ -21,8 +21,9 @@ import {
 } from 'lucide-react';
 import { FC, useEffect, useRef, useState } from 'react';
 
-import { encodeResultToCompressedString } from '../lib/shareResult';
-import { FullAnalysisResult } from '../types';
+import { encodeResultToCompressedString } from '@/lib/shareResult';
+import { FullAnalysisResult } from '@/types';
+
 import { MouseReplayCanvas } from './MouseReplayCanvas';
 import { StoryCardModal } from './StoryCardModal';
 import { TouchTimelinePlayer } from './TouchTimelinePlayer';

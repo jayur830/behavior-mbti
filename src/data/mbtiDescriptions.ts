@@ -1,4 +1,4 @@
-import { BehaviorPersona } from '../types';
+import { BehaviorPersona } from '@/types';
 
 export interface MBTIProfile {
   title: string;

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-import { deleteResultFromDb, generateShortId, saveResultToDb } from '../../../lib/db';
-import { FullAnalysisResult } from '../../../types';
+import { deleteResultFromDb, generateShortId, saveResultToDb } from '@/lib/db';
+import { FullAnalysisResult } from '@/types';
 
 export async function POST(req: NextRequest) {
   try {

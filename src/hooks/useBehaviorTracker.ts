@@ -9,7 +9,7 @@ import {
   OptionHoverLog,
   QuestionBehaviorLog,
   TouchMetrics,
-} from '../types';
+} from '@/types';
 
 interface UseBehaviorTrackerProps {
   questionId: number;

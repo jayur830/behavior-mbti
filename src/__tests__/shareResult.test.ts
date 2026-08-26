@@ -1,5 +1,5 @@
-import { decodeResultFromCompressedString, encodeResultToCompressedString } from '../lib/shareResult';
-import { FullAnalysisResult } from '../types';
+import { decodeResultFromCompressedString, encodeResultToCompressedString } from '@/lib/shareResult';
+import { FullAnalysisResult } from '@/types';
 
 const mockResult: FullAnalysisResult = {
   mbti: 'INFP',

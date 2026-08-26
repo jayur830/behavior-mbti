@@ -3,8 +3,8 @@
 import { Crosshair, Flame, Pause, Play, RotateCcw } from 'lucide-react';
 import { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
-import { getOptionLabel } from '../data/questions';
-import { AnswerSelectionEvent, MousePoint, QuestionBehaviorLog } from '../types';
+import { getOptionLabel } from '@/data/questions';
+import { AnswerSelectionEvent, MousePoint, QuestionBehaviorLog } from '@/types';
 
 interface MouseReplayCanvasProps {
   behaviorLog: QuestionBehaviorLog;

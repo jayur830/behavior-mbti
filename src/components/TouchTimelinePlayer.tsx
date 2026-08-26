@@ -3,8 +3,8 @@
 import { ArrowRight, Clock, Fingerprint, Pause, Play, RotateCcw, Smartphone } from 'lucide-react';
 import { FC, useEffect, useRef, useState } from 'react';
 
-import { getOptionLabel } from '../data/questions';
-import { QuestionBehaviorLog } from '../types';
+import { getOptionLabel } from '@/data/questions';
+import { QuestionBehaviorLog } from '@/types';
 
 interface TouchTimelinePlayerProps {
   behaviorLog: QuestionBehaviorLog;

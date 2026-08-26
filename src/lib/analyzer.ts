@@ -1,6 +1,6 @@
-import { calculateUserBenchmark } from '../data/benchmarkStats';
-import { BEHAVIOR_PERSONAS, MBTI_PROFILES } from '../data/mbtiDescriptions';
-import { getOptionLabel, QUESTIONS_POOL } from '../data/questions';
+import { calculateUserBenchmark } from '@/data/benchmarkStats';
+import { BEHAVIOR_PERSONAS, MBTI_PROFILES } from '@/data/mbtiDescriptions';
+import { getOptionLabel, QUESTIONS_POOL } from '@/data/questions';
 import {
   DilemmaQuestionDetail,
   Dimension,
@@ -11,7 +11,7 @@ import {
   MBTIType,
   PersonaGapAnalysis,
   QuestionBehaviorLog,
-} from '../types';
+} from '@/types';
 
 export function analyzeBehaviorAndMBTI(
   logs: QuestionBehaviorLog[],

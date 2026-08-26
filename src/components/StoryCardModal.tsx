@@ -4,7 +4,7 @@ import { toPng } from 'html-to-image';
 import { Brain, Compass, Download, ShieldCheck, Sparkles, Target, X, Zap } from 'lucide-react';
 import { FC, useRef, useState } from 'react';
 
-import { FullAnalysisResult } from '../types';
+import { FullAnalysisResult } from '@/types';
 
 interface StoryCardModalProps {
   result: FullAnalysisResult;
@@ -71,6 +71,7 @@ export const StoryCardModal: FC<StoryCardModalProps> = ({ result, isOpen, onClos
           <button
             type="button"
             onClick={onClose}
+            aria-label="모달 닫기"
             className="w-8 h-8 rounded-full bg-white/8 hover:bg-white/15 text-white flex items-center justify-center transition-colors cursor-pointer"
           >
             <X className="w-4 h-4" />

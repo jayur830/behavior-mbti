@@ -1,6 +1,6 @@
 import { ImageResponse } from 'next/og';
 
-import { decodeResultFromCompressedString } from '../../lib/shareResult';
+import { decodeResultFromCompressedString } from '@/lib/shareResult';
 
 export const size = {
   width: 1200,

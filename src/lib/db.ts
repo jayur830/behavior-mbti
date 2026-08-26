@@ -1,6 +1,6 @@
 import { Pool } from 'pg';
 
-import { FullAnalysisResult } from '../types';
+import { FullAnalysisResult } from '@/types';
 
 const globalForPg = globalThis as unknown as {
   pgPool: Pool | undefined;

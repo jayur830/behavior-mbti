@@ -2,8 +2,8 @@
 
 import { useRouter } from 'next/navigation';
 
-import { TestCatalogGrid } from '../components/TestCatalogGrid';
-import { TestIntro } from '../components/TestIntro';
+import { TestCatalogGrid } from '@/components/TestCatalogGrid';
+import { TestIntro } from '@/components/TestIntro';
 
 export default function HomePage() {
   const router = useRouter();

@@ -4,8 +4,8 @@ import { Activity, ArrowRight, Compass } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Suspense } from 'react';
 
-import { ResultView } from '../../components/ResultView';
-import { decodeResultFromCompressedString } from '../../lib/shareResult';
+import { ResultView } from '@/components/ResultView';
+import { decodeResultFromCompressedString } from '@/lib/shareResult';
 
 function PreviewContent() {
   const router = useRouter();
