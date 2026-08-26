@@ -1,12 +1,13 @@
 'use client';
 
 import { ArrowRight, Clock, Fingerprint, Pause, Play, RotateCcw, Smartphone } from 'lucide-react';
-import { FC, useEffect, useRef, useState } from 'react';
+import type { FC } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import { getOptionLabel } from '@/data/questions';
-import { QuestionBehaviorLog } from '@/types';
+import type { QuestionBehaviorLog } from '@/types';
 
-interface TouchTimelinePlayerProps {
+export interface TouchTimelinePlayerProps {
   behaviorLog: QuestionBehaviorLog;
 }
 

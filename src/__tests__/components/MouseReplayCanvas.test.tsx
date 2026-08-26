@@ -1,7 +1,7 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 
 import { MouseReplayCanvas } from '@/components/MouseReplayCanvas';
-import { QuestionBehaviorLog } from '@/types';
+import type { QuestionBehaviorLog } from '@/types';
 
 const mockBehaviorLog: QuestionBehaviorLog = {
   questionId: 1,

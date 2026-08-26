@@ -1,9 +1,9 @@
 'use client';
 
 import { ArrowRight, BarChart3, GitBranch, MousePointer2, ShieldCheck } from 'lucide-react';
-import { FC } from 'react';
+import type { FC } from 'react';
 
-interface TestIntroProps {
+export interface TestIntroProps {
   onStart: () => void;
   onExploreCatalog?: () => void;
 }

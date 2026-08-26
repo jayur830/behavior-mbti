@@ -1,13 +1,14 @@
 'use client';
 
 import { ArrowLeft, ArrowRight, Check, Keyboard, Mouse, Smartphone } from 'lucide-react';
-import { FC, useCallback, useRef } from 'react';
+import type { FC } from 'react';
+import { useCallback, useRef } from 'react';
 
 import { LIKERT_OPTIONS } from '@/data/questions';
 import { useBehaviorTracker } from '@/hooks/useBehaviorTracker';
-import { Question, QuestionBehaviorLog } from '@/types';
+import type { Question, QuestionBehaviorLog } from '@/types';
 
-interface QuestionCardProps {
+export interface QuestionCardProps {
   question: Question;
   currentIndex: number;
   totalQuestions: number;

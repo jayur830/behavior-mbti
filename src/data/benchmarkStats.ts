@@ -1,4 +1,4 @@
-import { BenchmarkStats } from '@/types';
+import type { BenchmarkStats } from '@/types';
 
 import { QUESTIONS } from './questions';
 
@@ -21,25 +21,27 @@ export const GLOBAL_BENCHMARK_BASE = {
   ],
 };
 
+function calculateSpeedPercentile(durationSec: number): number {
+  if (durationSec < 25) return 96;
+  if (durationSec < 35) return 85;
+  if (durationSec < 45) return 70;
+  if (durationSec < 55) return 50;
+  if (durationSec < 75) return 30;
+  return 12;
+}
+
+function calculateDecisivenessPercentile(totalChanges: number): number {
+  if (totalChanges === 0) return 92;
+  if (totalChanges === 1) return 75;
+  if (totalChanges === 2) return 55;
+  if (totalChanges === 3) return 35;
+  return 15;
+}
+
 export function calculateUserBenchmark(totalDurationMs: number, totalChanges: number): BenchmarkStats {
   const durationSec = totalDurationMs / 1000;
-
-  // Percentile calculation for duration (lower = faster = higher percentile)
-  let speedPercentile = 50;
-  if (durationSec < 25) speedPercentile = 96;
-  else if (durationSec < 35) speedPercentile = 85;
-  else if (durationSec < 45) speedPercentile = 70;
-  else if (durationSec < 55) speedPercentile = 50;
-  else if (durationSec < 75) speedPercentile = 30;
-  else speedPercentile = 12;
-
-  // Percentile for decisiveness (fewer changes = higher decisiveness percentile)
-  let decisivenessPercentile = 50;
-  if (totalChanges === 0) decisivenessPercentile = 92;
-  else if (totalChanges === 1) decisivenessPercentile = 75;
-  else if (totalChanges === 2) decisivenessPercentile = 55;
-  else if (totalChanges === 3) decisivenessPercentile = 35;
-  else decisivenessPercentile = 15;
+  const speedPercentile = calculateSpeedPercentile(durationSec);
+  const decisivenessPercentile = calculateDecisivenessPercentile(totalChanges);
 
   const topRevisedQuestions = GLOBAL_BENCHMARK_BASE.revisedQuestionRates.map((item, idx) => {
     const q = QUESTIONS.find((qItem) => qItem.id === item.questionId);

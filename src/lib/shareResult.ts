@@ -3,7 +3,7 @@ import LZString from 'lz-string';
 import { calculateUserBenchmark } from '@/data/benchmarkStats';
 import { BEHAVIOR_PERSONAS, MBTI_PROFILES } from '@/data/mbtiDescriptions';
 import { getOptionLabel, QUESTIONS_POOL } from '@/data/questions';
-import {
+import type {
   AnswerSelectionEvent,
   DimensionAnalysis,
   FullAnalysisResult,
@@ -21,12 +21,12 @@ const INTEGRITY_SALT = 'BM_CRYPTO_TAMPER_PROOF_SALT_2026_@!';
  * URL 내의 데이터가 1글자라도 변경되면 시그니처 불일치로 즉시 거부됩니다.
  */
 function computeSignature(payloadStr: string): string {
-  let hash = 0x811c9dc5;
   const combined = payloadStr + INTEGRITY_SALT;
-  for (let i = 0; i < combined.length; i++) {
-    hash ^= combined.charCodeAt(i);
-    hash = Math.imul(hash, 0x01000193);
-  }
+  const hash = Array.from(combined).reduce((acc, char) => {
+    const xorVal = acc ^ char.charCodeAt(0);
+    return Math.imul(xorVal, 0x01000193);
+  }, 0x811c9dc5);
+
   return (hash >>> 0).toString(36);
 }
 
@@ -36,12 +36,9 @@ function computeSignature(payloadStr: string): string {
  */
 function xorScramble(str: string): string {
   const saltLen = INTEGRITY_SALT.length;
-  let out = '';
-  for (let i = 0; i < str.length; i++) {
-    const code = str.charCodeAt(i) ^ INTEGRITY_SALT.charCodeAt(i % saltLen);
-    out += String.fromCharCode(code);
-  }
-  return out;
+  return Array.from(str)
+    .map((char, i) => String.fromCharCode(char.charCodeAt(0) ^ INTEGRITY_SALT.charCodeAt(i % saltLen)))
+    .join('');
 }
 
 export interface CompactSharePayload {
@@ -150,26 +147,26 @@ export function decodeResultFromCompressedString(compressedStr: string): FullAna
     const decompressed = LZString.decompressFromEncodedURIComponent(compressedStr);
     if (!decompressed) return null;
 
-    let payload: CompactSharePayload | null = null;
+    const parsePayload = (): CompactSharePayload | null => {
+      // 1. 보안 엔벨로프(서명 + 스크램블링) 파싱 시도
+      if (decompressed.includes('_d') && decompressed.includes('_s')) {
+        const envelope: SecurePayloadEnvelope = JSON.parse(decompressed);
+        const unscrambledJson = xorScramble(envelope._d);
+        const expectedSig = computeSignature(unscrambledJson);
 
-    // 1. 보안 엔벨로프(서명 + 스크램블링) 파싱 시도
-    if (decompressed.includes('_d') && decompressed.includes('_s')) {
-      const envelope: SecurePayloadEnvelope = JSON.parse(decompressed);
-      const unscrambledJson = xorScramble(envelope._d);
-      const expectedSig = computeSignature(unscrambledJson);
+        // 위변조 검증: 서명이 일치하지 않으면 즉시 차단
+        if (envelope._s !== expectedSig) {
+          console.warn('Tampered or corrupted payload signature detected! Rejected.');
+          return null;
+        }
 
-      // 위변조 검증: 서명이 일치하지 않으면 즉시 차단
-      if (envelope._s !== expectedSig) {
-        console.warn('Tampered or corrupted payload signature detected! Rejected.');
-        return null;
+        return JSON.parse(unscrambledJson) as CompactSharePayload;
       }
-
-      payload = JSON.parse(unscrambledJson) as CompactSharePayload;
-    } else {
       // 레거시 페이로드 하위 호환
-      payload = JSON.parse(decompressed) as CompactSharePayload;
-    }
+      return JSON.parse(decompressed) as CompactSharePayload;
+    };
 
+    const payload = parsePayload();
     if (!payload || !payload.m) return null;
 
     // 2. 성향 축 분석 복원
@@ -185,14 +182,12 @@ export function decodeResultFromCompressedString(compressedStr: string): FullAna
       const winner: MBTIType = leftScore >= rightScore ? leftType : rightType;
       const winnerPercentage = Math.max(leftScore, rightScore);
 
-      let behaviorInsight = '';
-      if (certaintyScore >= 80) {
-        behaviorInsight = `마우스 망설임이나 수정 없이 매우 단호하고 명확하게 ${winner} 성향을 선택했습니다. (확신도 ${certaintyScore}%)`;
-      } else if (certaintyScore >= 55) {
-        behaviorInsight = `${winner} 성향이 우세하지만, 일부 문항에서 선택지를 비교하며 신중하게 사색했습니다. (확신도 ${certaintyScore}%)`;
-      } else {
-        behaviorInsight = `${leftType}와 ${rightType} 성향 사이에서 마우스 궤적의 흔들림과 선택 수정이 관측된 균형/경계 영역입니다. (확신도 ${certaintyScore}%)`;
-      }
+      const behaviorInsight =
+        certaintyScore >= 80
+          ? `마우스 망설임이나 수정 없이 매우 단호하고 명확하게 ${winner} 성향을 선택했습니다. (확신도 ${certaintyScore}%)`
+          : certaintyScore >= 55
+            ? `${winner} 성향이 우세하지만, 일부 문항에서 선택지를 비교하며 신중하게 사색했습니다. (확신도 ${certaintyScore}%)`
+            : `${leftType}와 ${rightType} 성향 사이에서 마우스 궤적의 흔들림과 선택 수정이 관측된 균형/경계 영역입니다. (확신도 ${certaintyScore}%)`;
 
       return {
         dimension: dimKey,
@@ -234,11 +229,6 @@ export function decodeResultFromCompressedString(compressedStr: string): FullAna
         dimensions.JP.certaintyScore) /
         4,
     );
-
-    let totalHoverCount = 0;
-    let totalHoverDurationMs = 0;
-    let hesitatedOptionsCount = 0;
-    const conflictedHoverItems: HoverPsychologyAnalysis['conflictedHoverItems'] = [];
 
     // 3. 문항별 디테일 및 궤적 복원
     const allQuestionDetails = (payload.dil || []).map((item) => {
@@ -282,26 +272,6 @@ export function decodeResultFromCompressedString(compressedStr: string): FullAna
             }))
           : [];
 
-      totalHoverCount += hoverLogs.length;
-      hoverLogs.forEach((h) => {
-        totalHoverDurationMs += h.duration;
-        if (h.duration >= 400) hesitatedOptionsCount++;
-        if (
-          item.val !== null &&
-          h.optionValue !== item.val &&
-          h.duration >= 450 &&
-          Math.sign(h.optionValue || 1) !== Math.sign(item.val || 1)
-        ) {
-          conflictedHoverItems.push({
-            questionTitle: q.title,
-            hoveredOptionLabel: getOptionLabel(h.optionValue),
-            finalOptionLabel: getOptionLabel(item.val),
-            hoverDurationMs: h.duration,
-            interpretation: `[${getOptionLabel(h.optionValue)}]에 ${(h.duration / 1000).toFixed(1)}초간 마우스를 올려두며 내적 갈등을 겪은 후, 최종적으로 [${getOptionLabel(item.val)}]을 선택했습니다.`,
-          });
-        }
-      });
-
       const behavior: QuestionBehaviorLog = {
         questionId: item.qid,
         startTime: 0,
@@ -341,18 +311,47 @@ export function decodeResultFromCompressedString(compressedStr: string): FullAna
       };
     });
 
-    const topDilemmas = [...allQuestionDetails].sort((a, b) => b.hesitationTime - a.hesitationTime).slice(0, 3);
+    const flatHovers = allQuestionDetails.flatMap((d) =>
+      (d.behavior.hoverLogs || []).map((h) => ({
+        question: d.question,
+        finalValue: d.behavior.finalValue,
+        hover: h,
+      })),
+    );
+
+    const totalHoverCount = flatHovers.length;
+    const totalHoverDurationMs = flatHovers.reduce((acc, item) => acc + item.hover.duration, 0);
+    const hesitatedOptionsCount = flatHovers.filter((item) => item.hover.duration >= 400).length;
+
+    const conflictedHoverItems: HoverPsychologyAnalysis['conflictedHoverItems'] = flatHovers
+      .filter(
+        (item) =>
+          item.finalValue !== null &&
+          item.hover.optionValue !== item.finalValue &&
+          item.hover.duration >= 450 &&
+          Math.sign(item.hover.optionValue || 1) !== Math.sign(item.finalValue || 1),
+      )
+      .map((item) => ({
+        questionTitle: item.question.title,
+        hoveredOptionLabel: getOptionLabel(item.hover.optionValue),
+        finalOptionLabel: getOptionLabel(item.finalValue!),
+        hoverDurationMs: item.hover.duration,
+        interpretation: `[${getOptionLabel(item.hover.optionValue)}]에 ${(item.hover.duration / 1000).toFixed(1)}초간 마우스를 올려두며 내적 갈등을 겪은 후, 최종적으로 [${getOptionLabel(item.finalValue!)}]을 선택했습니다.`,
+      }))
+      .slice(0, 3);
 
     const hoverAnalysis: HoverPsychologyAnalysis = {
       totalHoverCount,
       totalHoverDurationMs,
       hesitatedOptionsCount,
       hoverInsight:
-        hesitatedOptionsCount > 4
+        hesitatedOptionsCount > 2
           ? '선택지를 누르기 전 여러 대안 위를 신중하게 오가며 비교 검토하는 사색적 시선 패턴이 뚜렷합니다.'
           : '직관적으로 떠오른 선택지로 마우스가 곧장 직행하는 결단력 있는 선택 패턴을 보였습니다.',
-      conflictedHoverItems: conflictedHoverItems.slice(0, 3),
+      conflictedHoverItems,
     };
+
+    const topDilemmas = [...allQuestionDetails].sort((a, b) => b.hesitationTime - a.hesitationTime).slice(0, 3);
 
     const benchmark = calculateUserBenchmark(payload.t, payload.c);
 

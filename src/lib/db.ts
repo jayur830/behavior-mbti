@@ -1,6 +1,6 @@
 import { Pool } from 'pg';
 
-import { FullAnalysisResult } from '@/types';
+import type { FullAnalysisResult } from '@/types';
 
 const globalForPg = globalThis as unknown as {
   pgPool: Pool | undefined;
@@ -35,12 +35,8 @@ export function getPgPool(): Pool | null {
  * 10자리 영문 대소문자 + 숫자 난수 ID 생성
  */
 export function generateShortId(length = 10): string {
-  const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-  let result = '';
-  for (let i = 0; i < length; i++) {
-    result += chars.charAt(Math.floor(Math.random() * chars.length));
-  }
-  return result;
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  return Array.from({ length }, () => chars.charAt(Math.floor(Math.random() * chars.length))).join('');
 }
 
 /**

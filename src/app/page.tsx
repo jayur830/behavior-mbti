@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { TestCatalogGrid } from '@/components/TestCatalogGrid';
 import { TestIntro } from '@/components/TestIntro';
 
-export default function HomePage() {
+export default function Page() {
   const router = useRouter();
 
   const handleStart = () => {

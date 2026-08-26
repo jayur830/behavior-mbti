@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react';
 
 import { ResultView } from '@/components/ResultView';
-import { FullAnalysisResult } from '@/types';
+import type { FullAnalysisResult } from '@/types';
 
 const mockResult: FullAnalysisResult = {
   mbti: 'INTJ',

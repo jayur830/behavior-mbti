@@ -1,18 +1,19 @@
 'use client';
 
 import { Crosshair, Flame, Pause, Play, RotateCcw } from 'lucide-react';
-import { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import type { FC } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { getOptionLabel } from '@/data/questions';
-import { AnswerSelectionEvent, MousePoint, QuestionBehaviorLog } from '@/types';
+import type { AnswerSelectionEvent, MousePoint, QuestionBehaviorLog } from '@/types';
 
-interface MouseReplayCanvasProps {
+export interface MouseReplayCanvasProps {
   behaviorLog: QuestionBehaviorLog;
   width?: number;
   height?: number;
 }
 
-type ViewMode = 'replay' | 'heatmap';
+export type ViewMode = 'replay' | 'heatmap';
 
 export const MouseReplayCanvas: FC<MouseReplayCanvasProps> = ({ behaviorLog, width = 640, height = 320 }) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);

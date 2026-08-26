@@ -1,7 +1,7 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 
 import { QuestionCard } from '@/components/QuestionCard';
-import { Question } from '@/types';
+import type { Question } from '@/types';
 
 const mockQuestion: Question = {
   id: 1,

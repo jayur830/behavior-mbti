@@ -6,7 +6,7 @@ import { Suspense, useMemo, useSyncExternalStore } from 'react';
 
 import { ResultView } from '@/components/ResultView';
 import { decodeResultFromCompressedString } from '@/lib/shareResult';
-import { FullAnalysisResult } from '@/types';
+import type { FullAnalysisResult } from '@/types';
 
 const emptySubscribe = () => () => {};
 

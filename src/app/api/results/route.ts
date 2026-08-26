@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 import { deleteResultFromDb, generateShortId, saveResultToDb } from '@/lib/db';
-import { FullAnalysisResult } from '@/types';
+import type { FullAnalysisResult } from '@/types';
 
 export async function POST(req: NextRequest) {
   try {
@@ -29,24 +29,19 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Invalid result payload' }, { status: 400 });
     }
 
-    // 3. 정상 DB 적재 (persona.mbti_results)
-    const shortId = await saveResultToDb(result);
+    const clientGivenId = body?.id;
+    const shareId = clientGivenId && clientGivenId.length >= 5 ? clientGivenId : generateShortId(10);
 
-    if (shortId) {
-      console.log(
-        `[API /api/results] ✅ DB 적재 성공: ID=${shortId}, MBTI=${result.mbti}, Persona=${result.behaviorPersona?.code}`,
-      );
-      return NextResponse.json({
-        id: shortId,
-        shortUrl: `/s/${shortId}`,
-      });
+    const saved = await saveResultToDb(result, shareId);
+
+    if (!saved) {
+      console.warn(`[API /api/results] ⚠️ DB 저장 실패, 클라이언트 폴백 유도: ID=${shareId}`);
     }
 
-    const fallbackId = generateShortId(10);
-    console.warn(`[API /api/results] ⚠️ DB 적재 실패 (Fallback ID=${fallbackId} 발급)`);
     return NextResponse.json({
-      id: fallbackId,
-      shortUrl: `/s/${fallbackId}`,
+      id: shareId,
+      shortUrl: `/s/${shareId}`,
+      savedToDb: saved,
     });
   } catch (err: unknown) {
     const errorMsg = err instanceof Error ? err.message : String(err);
@@ -61,16 +56,8 @@ export async function POST(req: NextRequest) {
 
 export async function DELETE(req: NextRequest) {
   try {
-    let id = req.nextUrl.searchParams.get('id');
-
-    if (!id) {
-      try {
-        const body = await req.json();
-        id = body?.id;
-      } catch {
-        // ignore body parse failure
-      }
-    }
+    const bodyJson = await req.json().catch(() => null);
+    const id = req.nextUrl.searchParams.get('id') || bodyJson?.id;
 
     if (!id) {
       return NextResponse.json({ error: 'Missing id' }, { status: 400 });

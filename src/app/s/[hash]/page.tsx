@@ -1,13 +1,13 @@
 import { Activity, ArrowRight, Compass } from 'lucide-react';
-import { Metadata } from 'next';
+import type { Metadata } from 'next';
 import Link from 'next/link';
 
 import { ResultView } from '@/components/ResultView';
 import { getResultFromDb } from '@/lib/db';
 import { decodeResultFromCompressedString } from '@/lib/shareResult';
-import { FullAnalysisResult } from '@/types';
+import type { FullAnalysisResult } from '@/types';
 
-interface Props {
+export interface Props {
   params: Promise<{ hash: string }>;
 }
 
@@ -57,7 +57,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-export default async function ShortLinkPage({ params }: Props) {
+export default async function Page({ params }: Props) {
   const { hash } = await params;
   const decoded = await resolveResult(hash);
 

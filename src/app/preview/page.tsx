@@ -1,10 +1,10 @@
-import { Metadata } from 'next';
+import type { Metadata } from 'next';
 
 import { decodeResultFromCompressedString } from '@/lib/shareResult';
 
-import PreviewClient from './PreviewClient';
+import PreviewClient from './_components/PreviewClient';
 
-interface Props {
+export interface Props {
   searchParams: Promise<{ data?: string; r?: string }>;
 }
 
@@ -56,6 +56,6 @@ export async function generateMetadata({ searchParams }: Props): Promise<Metadat
   }
 }
 
-export default function PreviewPage() {
+export default function Page() {
   return <PreviewClient />;
 }

@@ -10,32 +10,48 @@ export const size = {
 export const contentType = 'image/png';
 export const alt = 'PersonaLens | 공유 성향 분석 리포트';
 
+function extractOgData(data?: string) {
+  if (!data) {
+    return {
+      mbti: 'MBTI',
+      title: '행동 인터랙션 성향 리포트',
+      persona: '초고속 직진 결단파',
+      certainty: '85%',
+      duration: '45.0s',
+      isDecoded: false,
+    };
+  }
+
+  try {
+    const decoded = decodeResultFromCompressedString(data);
+    if (decoded) {
+      return {
+        mbti: decoded.mbti,
+        title: decoded.mbtiTitle,
+        persona: decoded.behaviorPersona.title,
+        certainty: `${decoded.overallCertainty}%`,
+        duration: `${(decoded.totalTestDuration / 1000).toFixed(1)}s`,
+        isDecoded: true,
+      };
+    }
+  } catch (err) {
+    console.error('OG decode error:', err);
+  }
+
+  return {
+    mbti: 'MBTI',
+    title: '행동 인터랙션 성향 리포트',
+    persona: '초고속 직진 결단파',
+    certainty: '85%',
+    duration: '45.0s',
+    isDecoded: false,
+  };
+}
+
 export default async function Image({ searchParams }: { searchParams?: Promise<{ data?: string; r?: string }> }) {
   const resolvedParams = searchParams ? await searchParams : {};
   const data = resolvedParams?.data || resolvedParams?.r;
-
-  let mbti = 'MBTI';
-  let title = '행동 인터랙션 성향 리포트';
-  let persona = '초고속 직진 결단파';
-  let certainty = '85%';
-  let duration = '45.0s';
-  let isDecoded = false;
-
-  if (data) {
-    try {
-      const decoded = decodeResultFromCompressedString(data);
-      if (decoded) {
-        mbti = decoded.mbti;
-        title = decoded.mbtiTitle;
-        persona = decoded.behaviorPersona.title;
-        certainty = `${decoded.overallCertainty}%`;
-        duration = `${(decoded.totalTestDuration / 1000).toFixed(1)}s`;
-        isDecoded = true;
-      }
-    } catch (err) {
-      console.error('OG decode error:', err);
-    }
-  }
+  const { mbti, title, persona, certainty, duration, isDecoded } = extractOgData(data);
 
   return new ImageResponse(
     <div

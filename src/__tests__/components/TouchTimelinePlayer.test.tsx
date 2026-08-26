@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react';
 
 import { TouchTimelinePlayer } from '@/components/TouchTimelinePlayer';
-import { QuestionBehaviorLog } from '@/types';
+import type { QuestionBehaviorLog } from '@/types';
 
 const mockBehaviorLog: QuestionBehaviorLog = {
   questionId: 1,

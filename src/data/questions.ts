@@ -1,4 +1,4 @@
-import { Question } from '@/types';
+import type { Question } from '@/types';
 
 export const LIKERT_OPTIONS = [
   { value: -3, label: '매우 아니다', color: '#ef4444', size: 'w-12 h-12' },

@@ -1,8 +1,9 @@
 'use client';
 
+import type { RefObject } from 'react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
-import {
+import type {
   AnswerSelectionEvent,
   InputDevice,
   MousePoint,
@@ -11,9 +12,9 @@ import {
   TouchMetrics,
 } from '@/types';
 
-interface UseBehaviorTrackerProps {
+export interface UseBehaviorTrackerProps {
   questionId: number;
-  containerRef: React.RefObject<HTMLDivElement | null>;
+  containerRef: RefObject<HTMLDivElement | null>;
   initialValue?: number | null;
   existingLog?: QuestionBehaviorLog | null;
   onAutoSubmit?: () => void;
@@ -307,31 +308,25 @@ export function useBehaviorTracker({
       tapCount: selectionHistoryRef.current.length,
     };
 
-    // Determine device accurately
-    let detectedDevice: InputDevice = 'mouse';
-    if (mouseMoveCountRef.current >= 3 || mouseTrajectoryRef.current.length > 3) {
-      detectedDevice = 'mouse';
-    } else if (keyStrokeCountRef.current > 0 && touchCountRef.current === 0) {
-      detectedDevice = 'keyboard';
-    } else if (touchCountRef.current > 0 && mouseMoveCountRef.current < 3) {
-      detectedDevice = 'touch';
-    }
+    // Determine device accurately (Declarative)
+    const detectedDevice: InputDevice =
+      mouseMoveCountRef.current >= 3 || mouseTrajectoryRef.current.length > 3
+        ? 'mouse'
+        : keyStrokeCountRef.current > 0 && touchCountRef.current === 0
+          ? 'keyboard'
+          : touchCountRef.current > 0 && mouseMoveCountRef.current < 3
+            ? 'touch'
+            : 'mouse';
 
-    // Calculate hesitation score
-    let hesitationScore = 0;
-    hesitationScore += changeCount * 25;
-    hesitationScore += Math.min(40, (totalDwellTime / 1000) * 3);
+    // Calculate hesitation score (Declarative)
+    const baseHesitation = changeCount * 25 + Math.min(40, (totalDwellTime / 1000) * 3);
+    const deviceSpecificHesitation =
+      detectedDevice === 'touch'
+        ? (firstTapLatency > 5000 ? 15 : 0) + (avgPress > 250 ? 10 : 0) + (confirmationDelay > 3000 ? 10 : 0)
+        : Math.min(25, directionChangesRef.current * 2);
+    const blurHesitation = tabBlurCountRef.current > 0 ? 15 : 0;
 
-    if (detectedDevice === 'touch') {
-      if (firstTapLatency > 5000) hesitationScore += 15;
-      if (avgPress > 250) hesitationScore += 10;
-      if (confirmationDelay > 3000) hesitationScore += 10;
-    } else {
-      hesitationScore += Math.min(25, directionChangesRef.current * 2);
-    }
-
-    if (tabBlurCountRef.current > 0) hesitationScore += 15;
-    hesitationScore = Math.min(100, Math.round(hesitationScore));
+    const hesitationScore = Math.min(100, Math.round(baseHesitation + deviceSpecificHesitation + blurHesitation));
 
     return {
       questionId,

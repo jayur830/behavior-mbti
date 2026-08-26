@@ -1,7 +1,7 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 
 import { StoryCardModal } from '@/components/StoryCardModal';
-import { FullAnalysisResult } from '@/types';
+import type { FullAnalysisResult } from '@/types';
 
 const mockResult: FullAnalysisResult = {
   mbti: 'ENFP',

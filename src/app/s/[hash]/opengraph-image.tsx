@@ -2,7 +2,7 @@ import { ImageResponse } from 'next/og';
 
 import { getResultFromDb } from '@/lib/db';
 import { decodeResultFromCompressedString } from '@/lib/shareResult';
-import { FullAnalysisResult } from '@/types';
+import type { FullAnalysisResult } from '@/types';
 
 export const size = {
   width: 1200,
@@ -10,7 +10,7 @@ export const size = {
 };
 
 export const contentType = 'image/png';
-export const alt = 'PersonaLens | 공유 성향 분석 리포트';
+export const alt = 'PersonaLens | 친구의 무의식 성향 분석 리포트';
 
 async function resolveResult(hash: string): Promise<FullAnalysisResult | null> {
   if (!hash) return null;
@@ -21,31 +21,47 @@ async function resolveResult(hash: string): Promise<FullAnalysisResult | null> {
   return decodeResultFromCompressedString(hash);
 }
 
+async function extractOgData(hash: string) {
+  if (!hash) {
+    return {
+      mbti: 'MBTI',
+      title: '행동 인터랙션 성향 리포트',
+      persona: '초고속 직진 결단파',
+      certainty: '85%',
+      duration: '45.0s',
+      isDecoded: false,
+    };
+  }
+
+  try {
+    const decoded = await resolveResult(hash);
+    if (decoded) {
+      return {
+        mbti: decoded.mbti,
+        title: decoded.mbtiTitle,
+        persona: decoded.behaviorPersona.title,
+        certainty: `${decoded.overallCertainty}%`,
+        duration: `${((decoded.totalTestDuration || 45000) / 1000).toFixed(1)}s`,
+        isDecoded: true,
+      };
+    }
+  } catch (err) {
+    console.error('OG decode error:', err);
+  }
+
+  return {
+    mbti: 'MBTI',
+    title: '행동 인터랙션 성향 리포트',
+    persona: '초고속 직진 결단파',
+    certainty: '85%',
+    duration: '45.0s',
+    isDecoded: false,
+  };
+}
+
 export default async function Image({ params }: { params: Promise<{ hash: string }> }) {
   const { hash } = await params;
-
-  let mbti = 'MBTI';
-  let title = '행동 인터랙션 성향 리포트';
-  let persona = '초고속 직진 결단파';
-  let certainty = '85%';
-  let duration = '45.0s';
-  let isDecoded = false;
-
-  if (hash) {
-    try {
-      const decoded = await resolveResult(hash);
-      if (decoded) {
-        mbti = decoded.mbti;
-        title = decoded.mbtiTitle;
-        persona = decoded.behaviorPersona.title;
-        certainty = `${decoded.overallCertainty}%`;
-        duration = `${((decoded.totalTestDuration || 45000) / 1000).toFixed(1)}s`;
-        isDecoded = true;
-      }
-    } catch (err) {
-      console.error('OG decode error:', err);
-    }
-  }
+  const { mbti, title, persona, certainty, duration, isDecoded } = await extractOgData(hash);
 
   return new ImageResponse(
     <div

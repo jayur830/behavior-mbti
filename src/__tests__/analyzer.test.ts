@@ -1,17 +1,13 @@
 import { getRandomQuestions } from '@/data/questions';
 import { analyzeBehaviorAndMBTI } from '@/lib/analyzer';
-import { AnswerSelectionEvent, QuestionBehaviorLog } from '@/types';
+import type { AnswerSelectionEvent, QuestionBehaviorLog } from '@/types';
 
 describe('행동 궤적 분석 엔진 테스트 (Behavior Analyzer)', () => {
   it('40문항 전체에 대해 특정 성향(예: INTJ)으로 답변했을 때 정확한 MBTI 유형이 도출되어야 한다', () => {
     const testQuestions = getRandomQuestions(10);
 
     const mockLogs: QuestionBehaviorLog[] = testQuestions.map((q, idx) => {
-      let finalVal = 3;
-      if (q.dimension === 'EI') finalVal = -3;
-      else if (q.dimension === 'SN') finalVal = 3;
-      else if (q.dimension === 'TF') finalVal = 3;
-      else if (q.dimension === 'JP') finalVal = 3;
+      const finalVal = q.dimension === 'EI' ? -3 : 3;
 
       const selections: AnswerSelectionEvent[] = [
         {

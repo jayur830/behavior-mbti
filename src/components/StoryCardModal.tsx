@@ -2,11 +2,12 @@
 
 import { toPng } from 'html-to-image';
 import { Brain, Compass, Download, ShieldCheck, Sparkles, Target, X, Zap } from 'lucide-react';
-import { FC, useRef, useState } from 'react';
+import type { FC } from 'react';
+import { useRef, useState } from 'react';
 
-import { FullAnalysisResult } from '@/types';
+import type { FullAnalysisResult } from '@/types';
 
-interface StoryCardModalProps {
+export interface StoryCardModalProps {
   result: FullAnalysisResult;
   isOpen: boolean;
   onClose: () => void;

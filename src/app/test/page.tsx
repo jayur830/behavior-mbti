@@ -9,7 +9,7 @@ import { getRandomQuestions } from '@/data/questions';
 import { analyzeBehaviorAndMBTI } from '@/lib/analyzer';
 import { Question, QuestionBehaviorLog } from '@/types';
 
-export default function TestPage() {
+export default function Page() {
   const router = useRouter();
   const [questions] = useState<Question[]>(() => getRandomQuestions(10));
   const [currentQuestionIdx, setCurrentQuestionIdx] = useState<number>(0);

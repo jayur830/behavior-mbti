@@ -19,16 +19,17 @@ import {
   Target,
   Zap,
 } from 'lucide-react';
-import { FC, useEffect, useRef, useState } from 'react';
+import type { FC } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import { encodeResultToCompressedString } from '@/lib/shareResult';
-import { FullAnalysisResult } from '@/types';
+import type { FullAnalysisResult } from '@/types';
 
 import { MouseReplayCanvas } from './MouseReplayCanvas';
 import { StoryCardModal } from './StoryCardModal';
 import { TouchTimelinePlayer } from './TouchTimelinePlayer';
 
-interface ResultViewProps {
+export interface ResultViewProps {
   result: FullAnalysisResult;
   isSharedView?: boolean;
   onRestart?: () => void;
@@ -56,12 +57,19 @@ export const ResultView: FC<ResultViewProps> = ({ result, isSharedView = false, 
 
   // 링크 복사를 하지 않은 경우 DB에서 해당 row를 즉시 삭제하는 함수
   const triggerDeleteIfUnsaved = () => {
-    let idToDelete = savedDbIdRef.current;
-    if (!idToDelete && typeof window !== 'undefined') {
-      try {
-        idToDelete = sessionStorage.getItem('unsaved_mbti_id');
-      } catch {}
-    }
+    const getTargetId = (): string | null => {
+      if (savedDbIdRef.current) return savedDbIdRef.current;
+      if (typeof window !== 'undefined') {
+        try {
+          return sessionStorage.getItem('unsaved_mbti_id');
+        } catch {
+          return null;
+        }
+      }
+      return null;
+    };
+
+    const idToDelete = getTargetId();
 
     if (!isCopiedRef.current && idToDelete) {
       const origin = typeof window !== 'undefined' ? window.location.origin : '';
@@ -77,7 +85,7 @@ export const ResultView: FC<ResultViewProps> = ({ result, isSharedView = false, 
         }
       }
 
-      // 2. fetch keepalive POST (CORS Preflight가 없는 Simple Request로 즉시 전송)
+      // 2. fetch keepalive POST
       if (typeof fetch !== 'undefined') {
         try {
           fetch(deleteUrl, {
@@ -180,42 +188,44 @@ export const ResultView: FC<ResultViewProps> = ({ result, isSharedView = false, 
   const handleCopyLink = async () => {
     if (typeof window === 'undefined') return;
 
-    let id = savedDbIdRef.current;
+    const resolveSavedId = async (): Promise<string | null> => {
+      if (savedDbIdRef.current) return savedDbIdRef.current;
 
-    // 만약 자동 적재 요청이 진행 중인 경우 완료될 때까지 대기
-    if (!id && isSavingRef.current) {
-      let attempts = 0;
-      while (!savedDbIdRef.current && attempts < 10) {
-        await new Promise((r) => setTimeout(r, 100));
-        attempts++;
-      }
-      id = savedDbIdRef.current;
-    }
-
-    // 아직도 id가 없고 저장 시도가 없었을 경우에만 신규 저장
-    if (!id && !hasSavedRef.current && !isSavingRef.current) {
-      isSavingRef.current = true;
-      try {
-        const res = await fetch('/api/results', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ result }),
-        });
-
-        if (res.ok) {
-          const json = await res.json();
-          if (json.id) {
-            id = json.id;
-            savedDbIdRef.current = id;
-            hasSavedRef.current = true;
-          }
+      if (isSavingRef.current) {
+        for (let i = 0; i < 10; i++) {
+          if (savedDbIdRef.current) return savedDbIdRef.current;
+          await new Promise((r) => setTimeout(r, 100));
         }
-      } catch (err) {
-        console.error('Instant save error:', err);
-      } finally {
-        isSavingRef.current = false;
       }
-    }
+
+      if (!hasSavedRef.current && !isSavingRef.current) {
+        isSavingRef.current = true;
+        try {
+          const res = await fetch('/api/results', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ result }),
+          });
+
+          if (res.ok) {
+            const json = await res.json();
+            if (json.id) {
+              savedDbIdRef.current = json.id;
+              hasSavedRef.current = true;
+              return json.id;
+            }
+          }
+        } catch (err) {
+          console.error('Instant save error:', err);
+        } finally {
+          isSavingRef.current = false;
+        }
+      }
+
+      return savedDbIdRef.current;
+    };
+
+    const id = await resolveSavedId();
 
     // 2. 링크 복사 플래그를 true로 설정하고 sessionStorage에서 제거하여 영구 보존
     isCopiedRef.current = true;
@@ -228,36 +238,33 @@ export const ResultView: FC<ResultViewProps> = ({ result, isSharedView = false, 
       ? `${window.location.origin}/s/${id}`
       : `${window.location.origin}/s/${encodeResultToCompressedString(result)}`;
 
-    let success = false;
-
-    // 3. Modern navigator.clipboard API
-    if (navigator?.clipboard && typeof navigator.clipboard.writeText === 'function') {
-      try {
-        await navigator.clipboard.writeText(targetUrl);
-        success = true;
-      } catch {
-        success = false;
+    const copyToClipboard = async (): Promise<boolean> => {
+      if (navigator?.clipboard && typeof navigator.clipboard.writeText === 'function') {
+        try {
+          await navigator.clipboard.writeText(targetUrl);
+          return true;
+        } catch {
+          // fallback
+        }
       }
-    }
 
-    // 4. Legacy fallback using invisible textarea
-    if (!success) {
       try {
         const textArea = document.createElement('textarea');
         textArea.value = targetUrl;
         textArea.style.position = 'fixed';
-        textArea.style.left = '-9999px';
-        textArea.style.top = '-9999px';
-        textArea.setAttribute('readonly', '');
+        textArea.style.opacity = '0';
         document.body.appendChild(textArea);
         textArea.focus();
         textArea.select();
-        success = document.execCommand('copy');
+        const copySuccess = document.execCommand('copy');
         document.body.removeChild(textArea);
+        return copySuccess;
       } catch {
-        success = false;
+        return false;
       }
-    }
+    };
+
+    const success = await copyToClipboard();
 
     if (success) {
       setCopied(true);
