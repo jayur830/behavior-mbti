@@ -114,18 +114,18 @@ export default function ResultClient() {
   return (
     <div className="min-h-screen flex flex-col justify-between selection:bg-indigo-500/20 selection:text-indigo-200 relative">
       {/* Navigation Header */}
-      <header className="w-full border-b border-slate-800/60 backdrop-blur-xl sticky top-0 z-40 bg-[#0b0f17]/70">
+      <header className="w-full border-b border-border backdrop-blur-xl sticky top-0 z-40 bg-background/80">
         <div className="max-w-5xl mx-auto px-6 h-16 flex items-center justify-between">
           <button
             type="button"
             onClick={handleHome}
-            className="flex items-center gap-3 font-semibold text-slate-100 hover:text-white transition-colors cursor-pointer touch-manipulation"
+            className="flex items-center gap-3 font-semibold text-foreground hover:text-indigo-500 transition-colors cursor-pointer touch-manipulation"
           >
             <div className="w-8 h-8 rounded-xl bg-linear-to-tr from-indigo-600 to-violet-500 flex items-center justify-center text-white shadow-lg shadow-indigo-500/20">
               <Compass className="w-4 h-4" />
             </div>
-            <span className="tracking-tight text-base font-bold">
-              Persona<span className="text-indigo-400 font-normal">Lens</span>
+            <span className="tracking-tight text-base font-bold text-foreground">
+              Persona<span className="text-indigo-500 dark:text-indigo-400 font-normal">Lens</span>
             </span>
           </button>
 
@@ -137,8 +137,8 @@ export default function ResultClient() {
       <main className="flex-1 flex flex-col items-center justify-center px-4 py-10">
         <Suspense
           fallback={
-            <div className="flex flex-col items-center justify-center gap-4 text-xs font-medium text-slate-400 my-auto py-20">
-              <Activity className="w-6 h-6 text-indigo-400 animate-spin" />
+            <div className="flex flex-col items-center justify-center gap-4 text-xs font-medium text-muted-foreground my-auto py-20">
+              <Activity className="w-6 h-6 text-indigo-500 animate-spin" />
               <span>진단 결과 리포트를 불러오는 중입니다...</span>
             </div>
           }
@@ -148,10 +148,10 @@ export default function ResultClient() {
       </main>
 
       {/* Minimal Footer */}
-      <footer className="w-full border-t border-slate-800/50 py-8 text-center text-xs text-slate-500">
+      <footer className="w-full border-t border-border py-8 text-center text-xs text-muted-foreground">
         <div className="max-w-5xl mx-auto px-6 flex flex-col items-center justify-between gap-3 sm:flex-row">
           <p>© 2026 PersonaLens. All rights reserved.</p>
-          <p className="text-[11px] text-slate-500">
+          <p className="text-[11px] text-muted-foreground">
             본 서비스는 행동 궤적 분석을 통한 흥미 및 자기 탐색용 서비스이며, 공식 MBTI® 검사와는 무관합니다.
           </p>
         </div>

@@ -24,14 +24,14 @@ export default function Page() {
   return (
     <div className="min-h-screen flex flex-col justify-between selection:bg-indigo-500/20 selection:text-indigo-200 relative">
       {/* Modern Floating Navigation */}
-      <header className="w-full border-b border-slate-800/60 backdrop-blur-xl sticky top-0 z-40 bg-[#0b0f17]/70">
+      <header className="w-full border-b border-border backdrop-blur-xl sticky top-0 z-40 bg-background/80">
         <div className="max-w-5xl mx-auto px-6 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-3 font-semibold text-slate-100">
-            <div className="w-8 h-8 rounded-xl bg-slate-800 border border-slate-700/80 flex items-center justify-center text-indigo-400 font-bold text-sm tracking-tighter shadow-xs">
+          <div className="flex items-center gap-3 font-semibold text-foreground">
+            <div className="w-8 h-8 rounded-xl bg-muted border border-border flex items-center justify-center text-indigo-500 font-bold text-sm tracking-tighter shadow-xs">
               P
             </div>
-            <span className="tracking-tight text-base font-bold">
-              Persona<span className="text-indigo-400 font-normal">Lens</span>
+            <span className="tracking-tight text-base font-bold text-foreground">
+              Persona<span className="text-indigo-500 dark:text-indigo-400 font-normal">Lens</span>
             </span>
           </div>
 
@@ -42,7 +42,7 @@ export default function Page() {
               variant="outline"
               size="sm"
               onClick={handleScrollToCatalog}
-              className="text-xs font-semibold text-slate-400 hover:text-white px-3.5 py-1.5 rounded-full bg-slate-800/60 hover:bg-slate-800 border-slate-700/60"
+              className="text-xs font-semibold px-3.5 py-1.5 rounded-full"
             >
               검사 목록 둘러보기
             </Button>
@@ -58,16 +58,16 @@ export default function Page() {
         </section>
 
         {/* Multi-Test Catalog Section */}
-        <section id="catalog-section" className="w-full scroll-mt-20">
+        <div id="catalog-section" className="w-full">
           <TestCatalogGrid />
-        </section>
+        </div>
       </main>
 
       {/* Minimal Footer */}
-      <footer className="w-full border-t border-slate-800/50 py-8 text-center text-xs text-slate-500">
+      <footer className="w-full border-t border-border py-8 text-center text-xs text-muted-foreground">
         <div className="max-w-5xl mx-auto px-6 flex flex-col items-center justify-between gap-3 sm:flex-row">
           <p>© 2026 PersonaLens. All rights reserved.</p>
-          <p className="text-[11px] text-slate-500">
+          <p className="text-[11px] text-muted-foreground">
             본 서비스는 행동 궤적 분석을 통한 흥미 및 자기 탐색용 서비스이며, 공식 MBTI® 검사와는 무관합니다.
           </p>
         </div>

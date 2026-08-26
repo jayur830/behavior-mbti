@@ -90,48 +90,52 @@ export const QuestionCard: FC<QuestionCardProps> = ({
   const getDeviceIcon = () => {
     switch (primaryDevice) {
       case 'touch':
-        return <Smartphone className="w-3.5 h-3.5 text-indigo-400" />;
+        return <Smartphone className="w-3.5 h-3.5 text-indigo-500 dark:text-indigo-400" />;
       case 'keyboard':
-        return <Keyboard className="w-3.5 h-3.5 text-indigo-400" />;
+        return <Keyboard className="w-3.5 h-3.5 text-indigo-500 dark:text-indigo-400" />;
       case 'mouse':
       default:
-        return <Mouse className="w-3.5 h-3.5 text-indigo-400" />;
+        return <Mouse className="w-3.5 h-3.5 text-indigo-500 dark:text-indigo-400" />;
     }
   };
 
   return (
     <div
       ref={containerRef}
-      className="relative w-full max-w-2xl mx-auto glass-card rounded-3xl p-6 sm:p-10 shadow-2xl transition-all duration-300 text-slate-100 flex flex-col justify-between min-h-125"
+      className="relative w-full max-w-2xl mx-auto glass-card rounded-3xl p-6 sm:p-10 shadow-2xl transition-all duration-300 text-foreground flex flex-col justify-between min-h-125"
     >
       {/* Top Header: Progress & Category */}
       <div>
-        <div className="flex items-center justify-between text-xs text-slate-400 mb-4 font-medium">
+        <div className="flex items-center justify-between text-xs text-muted-foreground mb-4 font-medium">
           <Badge variant="indigo" className="font-medium">
             {getCategoryLabel(question.category)}
           </Badge>
           <div className="flex items-center gap-2">
-            <Badge variant="secondary" className="flex items-center gap-1.5 text-xs text-slate-300 font-normal">
+            <Badge variant="secondary" className="flex items-center gap-1.5 text-xs font-normal">
               {getDeviceIcon()}
               <span>{primaryDevice === 'touch' ? '터치 감지' : '움직임 분석 중'}</span>
             </Badge>
-            <span className="text-slate-300 font-semibold text-sm">
-              <span className="text-white">{currentIndex + 1}</span>
-              <span className="text-slate-500 font-normal"> / {totalQuestions}</span>
+            <span className="font-semibold text-sm">
+              <span className="text-foreground">{currentIndex + 1}</span>
+              <span className="text-muted-foreground font-normal"> / {totalQuestions}</span>
             </span>
           </div>
         </div>
 
         {/* Smooth Modern Progress Bar */}
         <div className="mb-8">
-          <Progress value={progressPercent} className="h-1.5 bg-slate-800/60" />
+          <Progress value={progressPercent} className="h-1.5 bg-muted" />
         </div>
 
         {/* Question Text */}
         <div className="mb-8">
-          <h2 className="text-xl sm:text-2xl font-bold text-white leading-relaxed tracking-tight">{question.title}</h2>
+          <h2 className="text-xl sm:text-2xl font-bold text-foreground leading-relaxed tracking-tight">
+            {question.title}
+          </h2>
           {question.description && (
-            <p className="text-xs sm:text-sm text-slate-400 leading-relaxed mt-2 font-normal">{question.description}</p>
+            <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed mt-2 font-normal">
+              {question.description}
+            </p>
           )}
         </div>
       </div>
@@ -139,12 +143,12 @@ export const QuestionCard: FC<QuestionCardProps> = ({
       {/* Likert Scale Choices */}
       <div className="my-auto py-4">
         <div className="flex justify-between items-center text-xs font-semibold mb-4 px-2">
-          <span className="text-rose-400">비동의 (그렇지 않다)</span>
-          <span className="text-slate-500 font-normal text-[11px]">중립</span>
-          <span className="text-indigo-400">동의 (매우 그렇다)</span>
+          <span className="text-rose-500 dark:text-rose-400">비동의 (그렇지 않다)</span>
+          <span className="text-muted-foreground font-normal text-[11px]">중립</span>
+          <span className="text-indigo-600 dark:text-indigo-400">동의 (매우 그렇다)</span>
         </div>
 
-        <div className="flex items-center justify-between gap-1.5 sm:gap-3 px-3 sm:px-6 py-6 bg-slate-900/60 rounded-2xl border border-slate-800/80 backdrop-blur-md">
+        <div className="flex items-center justify-between gap-1.5 sm:gap-3 px-3 sm:px-6 py-6 bg-slate-100/80 dark:bg-slate-900/60 rounded-2xl border border-slate-200 dark:border-slate-800/80 backdrop-blur-md">
           {LIKERT_OPTIONS.map((opt, idx) => {
             const isSelected = selectedVal === opt.value;
             const sizeClass =
@@ -168,26 +172,28 @@ export const QuestionCard: FC<QuestionCardProps> = ({
                   aria-label={opt.label}
                   onClick={() => handleSelectOption(opt.value, 'mouse')}
                   className={`
-                    relative rounded-full transition-all duration-200 cursor-pointer flex items-center justify-center touch-manipulation
+                    relative rounded-full transition-all duration-200 cursor-pointer flex items-center justify-center touch-manipulation shadow-xs
                     ${sizeClass}
                     ${
                       isSelected
                         ? 'bg-linear-to-tr from-indigo-500 to-violet-500 text-white shadow-lg shadow-indigo-500/40 ring-4 ring-indigo-500/20 scale-110'
-                        : 'bg-slate-800/80 border border-slate-700/60 hover:border-indigo-400/50 hover:bg-slate-750 text-transparent hover:scale-105 active:scale-95'
+                        : 'bg-white dark:bg-slate-800/80 border border-slate-300 dark:border-slate-700/60 hover:border-indigo-400 text-transparent hover:scale-105 active:scale-95'
                     }
                   `}
                 >
-                  {isSelected && <Check className="w-5 h-5 stroke-3" />}
+                  {isSelected && <Check className="w-5 h-5 stroke-3 text-white" />}
                 </button>
                 <span
                   className={`text-[11px] sm:text-xs text-center transition-colors hidden sm:block ${
-                    isSelected ? 'text-indigo-300 font-semibold' : 'text-slate-500 group-hover:text-slate-400'
+                    isSelected
+                      ? 'text-indigo-600 dark:text-indigo-300 font-semibold'
+                      : 'text-muted-foreground group-hover:text-foreground'
                   }`}
                 >
                   {opt.label}
                 </span>
                 {/* Keyboard Shortcut Hint */}
-                <span className="hidden sm:inline text-[9px] text-slate-500 bg-slate-800/80 px-1.5 py-0.5 rounded border border-slate-700/40">
+                <span className="hidden sm:inline text-[9px] text-muted-foreground bg-white dark:bg-slate-800/80 px-1.5 py-0.5 rounded border border-border shadow-xs">
                   {idx + 1}
                 </span>
               </div>
@@ -197,13 +203,13 @@ export const QuestionCard: FC<QuestionCardProps> = ({
       </div>
 
       {/* Footer Navigation Controls */}
-      <div className="flex items-center justify-between pt-6 border-t border-slate-800/60 mt-6">
+      <div className="flex items-center justify-between pt-6 border-t border-border mt-6">
         {currentIndex > 0 ? (
           <Button
             type="button"
             variant="ghost"
             onClick={onGoBack}
-            className="flex items-center gap-2 text-xs sm:text-sm font-medium text-slate-400 hover:text-white"
+            className="flex items-center gap-2 text-xs sm:text-sm font-medium text-muted-foreground hover:text-foreground"
           >
             <ArrowLeft className="w-4 h-4" />
             <span>이전 문항</span>

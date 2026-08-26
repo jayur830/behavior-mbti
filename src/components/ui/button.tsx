@@ -12,10 +12,10 @@ export const buttonVariants = cva(
       variant: {
         default: 'bg-indigo-600 text-white shadow-md hover:bg-indigo-500 shadow-indigo-500/20',
         destructive: 'bg-red-500 text-white shadow-sm hover:bg-red-600 shadow-red-500/20',
-        outline: 'border border-slate-700 bg-slate-800/60 hover:bg-slate-700/80 text-slate-200 hover:text-white',
-        secondary: 'bg-slate-800 text-slate-200 hover:bg-slate-700 hover:text-white',
-        ghost: 'hover:bg-slate-800/80 text-slate-300 hover:text-white',
-        link: 'text-indigo-400 underline-offset-4 hover:underline',
+        outline: 'border border-border bg-card/80 dark:bg-slate-800/60 hover:bg-muted text-foreground shadow-xs',
+        secondary: 'bg-muted text-foreground hover:bg-muted/80',
+        ghost: 'hover:bg-muted text-muted-foreground hover:text-foreground',
+        link: 'text-indigo-600 dark:text-indigo-400 underline-offset-4 hover:underline',
         gradient:
           'bg-linear-to-r from-indigo-600 to-purple-600 text-white hover:from-indigo-500 hover:to-purple-500 shadow-lg shadow-indigo-500/25',
       },

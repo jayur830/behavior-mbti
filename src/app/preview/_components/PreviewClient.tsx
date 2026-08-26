@@ -48,26 +48,26 @@ export default function PreviewClient() {
   const router = useRouter();
 
   return (
-    <div className="min-h-screen bg-[#090a0f] text-neutral-100 flex flex-col justify-between selection:bg-neutral-200 selection:text-neutral-900 bg-grid-pattern relative">
+    <div className="min-h-screen bg-background text-foreground flex flex-col justify-between selection:bg-indigo-500/20 selection:text-indigo-200 relative">
       {/* Navigation Header */}
-      <header className="w-full border-b border-white/6 backdrop-blur-md sticky top-0 z-40 bg-[#090a0f]/80">
+      <header className="w-full border-b border-border backdrop-blur-md sticky top-0 z-40 bg-background/80">
         <div className="max-w-4xl mx-auto px-4 h-16 flex items-center justify-between">
           <button
             type="button"
             onClick={() => router.push('/')}
-            className="flex items-center gap-2.5 font-mono text-sm tracking-widest text-neutral-200 hover:text-white transition-colors cursor-pointer touch-manipulation"
+            className="flex items-center gap-2.5 font-mono text-sm tracking-widest text-foreground hover:text-indigo-500 transition-colors cursor-pointer touch-manipulation"
           >
-            <div className="w-7 h-7 rounded-lg bg-white/8 border border-white/10 flex items-center justify-center text-neutral-100">
-              <Compass className="w-4 h-4 text-emerald-400" />
+            <div className="w-7 h-7 rounded-lg bg-muted border border-border flex items-center justify-center text-foreground">
+              <Compass className="w-4 h-4 text-emerald-500" />
             </div>
             <span className="font-bold">
-              PERSONA<span className="text-neutral-500">LENS</span>
+              PERSONA<span className="text-muted-foreground">LENS</span>
             </span>
           </button>
 
-          <div className="flex items-center gap-2 text-xs font-mono text-neutral-400">
+          <div className="flex items-center gap-2 text-xs font-mono text-muted-foreground">
             <ThemeToggle />
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
             <span className="hidden sm:inline">SHARED PREVIEW</span>
           </div>
         </div>
@@ -77,7 +77,7 @@ export default function PreviewClient() {
       <main className="flex-1 flex flex-col justify-center items-center px-4 py-8">
         <Suspense
           fallback={
-            <div className="flex items-center justify-center p-12 text-xs font-mono text-neutral-400">
+            <div className="flex items-center justify-center p-12 text-xs font-mono text-muted-foreground">
               LOADING SHARED REPORT...
             </div>
           }
@@ -87,10 +87,10 @@ export default function PreviewClient() {
       </main>
 
       {/* Minimal Footer */}
-      <footer className="w-full border-t border-white/4 py-6 text-center text-xs text-neutral-500 font-mono">
+      <footer className="w-full border-t border-border py-6 text-center text-xs text-muted-foreground font-mono">
         <div className="max-w-4xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
           <span>© 2026 PersonaLens. All rights reserved.</span>
-          <span className="text-neutral-500 text-[11px]">BEHAVIORAL INTERACTION ANALYSIS</span>
+          <span className="text-[11px]">BEHAVIORAL INTERACTION ANALYSIS</span>
         </div>
       </footer>
     </div>

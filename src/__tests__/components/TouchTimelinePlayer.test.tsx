@@ -40,6 +40,6 @@ describe('TouchTimelinePlayer 컴포넌트 테스트', () => {
 
     expect(screen.getByText(/Mobile Touch Dynamics Timeline/i)).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /일시정지/i })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /다시보기/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /처음부터|다시보기/i })).toBeInTheDocument();
   });
 });

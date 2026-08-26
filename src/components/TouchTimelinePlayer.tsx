@@ -1,12 +1,11 @@
 'use client';
 
-import { ArrowRight, Clock, Fingerprint, Pause, Play, RotateCcw, Smartphone } from 'lucide-react';
+import { Clock, Fingerprint, Pause, Play, RotateCcw, Smartphone, Timer } from 'lucide-react';
 import type { FC } from 'react';
 import { useEffect, useRef, useState } from 'react';
 
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { getOptionLabel } from '@/data/questions';
 import type { QuestionBehaviorLog } from '@/types';
 
 export interface TouchTimelinePlayerProps {
@@ -30,7 +29,6 @@ export const TouchTimelinePlayer: FC<TouchTimelinePlayerProps> = ({ behaviorLog 
   const taps = behaviorLog.selectionHistory || [];
   const latencySec = (touchMetrics.firstTapLatency / 1000).toFixed(1);
   const pressMs = touchMetrics.averagePressDuration;
-  const confirmSec = (touchMetrics.confirmationDelay / 1000).toFixed(1);
 
   useEffect(() => {
     if (!isPlaying) {
@@ -74,24 +72,24 @@ export const TouchTimelinePlayer: FC<TouchTimelinePlayerProps> = ({ behaviorLog 
   };
 
   return (
-    <Card className="w-full bg-neutral-950 border-white/8 rounded-2xl p-4 sm:p-5 shadow-xl text-neutral-100 font-sans">
+    <Card className="w-full bg-card dark:bg-neutral-950 border-border rounded-2xl p-4 sm:p-5 shadow-xl text-foreground font-sans">
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
-          <Smartphone className="w-3.5 h-3.5 text-sky-400" />
-          <span className="text-xs font-mono text-neutral-300 uppercase tracking-wide">
+          <Smartphone className="w-3.5 h-3.5 text-sky-500" />
+          <span className="text-xs font-mono text-foreground font-semibold uppercase tracking-wide">
             Mobile Touch Dynamics Timeline
           </span>
         </div>
-        <span className="text-xs font-mono text-neutral-500">
+        <span className="text-xs font-mono text-muted-foreground">
           {(progress * (duration / 1000)).toFixed(1)}s / {(duration / 1000).toFixed(1)}s
         </span>
       </div>
 
       {/* Touch Latency & Timeline Visualization */}
-      <div className="space-y-3 bg-[#07080c] border border-white/6 rounded-xl p-4 mb-4">
+      <div className="space-y-3 bg-muted/40 dark:bg-[#07080c] border border-border rounded-xl p-4 mb-4">
         {/* Timeline Flow Bar */}
-        <div className="relative w-full h-3 bg-neutral-900 rounded-full overflow-hidden mb-3">
+        <div className="relative w-full h-3 bg-muted rounded-full overflow-hidden mb-3">
           {/* First Tap Latency Zone */}
           <div
             className="absolute top-0 bottom-0 left-0 bg-sky-500/20 border-r border-sky-400/40"
@@ -121,51 +119,39 @@ export const TouchTimelinePlayer: FC<TouchTimelinePlayerProps> = ({ behaviorLog 
 
         {/* Phase Breakdown Badges */}
         <div className="grid grid-cols-3 gap-2 text-center text-xs font-mono">
-          <div className="bg-white/3 border border-white/6 p-2.5 rounded-xl flex flex-col items-center">
-            <span className="text-[10px] text-neutral-500 flex items-center gap-1 mb-1">
-              <Clock className="w-3 h-3 text-sky-400" />첫 터치 잠복기
+          <div className="bg-card border border-border p-2.5 rounded-xl flex flex-col items-center">
+            <span className="text-[10px] text-muted-foreground flex items-center gap-1 mb-1">
+              <Clock className="w-3 h-3 text-sky-500" />첫 터치 잠복기
             </span>
-            <span className="text-sm font-bold text-sky-400">{latencySec}초</span>
-            <span className="text-[9px] text-neutral-500 mt-0.5">질문 숙고 시간</span>
+            <span className="text-sm font-bold text-sky-500">{latencySec}초</span>
+            <span className="text-[9px] text-muted-foreground mt-0.5">질문 숙고 시간</span>
           </div>
 
-          <div className="bg-white/3 border border-white/6 p-2.5 rounded-xl flex flex-col items-center">
-            <span className="text-[10px] text-neutral-500 flex items-center gap-1 mb-1">
-              <Fingerprint className="w-3 h-3 text-emerald-400" />
+          <div className="bg-card border border-border p-2.5 rounded-xl flex flex-col items-center">
+            <span className="text-[10px] text-muted-foreground flex items-center gap-1 mb-1">
+              <Fingerprint className="w-3 h-3 text-emerald-500" />
               터치 프레스 시간
             </span>
-            <span className="text-sm font-bold text-emerald-400">{pressMs}ms</span>
-            <span className="text-[9px] text-neutral-500 mt-0.5">{pressMs < 120 ? '단호한 탭' : '신중한 롱터치'}</span>
+            <span className="text-sm font-bold text-emerald-500">{pressMs}ms</span>
+            <span className="text-[9px] text-muted-foreground mt-0.5">
+              {pressMs < 120 ? '단호한 탭' : '신중한 롱터치'}
+            </span>
           </div>
 
-          <div className="bg-white/3 border border-white/6 p-2.5 rounded-xl flex flex-col items-center">
-            <span className="text-[10px] text-neutral-500 flex items-center gap-1 mb-1">
-              <ArrowRight className="w-3 h-3 text-amber-400" />
-              확정 딜레이
+          <div className="bg-card border border-border p-2.5 rounded-xl flex flex-col items-center">
+            <span className="text-[10px] text-muted-foreground flex items-center gap-1 mb-1">
+              <Timer className="w-3 h-3 text-amber-500" />총 터치 횟수
             </span>
-            <span className="text-sm font-bold text-amber-400">{confirmSec}초</span>
-            <span className="text-[9px] text-neutral-500 mt-0.5">최종 확인 시간</span>
+            <span className="text-sm font-bold text-amber-500">{taps.length}회</span>
+            <span className="text-[9px] text-muted-foreground mt-0.5">
+              {taps.length > 1 ? '선택 번복 발생' : '단일 직진 터치'}
+            </span>
           </div>
         </div>
-
-        {/* Tap Selection Path */}
-        {taps.length > 0 && (
-          <div className="pt-2 border-t border-white/4 text-xs flex items-center gap-2 text-neutral-400 font-mono overflow-x-auto">
-            <span className="text-[11px] text-neutral-500 shrink-0">터치 시퀀스:</span>
-            {taps.map((t, idx) => (
-              <span key={idx} className="flex items-center gap-1 shrink-0">
-                <span className="px-2 py-0.5 rounded bg-white/6 text-neutral-200 font-semibold text-[11px]">
-                  #{idx + 1} {getOptionLabel(t.value)}
-                </span>
-                {idx < taps.length - 1 && <span className="text-neutral-600">➔</span>}
-              </span>
-            ))}
-          </div>
-        )}
       </div>
 
-      {/* Controls */}
-      <div className="flex items-center justify-between text-xs text-neutral-400 font-mono">
+      {/* Play Controls & Replay Status */}
+      <div className="flex items-center justify-between text-xs pt-1">
         <div className="flex items-center gap-2">
           <Button
             type="button"
@@ -176,31 +162,32 @@ export const TouchTimelinePlayer: FC<TouchTimelinePlayerProps> = ({ behaviorLog 
           >
             {isPlaying ? (
               <>
-                <Pause className="w-3 h-3" /> 일시정지
+                <Pause className="w-3.5 h-3.5" /> 일시정지
               </>
             ) : (
               <>
-                <Play className="w-3 h-3" /> 재생
+                <Play className="w-3.5 h-3.5" /> 재생
               </>
             )}
           </Button>
+
           <Button
             type="button"
             size="sm"
             variant="ghost"
             onClick={handleRestart}
-            className="flex items-center gap-1 px-2 text-xs text-neutral-400 hover:text-white"
+            className="text-muted-foreground hover:text-foreground text-xs"
           >
-            <RotateCcw className="w-3 h-3" /> 다시보기
+            <RotateCcw className="w-3.5 h-3.5 mr-1" /> 처음부터
           </Button>
         </div>
 
-        <div className="text-[11px] text-neutral-400">
-          최종 결정:{' '}
-          <strong className="text-emerald-400">
-            {behaviorLog.finalValue !== null ? getOptionLabel(behaviorLog.finalValue) : '미선택'}
+        <span className="text-[11px] text-muted-foreground font-mono">
+          터치 상호작용 속도:{' '}
+          <strong className="text-foreground">
+            {behaviorLog.primaryDevice === 'touch' ? 'Mobile Touch' : 'Touch Gesture'}
           </strong>
-        </div>
+        </span>
       </div>
     </Card>
   );
