@@ -156,6 +156,7 @@ export const QuestionCard: FC<QuestionCardProps> = ({
               >
                 <button
                   type="button"
+                  aria-label={opt.label}
                   onClick={() => handleSelectOption(opt.value, 'mouse')}
                   className={`
                     relative rounded-full transition-all duration-200 cursor-pointer flex items-center justify-center touch-manipulation
