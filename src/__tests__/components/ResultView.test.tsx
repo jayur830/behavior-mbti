@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 
 import { ResultView } from '@/components/ResultView';
 import type { FullAnalysisResult } from '@/types';
@@ -79,7 +79,76 @@ const mockResult: FullAnalysisResult = {
     hoverInsight: '선택지 간 망설임 없이 결정을 내렸습니다.',
     conflictedHoverItems: [],
   },
-  allQuestionDetails: [],
+  allQuestionDetails: [
+    {
+      question: {
+        id: 1,
+        title: '질문 1 테스트',
+        dimension: 'EI',
+        positiveType: 'I',
+        negativeType: 'E',
+        category: 'social',
+      },
+      behavior: {
+        questionId: 1,
+        startTime: 1000,
+        endTime: 2000,
+        totalDwellTime: 1000,
+        firstInteractionTime: 200,
+        finalValue: 3,
+        selectionHistory: [{ value: 3, timestamp: 500 }],
+        changeCount: 0,
+        hoverLogs: [],
+        mouseTrajectory: [
+          { x: 0.1, y: 0.2, timestamp: 100 },
+          { x: 0.5, y: 0.5, timestamp: 500 },
+        ],
+        directionChanges: 0,
+        hesitationScore: 10,
+        tabBlurCount: 0,
+        primaryDevice: 'mouse',
+        keyStrokeCount: 0,
+      },
+      hesitationTime: 1000,
+      changeHistorySummary: '선택 변경 없음',
+      hoverSummary: '망설임 없음',
+      insight: '신속하고 일관된 직관적 결정',
+    },
+    {
+      question: {
+        id: 2,
+        title: '질문 2 테스트',
+        dimension: 'SN',
+        positiveType: 'N',
+        negativeType: 'S',
+        category: 'cognition',
+      },
+      behavior: {
+        questionId: 2,
+        startTime: 2000,
+        endTime: 3500,
+        totalDwellTime: 1500,
+        firstInteractionTime: 300,
+        finalValue: -2,
+        selectionHistory: [{ value: -2, timestamp: 800 }],
+        changeCount: 0,
+        hoverLogs: [],
+        mouseTrajectory: [
+          { x: 0.2, y: 0.3, timestamp: 200 },
+          { x: 0.7, y: 0.8, timestamp: 800 },
+        ],
+        directionChanges: 0,
+        hesitationScore: 15,
+        tabBlurCount: 0,
+        primaryDevice: 'mouse',
+        keyStrokeCount: 0,
+      },
+      hesitationTime: 1500,
+      changeHistorySummary: '선택 변경 없음',
+      hoverSummary: '망설임 없음',
+      insight: '신중한 고민 후 결정',
+    },
+  ],
   topDilemmas: [],
   personaGap: {
     detected: false,
@@ -130,8 +199,23 @@ describe('ResultView 컴포넌트 테스트', () => {
     render(<ResultView result={mockResult} onHome={handleHome} isSharedView={false} />);
 
     const homeButton = screen.getByRole('button', { name: /홈으로 이동/i });
-    homeButton.click();
+    fireEvent.click(homeButton);
 
     expect(handleHome).toHaveBeenCalledTimes(1);
+  });
+
+  it('히트맵 모드를 선택한 후 다른 문항 번호를 클릭해도 히트맵 모드가 유지되어야 한다', () => {
+    render(<ResultView result={mockResult} isSharedView={false} />);
+
+    const heatmapButton = screen.getByRole('button', { name: /히트맵/i });
+    fireEvent.click(heatmapButton);
+
+    expect(screen.getByText(/붉은 영역일수록 마우스가 오래 머물며 고민한 지점입니다/i)).toBeInTheDocument();
+
+    const q2Button = screen.getByRole('button', { name: /Q2/i });
+    fireEvent.click(q2Button);
+
+    // Q2로 문항을 바꾼 후에도 히트맵 설명 문구가 여전히 유지되어야 함
+    expect(screen.getByText(/붉은 영역일수록 마우스가 오래 머물며 고민한 지점입니다/i)).toBeInTheDocument();
   });
 });

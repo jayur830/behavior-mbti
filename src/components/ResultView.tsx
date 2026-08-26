@@ -25,6 +25,7 @@ import { Button } from '@/components/ui/button';
 import { encodeResultToCompressedString } from '@/lib/shareResult';
 import type { FullAnalysisResult } from '@/types';
 
+import type { MouseCanvasViewMode } from './MouseReplayCanvas';
 import { MouseReplayCanvas } from './MouseReplayCanvas';
 import { StoryCardModal } from './StoryCardModal';
 import { TouchTimelinePlayer } from './TouchTimelinePlayer';
@@ -43,6 +44,7 @@ export const ResultView: FC<ResultViewProps> = ({ result, isSharedView = false, 
 
   const isTouchDevice = result.mouseTrajectoryStats?.primaryDevice === 'touch';
   const [replayerMode, setReplayerMode] = useState<'canvas' | 'timeline'>(isTouchDevice ? 'timeline' : 'canvas');
+  const [canvasViewMode, setCanvasViewMode] = useState<MouseCanvasViewMode>('replay');
 
   const questionsList =
     (result.allQuestionDetails && result.allQuestionDetails.length > 0
@@ -692,6 +694,8 @@ export const ResultView: FC<ResultViewProps> = ({ result, isSharedView = false, 
                 <MouseReplayCanvas
                   key={questionsList[selectedQuestionIdx].behavior.questionId}
                   behaviorLog={questionsList[selectedQuestionIdx].behavior}
+                  viewMode={canvasViewMode}
+                  onViewModeChange={setCanvasViewMode}
                 />
               )}
             </div>

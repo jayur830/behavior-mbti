@@ -10,17 +10,26 @@ import { Card } from '@/components/ui/card';
 import { getOptionLabel } from '@/data/questions';
 import type { AnswerSelectionEvent, MousePoint, QuestionBehaviorLog } from '@/types';
 
+export type MouseCanvasViewMode = 'replay' | 'heatmap';
+
 export interface MouseReplayCanvasProps {
   behaviorLog: QuestionBehaviorLog;
   width?: number;
   height?: number;
+  viewMode?: MouseCanvasViewMode;
+  onViewModeChange?: (mode: MouseCanvasViewMode) => void;
 }
 
-type ViewMode = 'replay' | 'heatmap';
-
-export const MouseReplayCanvas: FC<MouseReplayCanvasProps> = ({ behaviorLog, width = 800, height = 400 }) => {
+export const MouseReplayCanvas: FC<MouseReplayCanvasProps> = ({
+  behaviorLog,
+  width = 800,
+  height = 400,
+  viewMode: controlledViewMode,
+  onViewModeChange,
+}) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const [viewMode, setViewMode] = useState<ViewMode>('replay');
+  const [internalViewMode, setInternalViewMode] = useState<MouseCanvasViewMode>('replay');
+  const viewMode = controlledViewMode ?? internalViewMode;
   const [isPlaying, setIsPlaying] = useState<boolean>(true);
   const [playbackProgress, setPlaybackProgress] = useState<number>(0);
   const animFrameIdRef = useRef<number | null>(null);
@@ -325,9 +334,13 @@ export const MouseReplayCanvas: FC<MouseReplayCanvasProps> = ({ behaviorLog, wid
     [setupCanvas, trajectory, clicks, width, height, optionPositions, isDark],
   );
 
-  const handleSwitchViewMode = (mode: ViewMode) => {
+  const handleSwitchViewMode = (mode: MouseCanvasViewMode) => {
     if (mode === viewMode) return;
-    setViewMode(mode);
+    if (onViewModeChange) {
+      onViewModeChange(mode);
+    } else {
+      setInternalViewMode(mode);
+    }
     if (mode === 'replay') {
       pausedTimeOffsetRef.current = 0;
       setPlaybackProgress(0);
