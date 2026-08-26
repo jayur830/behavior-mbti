@@ -48,4 +48,18 @@ describe('MouseReplayCanvas 컴포넌트 테스트', () => {
 
     expect(screen.getByText(/붉은 영역일수록 마우스가 오래 머물며 고민한 지점입니다/i)).toBeInTheDocument();
   });
+
+  it('히트맵 모드에서 다시 궤적 재생으로 돌아오면 재생 컨트롤러가 다시 렌더링되어야 한다', () => {
+    render(<MouseReplayCanvas behaviorLog={mockBehaviorLog} />);
+
+    const heatmapButton = screen.getByRole('button', { name: /히트맵/i });
+    fireEvent.click(heatmapButton);
+    expect(screen.getByText(/붉은 영역일수록 마우스가 오래 머물며 고민한 지점입니다/i)).toBeInTheDocument();
+
+    const replayButton = screen.getByRole('button', { name: /궤적 재생/i });
+    fireEvent.click(replayButton);
+
+    expect(screen.getByRole('button', { name: /^(일시정지|재생)$/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /처음부터/i })).toBeInTheDocument();
+  });
 });

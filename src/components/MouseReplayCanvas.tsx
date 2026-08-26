@@ -325,15 +325,28 @@ export const MouseReplayCanvas: FC<MouseReplayCanvasProps> = ({ behaviorLog, wid
     [setupCanvas, trajectory, clicks, width, height, optionPositions, isDark],
   );
 
-  // Animation Loop for Replay
+  const handleSwitchViewMode = (mode: ViewMode) => {
+    if (mode === viewMode) return;
+    setViewMode(mode);
+    if (mode === 'replay') {
+      pausedTimeOffsetRef.current = 0;
+      setPlaybackProgress(0);
+      setIsPlaying(true);
+    }
+  };
+
+  // Animation Loop for Replay & Heatmap
   useEffect(() => {
     if (viewMode === 'heatmap') {
+      if (animFrameIdRef.current) cancelAnimationFrame(animFrameIdRef.current);
       drawHeatmap();
       return;
     }
 
     if (!isPlaying) {
       if (animFrameIdRef.current) cancelAnimationFrame(animFrameIdRef.current);
+      // Ensure the frame is drawn even when paused, replacing any leftover heatmap pixels
+      drawFrame(pausedTimeOffsetRef.current || (playbackProgress >= 1 ? duration : 0));
       return;
     }
 
@@ -362,7 +375,7 @@ export const MouseReplayCanvas: FC<MouseReplayCanvasProps> = ({ behaviorLog, wid
     return () => {
       if (animFrameIdRef.current) cancelAnimationFrame(animFrameIdRef.current);
     };
-  }, [isPlaying, viewMode, duration, drawFrame, drawHeatmap]);
+  }, [isPlaying, viewMode, duration, drawFrame, drawHeatmap, playbackProgress]);
 
   const handleTogglePlay = () => {
     if (isPlaying) {
@@ -396,7 +409,7 @@ export const MouseReplayCanvas: FC<MouseReplayCanvasProps> = ({ behaviorLog, wid
         <div className="flex items-center bg-muted p-0.5 rounded-lg border border-border">
           <button
             type="button"
-            onClick={() => setViewMode('replay')}
+            onClick={() => handleSwitchViewMode('replay')}
             className={`px-2.5 py-1 rounded-md transition-all cursor-pointer ${
               viewMode === 'replay'
                 ? 'bg-indigo-600 text-white font-semibold shadow-xs'
@@ -407,7 +420,7 @@ export const MouseReplayCanvas: FC<MouseReplayCanvasProps> = ({ behaviorLog, wid
           </button>
           <button
             type="button"
-            onClick={() => setViewMode('heatmap')}
+            onClick={() => handleSwitchViewMode('heatmap')}
             className={`px-2.5 py-1 rounded-md flex items-center gap-1 transition-all cursor-pointer ${
               viewMode === 'heatmap'
                 ? 'bg-amber-600 text-white font-semibold shadow-xs'
