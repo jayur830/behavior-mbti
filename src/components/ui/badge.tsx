@@ -10,13 +10,13 @@ export const badgeVariants = cva(
     variants: {
       variant: {
         default: 'border-transparent bg-indigo-600 text-white shadow hover:bg-indigo-500',
-        secondary: 'border-transparent bg-slate-800 text-slate-200 hover:bg-slate-700',
-        destructive: 'border-transparent bg-red-500/20 text-red-400 border-red-500/30',
-        outline: 'border-slate-700/80 text-slate-300',
-        indigo: 'bg-indigo-500/10 border-indigo-500/20 text-indigo-400',
-        purple: 'bg-purple-500/10 border-purple-500/20 text-purple-400',
-        emerald: 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400',
-        amber: 'bg-amber-500/10 border-amber-500/20 text-amber-400',
+        secondary: 'border-transparent bg-muted text-foreground hover:bg-muted/80',
+        destructive: 'border-transparent bg-red-500/15 text-red-600 dark:text-red-400 border-red-500/30',
+        outline: 'border-border bg-muted/60 dark:bg-slate-900/60 text-foreground font-medium',
+        indigo: 'bg-indigo-500/10 border-indigo-500/30 text-indigo-600 dark:text-indigo-400',
+        purple: 'bg-purple-500/10 border-purple-500/30 text-purple-600 dark:text-purple-400',
+        emerald: 'bg-emerald-500/10 border-emerald-500/30 text-emerald-600 dark:text-emerald-400',
+        amber: 'bg-amber-500/10 border-amber-500/30 text-amber-600 dark:text-amber-400',
       },
     },
     defaultVariants: {
@@ -25,8 +25,8 @@ export const badgeVariants = cva(
   },
 );
 
-export type BadgeProps = HTMLAttributes<HTMLDivElement> & VariantProps<typeof badgeVariants>;
+export interface BadgeProps extends HTMLAttributes<HTMLDivElement>, VariantProps<typeof badgeVariants> {}
 
 export function Badge({ className, variant, ...props }: BadgeProps) {
-  return <div className={cn(badgeVariants({ variant }), className)} {...props} />;
+  return <div className={cn(badgeVariants({ variant, className }))} {...props} />;
 }
