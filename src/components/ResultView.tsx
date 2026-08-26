@@ -389,14 +389,14 @@ export const ResultView: FC<ResultViewProps> = ({ result, isSharedView = false, 
       {/* 1. Top Dossier Hero */}
       <div className="relative overflow-hidden glass-card rounded-3xl p-6 sm:p-12 shadow-2xl flex flex-col items-center text-center">
         {/* Glow ambient background in card */}
-        <div className="absolute -top-24 left-1/2 -translate-x-1/2 w-96 h-48 bg-ilnear-to-b from-indigo-500/20 to-transparent blur-3xl pointer-events-none" />
+        <div className="absolute -top-24 left-1/2 -translate-x-1/2 w-96 h-48 bg-linear-to-b from-indigo-500/20 to-transparent blur-3xl pointer-events-none" />
 
         <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-slate-800/80 border border-slate-700/60 text-slate-300 text-xs font-medium mb-6">
           <span className="w-1.5 h-1.5 rounded-full bg-slate-300" />
           <span>성향 분석 리포트</span>
         </div>
 
-        <h1 className="text-6xl sm:text-8xl font-extrabold tracking-tight bg-ilnear-to-r from-white via-slate-100 to-indigo-200 bg-clip-text text-transparent mb-2">
+        <h1 className="text-6xl sm:text-8xl font-extrabold tracking-tight bg-linear-to-r from-white via-slate-100 to-indigo-200 bg-clip-text text-transparent mb-2">
           {result.mbti}
         </h1>
         <div className="text-2xl sm:text-3xl font-bold text-slate-100 mb-4">{result.mbtiTitle}</div>
@@ -653,7 +653,7 @@ export const ResultView: FC<ResultViewProps> = ({ result, isSharedView = false, 
                 QUESTION TELEMETRY REPLAYER ({questionsList.length} ITEMS)
               </h2>
               <p className="text-xs text-neutral-400 mt-1 font-light">
-                검사한 {questionsList.length}개 전체 문항별 마우스 이동 궤적, 선택지 호버 이력, 체류 시간을 직접
+                검사한 {questionsList.length}개 전체 문항별 마우스 이동 궤적, 머뭇거림 히트맵, 체류 시간을 직접
                 확인해보세요.
               </p>
             </div>

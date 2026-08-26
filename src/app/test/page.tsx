@@ -85,7 +85,7 @@ export default function TestPage() {
             onClick={() => router.push('/')}
             className="flex items-center gap-3 font-semibold text-slate-100 hover:text-white transition-colors cursor-pointer touch-manipulation"
           >
-            <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-indigo-600 to-violet-500 flex items-center justify-center text-white shadow-lg shadow-indigo-500/20">
+            <div className="w-8 h-8 rounded-xl bg-linear-to-tr from-indigo-600 to-violet-500 flex items-center justify-center text-white shadow-lg shadow-indigo-500/20">
               <Compass className="w-4 h-4" />
             </div>
             <span className="tracking-tight text-base font-bold">
@@ -104,7 +104,7 @@ export default function TestPage() {
       <main className="flex-1 flex flex-col justify-center items-center px-4 py-8">
         {isAnalyzing || !activeQuestion ? (
           <div className="flex flex-col items-center justify-center text-center p-8 max-w-sm animate-fade-in">
-            <div className="w-12 h-12 rounded-full border border-white/[0.1] bg-neutral-900 flex items-center justify-center mb-6 shadow-inner">
+            <div className="w-12 h-12 rounded-full border border-white/10 bg-neutral-900 flex items-center justify-center mb-6 shadow-inner">
               <Activity className="w-5 h-5 text-emerald-400 animate-pulse" />
             </div>
             <h3 className="text-base font-bold text-white mb-1.5 font-mono">ANALYZING TELEMETRY...</h3>
@@ -127,7 +127,7 @@ export default function TestPage() {
       </main>
 
       {/* Minimal Footer */}
-      <footer className="w-full border-t border-white/[0.04] py-6 text-center text-xs text-neutral-500 font-mono">
+      <footer className="w-full border-t border-white/4 py-6 text-center text-xs text-neutral-500 font-mono">
         <div className="max-w-4xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
           <span>© 2026 PersonaLens. All rights reserved.</span>
           <span className="text-neutral-500 text-[11px]">BEHAVIORAL INTERACTION ANALYSIS</span>
