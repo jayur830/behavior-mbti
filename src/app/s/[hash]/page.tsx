@@ -1,15 +1,12 @@
-import { Activity, ArrowRight, Compass } from 'lucide-react';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 
 import { ResultView } from '@/components/ResultView';
 import { getResultFromDb } from '@/lib/db';
 import { decodeResultFromCompressedString } from '@/lib/shareResult';
-import type { FullAnalysisResult } from '@/types';
+import type { FullAnalysisResult, PageProps } from '@/types';
 
-export interface Props {
-  params: Promise<{ hash: string }>;
-}
+export type Props = PageProps<{ hash: string }>;
 
 async function resolveResult(hash: string): Promise<FullAnalysisResult | null> {
   if (!hash) return null;
@@ -25,7 +22,7 @@ async function resolveResult(hash: string): Promise<FullAnalysisResult | null> {
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { hash } = await params;
+  const { hash } = (await params) || { hash: '' };
   const decoded = await resolveResult(hash);
 
   if (!decoded) {
@@ -58,60 +55,40 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function Page({ params }: Props) {
-  const { hash } = await params;
-  const decoded = await resolveResult(hash);
+  const { hash } = (await params) || { hash: '' };
+  const result = await resolveResult(hash);
 
-  if (!decoded) {
+  if (!result) {
     return (
-      <div className="min-h-screen bg-[#090a0f] text-neutral-100 flex flex-col justify-between selection:bg-neutral-200 selection:text-neutral-900 bg-grid-pattern relative">
-        <header className="w-full border-b border-white/6 backdrop-blur-md sticky top-0 z-40 bg-[#090a0f]/80">
-          <div className="max-w-4xl mx-auto px-4 h-16 flex items-center justify-between">
-            <Link
-              href="/"
-              className="flex items-center gap-2.5 font-mono text-sm tracking-widest text-neutral-200 hover:text-white transition-colors"
-            >
-              <div className="w-7 h-7 rounded-lg bg-white/8 border border-white/10 flex items-center justify-center text-neutral-100">
-                <Compass className="w-4 h-4 text-emerald-400" />
-              </div>
-              <span className="font-bold">
-                PERSONA<span className="text-neutral-500">LENS</span>
-              </span>
-            </Link>
-          </div>
-        </header>
-
-        <main className="flex-1 flex flex-col justify-center items-center px-4 py-8">
-          <div className="flex flex-col items-center justify-center text-center p-8 max-w-md mx-auto my-auto">
-            <div className="w-12 h-12 rounded-full border border-white/10 bg-neutral-900 flex items-center justify-center mb-6">
-              <Activity className="w-5 h-5 text-amber-400" />
-            </div>
-            <h2 className="text-xl font-bold text-white mb-2">분석 리포트 데이터를 찾을 수 없습니다</h2>
-            <p className="text-xs text-neutral-400 mb-8 leading-relaxed">
-              만료되었거나 유효하지 않은 결과 링크입니다. 지금 바로 나만의 행동 분석 MBTI 검사를 시작해보세요!
-            </p>
-            <Link
-              href="/test"
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-full font-semibold text-xs sm:text-sm bg-neutral-100 hover:bg-white text-neutral-950 shadow-md transition-all cursor-pointer touch-manipulation"
-            >
-              <span>MBTI 검사 시작하기</span>
-              <ArrowRight className="w-4 h-4" />
-            </Link>
-          </div>
-        </main>
+      <div className="min-h-screen flex flex-col items-center justify-center p-6 text-center">
+        <div className="w-16 h-16 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center mb-6">
+          <span className="text-2xl font-black text-amber-400">?</span>
+        </div>
+        <h1 className="text-2xl font-bold text-white mb-2">분석 리포트를 찾을 수 없습니다</h1>
+        <p className="text-sm text-slate-400 max-w-md mb-8">
+          링크가 만료되었거나 올바르지 않은 주소입니다. 지금 나만의 무의식 행동 MBTI를 직접 검사해보세요!
+        </p>
+        <Link
+          href="/test"
+          className="inline-flex items-center gap-2 px-6 py-3 rounded-full font-semibold text-sm bg-linear-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white shadow-lg shadow-indigo-500/25 transition-all"
+        >
+          <span>내 성향 직접 검사해보기</span>
+        </Link>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen flex flex-col justify-between selection:bg-indigo-500/20 selection:text-indigo-200 relative">
+    <div className="min-h-screen flex flex-col justify-between selection:bg-indigo-500/20 selection:text-indigo-200">
+      {/* Navigation Header */}
       <header className="w-full border-b border-slate-800/60 backdrop-blur-xl sticky top-0 z-40 bg-[#0b0f17]/70">
         <div className="max-w-5xl mx-auto px-6 h-16 flex items-center justify-between">
           <Link
             href="/"
             className="flex items-center gap-3 font-semibold text-slate-100 hover:text-white transition-colors"
           >
-            <div className="w-8 h-8 rounded-xl bg-slate-800 border border-slate-700/80 flex items-center justify-center text-indigo-400 font-bold text-sm tracking-tighter shadow-xs">
-              P
+            <div className="w-8 h-8 rounded-xl bg-linear-to-tr from-indigo-600 to-violet-500 flex items-center justify-center text-white shadow-lg shadow-indigo-500/20">
+              <span className="font-bold text-sm">PL</span>
             </div>
             <span className="tracking-tight text-base font-bold">
               Persona<span className="text-indigo-400 font-normal">Lens</span>
@@ -120,17 +97,19 @@ export default async function Page({ params }: Props) {
 
           <Link
             href="/test"
-            className="px-4 py-2 rounded-full text-xs font-semibold bg-white hover:bg-slate-100 text-slate-950 transition-all cursor-pointer touch-manipulation"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-semibold bg-linear-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white shadow-md shadow-indigo-500/20 transition-all cursor-pointer touch-manipulation"
           >
-            나도 검사하기
+            <span>나도 검사하기</span>
           </Link>
         </div>
       </header>
 
-      <main className="flex-1 flex flex-col justify-center items-center px-4 py-10">
-        <ResultView result={decoded} isSharedView={true} />
+      {/* Main Shared Result View */}
+      <main className="flex-1 flex flex-col items-center justify-center px-4 py-10">
+        <ResultView result={result} isSharedView />
       </main>
 
+      {/* Minimal Footer */}
       <footer className="w-full border-t border-slate-800/50 py-8 text-center text-xs text-slate-500">
         <div className="max-w-5xl mx-auto px-6 flex flex-col items-center justify-between gap-3 sm:flex-row">
           <p>© 2026 PersonaLens. All rights reserved.</p>

@@ -1,15 +1,14 @@
 import type { Metadata } from 'next';
 
 import { decodeResultFromCompressedString } from '@/lib/shareResult';
+import type { PageProps } from '@/types';
 
 import PreviewClient from './_components/PreviewClient';
 
-export interface Props {
-  searchParams: Promise<{ data?: string; r?: string }>;
-}
+export type Props = PageProps<Record<string, never>, { data?: string; r?: string }>;
 
 export async function generateMetadata({ searchParams }: Props): Promise<Metadata> {
-  const params = await searchParams;
+  const params = (await searchParams) || {};
   const data = params.data || params.r;
 
   if (!data) {

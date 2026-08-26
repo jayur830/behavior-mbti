@@ -2,6 +2,18 @@ export type MBTIType = 'E' | 'I' | 'S' | 'N' | 'T' | 'F' | 'J' | 'P';
 export type Dimension = 'EI' | 'SN' | 'TF' | 'JP';
 export type InputDevice = 'mouse' | 'touch' | 'keyboard';
 
+/**
+ * Next.js App Router 공통 PageProps 제네릭 타입
+ * params 및 searchParams 비동기 Promise 구조를 지원합니다.
+ */
+export interface PageProps<
+  TParams = Record<string, string | string[] | undefined>,
+  TSearchParams = Record<string, string | string[] | undefined>,
+> {
+  params?: Promise<TParams>;
+  searchParams?: Promise<TSearchParams>;
+}
+
 export interface Question {
   id: number;
   dimension: Dimension;
