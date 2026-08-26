@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { Suspense } from 'react';
 
 import { ResultView } from '@/components/ResultView';
+import { ThemeToggle } from '@/components/ThemeToggle';
 import { decodeResultFromCompressedString } from '@/lib/shareResult';
 
 function PreviewContent() {
@@ -65,6 +66,7 @@ export default function PreviewClient() {
           </button>
 
           <div className="flex items-center gap-2 text-xs font-mono text-neutral-400">
+            <ThemeToggle />
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
             <span className="hidden sm:inline">SHARED PREVIEW</span>
           </div>

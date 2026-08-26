@@ -2,6 +2,9 @@ import './globals.css';
 
 import type { Metadata } from 'next';
 import { Plus_Jakarta_Sans } from 'next/font/google';
+import type { ReactNode } from 'react';
+
+import { ThemeProvider } from '@/components/ThemeProvider';
 
 const plusJakartaSans = Plus_Jakarta_Sans({
   variable: '--font-sans',
@@ -40,24 +43,27 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export interface RootLayoutProps {
+  children: ReactNode;
+}
+
+export default function RootLayout({ children }: Readonly<RootLayoutProps>) {
   return (
     <html
       lang="ko"
+      suppressHydrationWarning
       className={`${plusJakartaSans.variable} font-sans h-full antialiased selection:bg-indigo-500/20 selection:text-indigo-200`}
     >
       <body className="min-h-full flex flex-col bg-[#0b0f17] text-slate-100 relative overflow-x-hidden">
-        {/* Ambient background glow */}
-        <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
-          <div className="absolute top-[-20%] left-1/2 -translate-x-1/2 w-175 h-125 bg-linear-to-br from-indigo-600/15 via-purple-600/10 to-transparent blur-[120px] rounded-full" />
-          <div className="absolute top-[60%] left-[-10%] w-125 h-125 bg-blue-600/10 blur-[140px] rounded-full" />
-          <div className="absolute top-[40%] right-[-10%] w-125 h-125 bg-violet-600/10 blur-[140px] rounded-full" />
-        </div>
-        <div className="relative z-10 flex-1 flex flex-col">{children}</div>
+        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
+          {/* Ambient background glow */}
+          <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+            <div className="absolute top-[-20%] left-1/2 -translate-x-1/2 w-175 h-125 bg-linear-to-br from-indigo-600/15 via-purple-600/10 to-transparent blur-[120px] rounded-full" />
+            <div className="absolute top-[60%] left-[-10%] w-125 h-125 bg-blue-600/10 blur-[140px] rounded-full" />
+            <div className="absolute top-[40%] right-[-10%] w-125 h-125 bg-violet-600/10 blur-[140px] rounded-full" />
+          </div>
+          <div className="relative z-10 flex-1 flex flex-col">{children}</div>
+        </ThemeProvider>
       </body>
     </html>
   );

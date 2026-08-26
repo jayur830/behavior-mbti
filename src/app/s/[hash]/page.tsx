@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 
 import { ResultView } from '@/components/ResultView';
+import { ThemeToggle } from '@/components/ThemeToggle';
 import { Button } from '@/components/ui/button';
 import { getResultFromDb } from '@/lib/db';
 import { decodeResultFromCompressedString } from '@/lib/shareResult';
@@ -95,11 +96,14 @@ export default async function Page({ params }: Props) {
             </span>
           </Link>
 
-          <Button asChild variant="gradient" size="sm" className="rounded-full px-4 py-2 text-xs font-semibold">
-            <Link href="/test">
-              <span>나도 검사하기</span>
-            </Link>
-          </Button>
+          <div className="flex items-center gap-2">
+            <ThemeToggle />
+            <Button asChild variant="gradient" size="sm" className="rounded-full px-4 py-2 text-xs font-semibold">
+              <Link href="/test">
+                <span>나도 검사하기</span>
+              </Link>
+            </Button>
+          </div>
         </div>
       </header>
 

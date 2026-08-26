@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { Suspense, useMemo, useSyncExternalStore } from 'react';
 
 import { ResultView } from '@/components/ResultView';
+import { ThemeToggle } from '@/components/ThemeToggle';
 import { decodeResultFromCompressedString } from '@/lib/shareResult';
 import type { FullAnalysisResult } from '@/types';
 
@@ -127,6 +128,8 @@ export default function ResultClient() {
               Persona<span className="text-indigo-400 font-normal">Lens</span>
             </span>
           </button>
+
+          <ThemeToggle />
         </div>
       </header>
 

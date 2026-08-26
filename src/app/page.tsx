@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 
 import { TestCatalogGrid } from '@/components/TestCatalogGrid';
 import { TestIntro } from '@/components/TestIntro';
+import { ThemeToggle } from '@/components/ThemeToggle';
 import { Button } from '@/components/ui/button';
 
 export default function Page() {
@@ -34,15 +35,18 @@ export default function Page() {
             </span>
           </div>
 
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            onClick={handleScrollToCatalog}
-            className="text-xs font-semibold text-slate-400 hover:text-white px-3.5 py-1.5 rounded-full bg-slate-800/60 hover:bg-slate-800 border-slate-700/60"
-          >
-            검사 목록 둘러보기
-          </Button>
+          <div className="flex items-center gap-2">
+            <ThemeToggle />
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={handleScrollToCatalog}
+              className="text-xs font-semibold text-slate-400 hover:text-white px-3.5 py-1.5 rounded-full bg-slate-800/60 hover:bg-slate-800 border-slate-700/60"
+            >
+              검사 목록 둘러보기
+            </Button>
+          </div>
         </div>
       </header>
 
