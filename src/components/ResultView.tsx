@@ -5,23 +5,23 @@ import {
   Activity,
   ArrowRight,
   BarChart3,
-  Brain,
   Check,
   Clock,
-  Compass,
   Eye,
   Home,
   MousePointer,
   RotateCcw,
   Share2,
   Sparkles,
-  Target,
   Zap,
 } from 'lucide-react';
 import type { FC } from 'react';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 
+import { PersonaIcon } from '@/components/PersonaIcon';
 import { Button } from '@/components/ui/button';
+import { useClipboard } from '@/hooks/useClipboard';
+import { useResultSaveLifecycle } from '@/hooks/useResultSaveLifecycle';
 import { encodeResultToCompressedString } from '@/lib/shareResult';
 import type { FullAnalysisResult } from '@/types';
 
@@ -39,8 +39,10 @@ export interface ResultViewProps {
 
 export const ResultView: FC<ResultViewProps> = ({ result, isSharedView = false, onRestart, onHome }) => {
   const [selectedQuestionIdx, setSelectedQuestionIdx] = useState<number>(0);
-  const [copied, setCopied] = useState<boolean>(false);
   const [isStoryModalOpen, setIsStoryModalOpen] = useState<boolean>(false);
+
+  const { copied, copy } = useClipboard({ timeoutMs: 2000 });
+  const { markAsSaved } = useResultSaveLifecycle({ result, isSharedView });
 
   const isTouchDevice = result.mouseTrajectoryStats?.primaryDevice === 'touch';
   const [replayerMode, setReplayerMode] = useState<'canvas' | 'timeline'>(isTouchDevice ? 'timeline' : 'canvas');
@@ -51,243 +53,26 @@ export const ResultView: FC<ResultViewProps> = ({ result, isSharedView = false, 
       ? result.allQuestionDetails
       : result.topDilemmas) || [];
 
-  const savedDbIdRef = useRef<string | null>(null);
-  const isCopiedRef = useRef<boolean>(false);
-  const hasSavedRef = useRef<boolean>(false);
-  const isSavingRef = useRef<boolean>(false);
-
-  // 링크 복사를 하지 않은 경우 DB에서 해당 row를 즉시 삭제하는 함수
-  const triggerDeleteIfUnsaved = () => {
-    const getTargetId = (): string | null => {
-      if (savedDbIdRef.current) return savedDbIdRef.current;
-      if (typeof window !== 'undefined') {
-        try {
-          return sessionStorage.getItem('unsaved_mbti_id');
-        } catch {
-          return null;
-        }
-      }
-      return null;
-    };
-
-    const idToDelete = getTargetId();
-
-    if (!isCopiedRef.current && idToDelete) {
-      const origin = typeof window !== 'undefined' ? window.location.origin : '';
-      const deleteUrl = `${origin}/api/results?id=${encodeURIComponent(idToDelete)}`;
-
-      // 1. sendBeacon (CORS Preflight 없는 text/plain Blob - Chrome/Safari 탭 닫기 100% 보장)
-      if (typeof navigator !== 'undefined' && navigator.sendBeacon) {
-        try {
-          const blob = new Blob([idToDelete], { type: 'text/plain;charset=UTF-8' });
-          navigator.sendBeacon(deleteUrl, blob);
-        } catch {
-          // fallback
-        }
-      }
-
-      // 2. fetch keepalive POST
-      if (typeof fetch !== 'undefined') {
-        try {
-          fetch(deleteUrl, {
-            method: 'POST',
-            keepalive: true,
-            headers: { 'Content-Type': 'text/plain' },
-            body: idToDelete,
-          }).catch(() => {});
-        } catch {}
-      }
-
-      // 3. fetch keepalive DELETE
-      if (typeof fetch !== 'undefined') {
-        try {
-          fetch(deleteUrl, {
-            method: 'DELETE',
-            keepalive: true,
-          }).catch(() => {});
-        } catch {}
-      }
-
-      try {
-        sessionStorage.removeItem('unsaved_mbti_id');
-      } catch {}
-    }
-  };
-
   useEffect(() => {
     confetti({
       particleCount: 50,
       spread: 60,
       origin: { y: 0.6 },
     });
-
-    if (isSharedView) return;
-
-    // 0. 이전 세션에서 미공유 상태로 남아있던 ID가 있다면 즉시 DB 정리
-    try {
-      const prevUnsavedId = sessionStorage.getItem('unsaved_mbti_id');
-      if (prevUnsavedId) {
-        const origin = typeof window !== 'undefined' ? window.location.origin : '';
-        fetch(`${origin}/api/results?id=${encodeURIComponent(prevUnsavedId)}`, {
-          method: 'DELETE',
-          keepalive: true,
-        }).catch(() => {});
-        sessionStorage.removeItem('unsaved_mbti_id');
-      }
-    } catch {}
-
-    if (hasSavedRef.current || isSavingRef.current) return;
-    isSavingRef.current = true;
-
-    // 1. 결과 페이지 진입 후 DB에 단 1회만 자동 적재
-    fetch('/api/results', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ result }),
-    })
-      .then((res) => (res.ok ? res.json() : null))
-      .then((data) => {
-        if (data?.id) {
-          savedDbIdRef.current = data.id;
-          hasSavedRef.current = true;
-          try {
-            sessionStorage.setItem('unsaved_mbti_id', data.id);
-          } catch {}
-        }
-      })
-      .catch((err) => console.error('Auto save error:', err))
-      .finally(() => {
-        isSavingRef.current = false;
-      });
-
-    // 3. 브라우저 탭 닫기, 창 닫기, 새로고침, 백그라운드 전환 감지
-    const handleExit = () => {
-      triggerDeleteIfUnsaved();
-    };
-
-    const handleVisibilityChange = () => {
-      if (document.visibilityState === 'hidden') {
-        triggerDeleteIfUnsaved();
-      }
-    };
-
-    window.addEventListener('pagehide', handleExit);
-    window.addEventListener('beforeunload', handleExit);
-    window.addEventListener('unload', handleExit);
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-
-    // 4. SPA 클라이언트 라우팅 및 언마운트
-    return () => {
-      window.removeEventListener('pagehide', handleExit);
-      window.removeEventListener('beforeunload', handleExit);
-      window.removeEventListener('unload', handleExit);
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
-      triggerDeleteIfUnsaved();
-    };
-  }, [isSharedView, result]);
+  }, []);
 
   const handleCopyLink = async () => {
     if (typeof window === 'undefined') return;
 
-    const resolveSavedId = async (): Promise<string | null> => {
-      if (savedDbIdRef.current) return savedDbIdRef.current;
+    const id = await markAsSaved();
 
-      if (isSavingRef.current) {
-        for (let i = 0; i < 10; i++) {
-          if (savedDbIdRef.current) return savedDbIdRef.current;
-          await new Promise((r) => setTimeout(r, 100));
-        }
-      }
-
-      if (!hasSavedRef.current && !isSavingRef.current) {
-        isSavingRef.current = true;
-        try {
-          const res = await fetch('/api/results', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ result }),
-          });
-
-          if (res.ok) {
-            const json = await res.json();
-            if (json.id) {
-              savedDbIdRef.current = json.id;
-              hasSavedRef.current = true;
-              return json.id;
-            }
-          }
-        } catch (err) {
-          console.error('Instant save error:', err);
-        } finally {
-          isSavingRef.current = false;
-        }
-      }
-
-      return savedDbIdRef.current;
-    };
-
-    const id = await resolveSavedId();
-
-    // 2. 링크 복사 플래그를 true로 설정하고 sessionStorage에서 제거하여 영구 보존
-    isCopiedRef.current = true;
-    try {
-      sessionStorage.removeItem('unsaved_mbti_id');
-    } catch {}
-
-    // 10자리 영문 대소문자+숫자 랜덤 ID로 링크 생성 (DB 미연결 시 무상태 해시 대체)
     const targetUrl = id
       ? `${window.location.origin}/s/${id}`
       : `${window.location.origin}/s/${encodeResultToCompressedString(result)}`;
 
-    const copyToClipboard = async (): Promise<boolean> => {
-      if (navigator?.clipboard && typeof navigator.clipboard.writeText === 'function') {
-        try {
-          await navigator.clipboard.writeText(targetUrl);
-          return true;
-        } catch {
-          // fallback
-        }
-      }
-
-      try {
-        const textArea = document.createElement('textarea');
-        textArea.value = targetUrl;
-        textArea.style.position = 'fixed';
-        textArea.style.opacity = '0';
-        document.body.appendChild(textArea);
-        textArea.focus();
-        textArea.select();
-        const copySuccess = document.execCommand('copy');
-        document.body.removeChild(textArea);
-        return copySuccess;
-      } catch {
-        return false;
-      }
-    };
-
-    const success = await copyToClipboard();
-
-    if (success) {
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    } else {
+    const success = await copy(targetUrl);
+    if (!success) {
       window.prompt('아래 링크를 복사해주세요:', targetUrl);
-    }
-  };
-
-  const getPersonaIcon = (iconName: string) => {
-    switch (iconName) {
-      case 'Zap':
-        return <Zap className="w-6 h-6 text-amber-400" />;
-      case 'Brain':
-        return <Brain className="w-6 h-6 text-sky-400" />;
-      case 'Compass':
-        return <Compass className="w-6 h-6 text-rose-400" />;
-      case 'Sparkles':
-        return <Sparkles className="w-6 h-6 text-emerald-400" />;
-      case 'Target':
-      default:
-        return <Target className="w-6 h-6 text-neutral-300" />;
     }
   };
 
@@ -518,7 +303,7 @@ export const ResultView: FC<ResultViewProps> = ({ result, isSharedView = false, 
 
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-5">
           <div className="w-12 h-12 rounded-2xl bg-muted border border-border flex items-center justify-center shrink-0">
-            {getPersonaIcon(result.behaviorPersona?.iconName || 'Zap')}
+            <PersonaIcon name={result.behaviorPersona?.iconName || 'Zap'} className="w-6 h-6 text-indigo-400" />
           </div>
           <div>
             <h3 className="text-lg sm:text-xl font-bold text-foreground mb-1">

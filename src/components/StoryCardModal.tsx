@@ -1,10 +1,11 @@
 'use client';
 
 import { toPng } from 'html-to-image';
-import { Brain, Compass, Download, ShieldCheck, Sparkles, Target, Zap } from 'lucide-react';
+import { Compass, Download, ShieldCheck, Sparkles } from 'lucide-react';
 import type { FC } from 'react';
 import { useRef, useState } from 'react';
 
+import { PersonaIcon } from '@/components/PersonaIcon';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import type { FullAnalysisResult } from '@/types';
@@ -42,21 +43,6 @@ export const StoryCardModal: FC<StoryCardModalProps> = ({ result, isOpen, onClos
       alert('이미지 생성 중 오류가 발생했습니다. 브라우저 설정을 확인해주세요.');
     } finally {
       setIsExporting(false);
-    }
-  };
-
-  const getPersonaIcon = (iconName: string) => {
-    switch (iconName) {
-      case 'Zap':
-        return <Zap className="w-5 h-5 text-amber-400" />;
-      case 'Brain':
-        return <Brain className="w-5 h-5 text-purple-400" />;
-      case 'Compass':
-        return <Compass className="w-5 h-5 text-indigo-400" />;
-      case 'Sparkles':
-        return <Sparkles className="w-5 h-5 text-pink-400" />;
-      default:
-        return <Target className="w-5 h-5 text-indigo-400" />;
     }
   };
 
@@ -114,7 +100,7 @@ export const StoryCardModal: FC<StoryCardModalProps> = ({ result, isOpen, onClos
             {/* Persona Badge */}
             <div className="mt-3.5 p-3 rounded-2xl bg-white/3 border border-white/8 backdrop-blur-sm text-left flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl bg-neutral-900 border border-white/10 flex items-center justify-center shrink-0 shadow-inner">
-                {getPersonaIcon(result.behaviorPersona.iconName)}
+                <PersonaIcon name={result.behaviorPersona.iconName} className="w-5 h-5 text-indigo-400" />
               </div>
               <div className="min-w-0">
                 <span className="text-[9px] text-neutral-400 font-medium block">행동 페르소나</span>
