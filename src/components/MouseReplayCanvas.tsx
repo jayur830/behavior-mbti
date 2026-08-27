@@ -479,30 +479,28 @@ export default function MouseReplayCanvas({
           )}
 
           {/* View Mode Toggle */}
-          <div className="flex items-center bg-muted p-0.5 rounded-lg border border-border">
-            <button
-              type="button"
+          <div className="flex items-center bg-muted p-0.5 rounded-lg border border-border gap-1">
+            <Button
+              size="sm"
+              variant={viewMode === 'replay' ? 'default' : 'ghost'}
               onClick={() => handleSwitchViewMode('replay')}
-              className={`px-2.5 py-1 rounded-md transition-all cursor-pointer ${
-                viewMode === 'replay'
-                  ? 'bg-indigo-600 text-white font-semibold shadow-xs'
-                  : 'text-muted-foreground hover:text-foreground'
+              className={`h-6.5 px-2.5 text-xs rounded-md ${
+                viewMode === 'replay' ? 'bg-indigo-600 text-white font-semibold shadow-xs' : ''
               }`}
             >
               궤적 재생
-            </button>
-            <button
-              type="button"
+            </Button>
+            <Button
+              size="sm"
+              variant={viewMode === 'heatmap' ? 'default' : 'ghost'}
               onClick={() => handleSwitchViewMode('heatmap')}
-              className={`px-2.5 py-1 rounded-md flex items-center gap-1 transition-all cursor-pointer ${
-                viewMode === 'heatmap'
-                  ? 'bg-amber-600 text-white font-semibold shadow-xs'
-                  : 'text-muted-foreground hover:text-foreground'
+              className={`h-6.5 px-2.5 text-xs rounded-md flex items-center gap-1 ${
+                viewMode === 'heatmap' ? 'bg-amber-600 hover:bg-amber-500 text-white font-semibold shadow-xs' : ''
               }`}
             >
               <Flame className="w-3 h-3 text-amber-300" />
               히트맵
-            </button>
+            </Button>
           </div>
         </div>
       </div>

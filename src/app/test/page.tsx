@@ -7,6 +7,7 @@ import { useState, useSyncExternalStore } from 'react';
 import QuestionCard from '@/components/QuestionCard';
 import ThemeToggle from '@/components/ThemeToggle';
 import Badge from '@/components/ui/badge';
+import Button from '@/components/ui/button';
 import { getRandomQuestions } from '@/data/questions';
 import { analyzeBehaviorAndMBTI } from '@/lib/analyzer';
 import type { Question, QuestionBehaviorLog } from '@/types';
@@ -89,10 +90,10 @@ export default function Page() {
       {/* Navigation Header */}
       <header className="w-full border-b border-border backdrop-blur-xl sticky top-0 z-40 bg-background/80">
         <div className="max-w-5xl mx-auto px-6 h-16 flex items-center justify-between">
-          <button
-            type="button"
+          <Button
+            variant="ghost"
             onClick={() => router.push('/')}
-            className="flex items-center gap-3 font-semibold text-foreground hover:text-indigo-500 transition-colors cursor-pointer touch-manipulation"
+            className="h-auto p-0 hover:bg-transparent flex items-center gap-3 font-semibold text-foreground hover:text-indigo-500 transition-colors"
           >
             <div className="w-8 h-8 rounded-xl bg-linear-to-tr from-indigo-600 to-violet-500 flex items-center justify-center text-white shadow-lg shadow-indigo-500/20">
               <Compass className="w-4 h-4" />
@@ -100,7 +101,7 @@ export default function Page() {
             <span className="tracking-tight text-base font-bold text-foreground">
               Persona<span className="text-indigo-500 dark:text-indigo-400 font-normal">Lens</span>
             </span>
-          </button>
+          </Button>
 
           <div className="flex items-center gap-2">
             <ThemeToggle />

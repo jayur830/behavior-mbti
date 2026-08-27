@@ -4,6 +4,8 @@ import { Moon, Sun } from 'lucide-react';
 import { useTheme } from 'next-themes';
 import { useSyncExternalStore } from 'react';
 
+import Button from '@/components/ui/button';
+
 export interface ThemeToggleProps {
   className?: string;
 }
@@ -36,14 +38,14 @@ export default function ThemeToggle({ className }: ThemeToggleProps) {
   }
 
   return (
-    <button
-      type="button"
+    <Button
+      variant="ghost"
       role="switch"
       aria-checked={isDark}
       aria-label="테마 전환"
       onClick={toggleTheme}
       className={`
-        relative inline-flex items-center w-14 h-8 rounded-full p-1 transition-colors duration-300 cursor-pointer touch-manipulation focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500
+        relative inline-flex items-center w-14 h-8 rounded-full p-1 transition-colors duration-300 hover:bg-transparent focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500
         ${isDark ? 'bg-slate-900 border border-slate-700/80' : 'bg-slate-200 border border-slate-300'}
         ${className || ''}
       `}
@@ -65,6 +67,6 @@ export default function ThemeToggle({ className }: ThemeToggleProps) {
       >
         {isDark ? <Moon className="w-3.5 h-3.5" /> : <Sun className="w-3.5 h-3.5" />}
       </span>
-    </button>
+    </Button>
   );
 }

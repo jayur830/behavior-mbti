@@ -7,6 +7,7 @@ import { Suspense, useMemo, useSyncExternalStore } from 'react';
 
 import ResultView from '@/components/ResultView';
 import ThemeToggle from '@/components/ThemeToggle';
+import Button from '@/components/ui/button';
 import { deleteResultApi } from '@/lib/api/results';
 import { decodeResultFromCompressedString } from '@/lib/shareResult';
 import type { FullAnalysisResult } from '@/types';
@@ -82,14 +83,13 @@ function ResultContent({ onHome }: { onHome?: () => void }) {
         <p className="text-xs text-slate-400 mb-6 leading-relaxed">
           저장된 검사 세션이 만료되었거나 올바르지 않은 접근입니다. 새로운 성향 검사를 진행해보세요.
         </p>
-        <button
-          type="button"
+        <Button
           onClick={handleRestart}
-          className="inline-flex items-center gap-2 px-6 py-3 rounded-full font-semibold text-xs sm:text-sm bg-linear-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white shadow-lg shadow-indigo-500/25 transition-all cursor-pointer touch-manipulation"
+          className="inline-flex items-center gap-2 px-6 py-3 rounded-full font-semibold text-xs sm:text-sm bg-linear-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white shadow-lg shadow-indigo-500/25 transition-all"
         >
           <span>MBTI 검사 시작하기</span>
           <ArrowRight className="w-4 h-4" />
-        </button>
+        </Button>
       </div>
     );
   }
@@ -119,10 +119,10 @@ export default function ResultClient() {
       {/* Navigation Header */}
       <header className="w-full border-b border-border backdrop-blur-xl sticky top-0 z-40 bg-background/80">
         <div className="max-w-5xl mx-auto px-6 h-16 flex items-center justify-between">
-          <button
-            type="button"
+          <Button
+            variant="ghost"
             onClick={handleHome}
-            className="flex items-center gap-3 font-semibold text-foreground hover:text-indigo-500 transition-colors cursor-pointer touch-manipulation"
+            className="h-auto p-0 hover:bg-transparent flex items-center gap-3 font-semibold text-foreground hover:text-indigo-500 transition-colors"
           >
             <div className="w-8 h-8 rounded-xl bg-linear-to-tr from-indigo-600 to-violet-500 flex items-center justify-center text-white shadow-lg shadow-indigo-500/20">
               <Compass className="w-4 h-4" />
@@ -130,7 +130,7 @@ export default function ResultClient() {
             <span className="tracking-tight text-base font-bold text-foreground">
               Persona<span className="text-indigo-500 dark:text-indigo-400 font-normal">Lens</span>
             </span>
-          </button>
+          </Button>
 
           <ThemeToggle />
         </div>

@@ -166,22 +166,21 @@ export default function QuestionCard({
                 onMouseEnter={() => handleOptionMouseEnter(opt.value)}
                 onMouseLeave={() => handleOptionMouseLeave(opt.value)}
               >
-                <button
-                  type="button"
+                <Button
                   aria-label={opt.label}
                   onClick={() => handleSelectOption(opt.value, 'mouse')}
                   className={`
-                    relative rounded-full transition-all duration-200 cursor-pointer flex items-center justify-center touch-manipulation shadow-xs
+                    relative rounded-full transition-all duration-200 p-0 flex items-center justify-center touch-manipulation shadow-xs
                     ${sizeClass}
                     ${
                       isSelected
-                        ? 'bg-linear-to-tr from-indigo-500 to-violet-500 text-white shadow-lg shadow-indigo-500/40 ring-4 ring-indigo-500/20 scale-110'
-                        : 'bg-white dark:bg-slate-800/80 border border-slate-300 dark:border-slate-700/60 hover:border-indigo-400 text-transparent hover:scale-105 active:scale-95'
+                        ? 'bg-linear-to-tr from-indigo-500 to-violet-500 text-white shadow-lg shadow-indigo-500/40 ring-4 ring-indigo-500/20 scale-110 hover:from-indigo-600 hover:to-violet-600'
+                        : 'bg-white dark:bg-slate-800/80 border border-slate-300 dark:border-slate-700/60 hover:border-indigo-400 text-transparent hover:scale-105 active:scale-95 hover:bg-slate-50 dark:hover:bg-slate-800'
                     }
                   `}
                 >
                   {isSelected && <Check className="w-5 h-5 stroke-3 text-white" />}
-                </button>
+                </Button>
                 <span
                   className={`text-[11px] sm:text-xs text-center transition-colors hidden sm:block ${
                     isSelected

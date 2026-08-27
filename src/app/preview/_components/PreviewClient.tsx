@@ -6,6 +6,7 @@ import { Suspense } from 'react';
 
 import ResultView from '@/components/ResultView';
 import ThemeToggle from '@/components/ThemeToggle';
+import Button from '@/components/ui/button';
 import { decodeResultFromCompressedString } from '@/lib/shareResult';
 
 function PreviewContent() {
@@ -29,14 +30,13 @@ function PreviewContent() {
         <p className="text-xs text-neutral-400 mb-8 leading-relaxed">
           올바르지 않거나 손상된 결과 링크입니다. 지금 바로 나만의 행동 분석 MBTI 검사를 시작해보세요!
         </p>
-        <button
-          type="button"
+        <Button
           onClick={handleGoTest}
-          className="inline-flex items-center gap-2 px-6 py-3 rounded-full font-semibold text-xs sm:text-sm bg-neutral-100 hover:bg-white text-neutral-950 shadow-md transition-all cursor-pointer touch-manipulation"
+          className="inline-flex items-center gap-2 px-6 py-3 rounded-full font-semibold text-xs sm:text-sm shadow-md"
         >
           <span>MBTI 검사 시작하기</span>
           <ArrowRight className="w-4 h-4" />
-        </button>
+        </Button>
       </div>
     );
   }
@@ -52,10 +52,10 @@ export default function PreviewClient() {
       {/* Navigation Header */}
       <header className="w-full border-b border-border backdrop-blur-md sticky top-0 z-40 bg-background/80">
         <div className="max-w-4xl mx-auto px-4 h-16 flex items-center justify-between">
-          <button
-            type="button"
+          <Button
+            variant="ghost"
             onClick={() => router.push('/')}
-            className="flex items-center gap-2.5 font-mono text-sm tracking-widest text-foreground hover:text-indigo-500 transition-colors cursor-pointer touch-manipulation"
+            className="h-auto p-0 hover:bg-transparent flex items-center gap-2.5 font-mono text-sm tracking-widest text-foreground hover:text-indigo-500 transition-colors"
           >
             <div className="w-7 h-7 rounded-lg bg-muted border border-border flex items-center justify-center text-foreground">
               <Compass className="w-4 h-4 text-emerald-500" />
@@ -63,7 +63,7 @@ export default function PreviewClient() {
             <span className="font-bold">
               PERSONA<span className="text-muted-foreground">LENS</span>
             </span>
-          </button>
+          </Button>
 
           <div className="flex items-center gap-2 text-xs font-mono text-muted-foreground">
             <ThemeToggle />

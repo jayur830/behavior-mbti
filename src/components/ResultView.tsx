@@ -96,13 +96,13 @@ export default function ResultView({ result, isSharedView = false, onRestart, on
             <Sparkles className="w-4 h-4 text-emerald-400 shrink-0" />
             <span>공유받은 행동 분석 결과입니다. 당신의 무의식적 MBTI도 측정해보세요!</span>
           </div>
-          <button
-            type="button"
+          <Button
+            size="sm"
             onClick={onRestart}
-            className="px-4 py-2 rounded-full bg-emerald-400 hover:bg-emerald-300 text-neutral-950 font-bold text-xs shadow-md transition-all cursor-pointer touch-manipulation shrink-0"
+            className="rounded-full bg-emerald-400 hover:bg-emerald-300 text-neutral-950 font-bold text-xs shadow-md shrink-0"
           >
             나도 검사하러 가기 ➔
-          </button>
+          </Button>
         </div>
       )}
 
@@ -395,29 +395,23 @@ export default function ResultView({ result, isSharedView = false, onRestart, on
             </div>
 
             {/* Replayer View Mode Switcher */}
-            <div className="flex bg-muted p-1 rounded-xl border border-border text-xs self-start sm:self-auto">
-              <button
-                type="button"
+            <div className="flex bg-muted p-1 rounded-xl border border-border text-xs self-start sm:self-auto gap-1">
+              <Button
+                size="sm"
+                variant={replayerMode === 'canvas' ? 'default' : 'ghost'}
                 onClick={() => setReplayerMode('canvas')}
-                className={`px-3 py-1 rounded-lg transition-all cursor-pointer ${
-                  replayerMode === 'canvas'
-                    ? 'bg-card text-foreground font-semibold shadow-xs'
-                    : 'text-muted-foreground hover:text-foreground'
-                }`}
+                className="h-7 px-3 text-xs rounded-lg font-semibold"
               >
                 마우스 궤적
-              </button>
-              <button
-                type="button"
+              </Button>
+              <Button
+                size="sm"
+                variant={replayerMode === 'timeline' ? 'default' : 'ghost'}
                 onClick={() => setReplayerMode('timeline')}
-                className={`px-3 py-1 rounded-lg transition-all cursor-pointer ${
-                  replayerMode === 'timeline'
-                    ? 'bg-card text-foreground font-semibold shadow-xs'
-                    : 'text-muted-foreground hover:text-foreground'
-                }`}
+                className="h-7 px-3 text-xs rounded-lg font-semibold"
               >
                 타임라인
-              </button>
+              </Button>
             </div>
           </div>
 
@@ -427,19 +421,18 @@ export default function ResultView({ result, isSharedView = false, onRestart, on
               const isSelected = selectedQuestionIdx === idx;
               const hasChanges = qDetail.behavior.changeCount > 0;
               return (
-                <button
+                <Button
                   key={qDetail.question.id}
-                  type="button"
+                  variant={isSelected ? 'default' : 'outline'}
+                  size="sm"
                   onClick={() => setSelectedQuestionIdx(idx)}
-                  className={`w-10.5 h-8.5 sm:w-12 sm:h-9.5 rounded-xl text-xs font-semibold transition-all cursor-pointer touch-manipulation flex flex-col items-center justify-center relative shrink-0 ${
-                    isSelected
-                      ? 'bg-indigo-600 text-white shadow-md scale-105 z-10'
-                      : 'bg-card border border-border text-muted-foreground hover:text-foreground hover:border-indigo-400'
+                  className={`w-10.5 h-8.5 sm:w-12 sm:h-9.5 p-0 rounded-xl text-xs font-semibold flex flex-col items-center justify-center relative shrink-0 ${
+                    isSelected ? 'shadow-md scale-105 z-10' : ''
                   }`}
                 >
                   <span className="text-[10px] sm:text-[11px] font-bold font-mono">Q{idx + 1}</span>
                   {hasChanges && <span className="w-1.5 h-1.5 rounded-full bg-rose-400 absolute top-1 right-1" />}
-                </button>
+                </Button>
               );
             })}
           </div>
