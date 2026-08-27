@@ -1,7 +1,7 @@
 import type { MetadataRoute } from 'next';
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = 'https://mbti.opentoyapp.kr';
+  const baseUrl = 'https://persona.opentoyapp.kr';
   const lastModified = new Date();
 
   return [

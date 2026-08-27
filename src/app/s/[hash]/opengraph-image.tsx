@@ -236,7 +236,7 @@ export default async function Image({ params }: { params: Promise<{ hash: string
         }}
       >
         <span style={{ display: 'flex' }}>마우스 궤적 및 고민 시간 기반 무의식 행동 성향 분석</span>
-        <span style={{ display: 'flex', color: '#34d399', fontWeight: 700 }}>mbti.opentoyapp.kr</span>
+        <span style={{ display: 'flex', color: '#34d399', fontWeight: 700 }}>persona.opentoyapp.kr</span>
       </div>
     </div>,
     {

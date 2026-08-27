@@ -53,7 +53,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     title,
     description,
     alternates: {
-      canonical: `https://mbti.opentoyapp.kr/s/${hash}`,
+      canonical: `https://persona.opentoyapp.kr/s/${hash}`,
     },
     robots: {
       index: true,
@@ -62,7 +62,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     openGraph: {
       title,
       description,
-      url: `https://mbti.opentoyapp.kr/s/${hash}`,
+      url: `https://persona.opentoyapp.kr/s/${hash}`,
       siteName: 'PersonaLens',
       locale: 'ko_KR',
       type: 'article',

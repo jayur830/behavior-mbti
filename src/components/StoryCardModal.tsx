@@ -157,7 +157,7 @@ export default function StoryCardModal({ result, isOpen, onClose }: StoryCardMod
             <div className="flex items-center justify-between text-[10px] text-neutral-400 pt-1">
               <span className="text-neutral-300 font-semibold flex items-center gap-1">
                 <ShieldCheck className="w-3 h-3 text-emerald-400" />
-                mbti.opentoyapp.kr
+                persona.opentoyapp.kr
               </span>
               <span className="font-medium">나도 검사하기 ➔</span>
             </div>

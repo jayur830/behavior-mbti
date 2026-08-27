@@ -49,7 +49,7 @@ export async function generateMetadata({ searchParams }: Props): Promise<Metadat
       openGraph: {
         title,
         description,
-        url: `https://mbti.opentoyapp.kr/preview?data=${data}`,
+        url: `https://persona.opentoyapp.kr/preview?data=${data}`,
         siteName: 'PersonaLens',
         locale: 'ko_KR',
         type: 'article',

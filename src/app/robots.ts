@@ -1,7 +1,7 @@
 import type { MetadataRoute } from 'next';
 
 export default function robots(): MetadataRoute.Robots {
-  const baseUrl = 'https://mbti.opentoyapp.kr';
+  const baseUrl = 'https://persona.opentoyapp.kr';
 
   return {
     rules: [

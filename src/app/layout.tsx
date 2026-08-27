@@ -14,7 +14,7 @@ const plusJakartaSans = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://mbti.opentoyapp.kr'),
+  metadataBase: new URL('https://persona.opentoyapp.kr'),
   title: {
     default: 'PersonaLens | 무의식 행동으로 읽는 나만의 페르소나',
     template: '%s | PersonaLens',
@@ -49,7 +49,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'PersonaLens | 무의식 행동으로 읽는 나만의 페르소나',
     description: '선택의 순간, 머뭇거림과 망설임의 궤적을 분석하여 당신의 진짜 내면과 페르소나를 도출합니다.',
-    url: 'https://mbti.opentoyapp.kr',
+    url: 'https://persona.opentoyapp.kr',
     siteName: 'PersonaLens',
     locale: 'ko_KR',
     type: 'website',
@@ -66,17 +66,17 @@ const jsonLd = {
   '@graph': [
     {
       '@type': 'WebSite',
-      '@id': 'https://mbti.opentoyapp.kr/#website',
-      url: 'https://mbti.opentoyapp.kr',
+      '@id': 'https://persona.opentoyapp.kr/#website',
+      url: 'https://persona.opentoyapp.kr',
       name: 'PersonaLens',
       description: '무의식 마우스 궤적과 망설임 시간으로 분석하는 신개념 MBTI 성향 검사',
       inLanguage: 'ko-KR',
     },
     {
       '@type': 'WebApplication',
-      '@id': 'https://mbti.opentoyapp.kr/#app',
+      '@id': 'https://persona.opentoyapp.kr/#app',
       name: 'PersonaLens MBTI',
-      url: 'https://mbti.opentoyapp.kr',
+      url: 'https://persona.opentoyapp.kr',
       applicationCategory: 'LifestyleApplication',
       operatingSystem: 'All',
       browserRequirements: 'Requires JavaScript. Requires HTML5.',
