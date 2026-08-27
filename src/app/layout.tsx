@@ -15,7 +15,10 @@ const plusJakartaSans = Plus_Jakarta_Sans({
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://mbti.opentoyapp.kr'),
-  title: 'PersonaLens | 무의식 행동으로 읽는 나만의 페르소나',
+  title: {
+    default: 'PersonaLens | 무의식 행동으로 읽는 나만의 페르소나',
+    template: '%s | PersonaLens',
+  },
   description: '선택의 순간, 머뭇거림과 망설임의 궤적을 분석하여 당신의 진짜 내면과 페르소나를 도출합니다.',
   keywords: [
     'PersonaLens',
@@ -29,6 +32,20 @@ export const metadata: Metadata = {
     'opentoyapp',
   ],
   authors: [{ name: 'PersonaLens' }],
+  alternates: {
+    canonical: '/',
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
   openGraph: {
     title: 'PersonaLens | 무의식 행동으로 읽는 나만의 페르소나',
     description: '선택의 순간, 머뭇거림과 망설임의 궤적을 분석하여 당신의 진짜 내면과 페르소나를 도출합니다.',
@@ -44,6 +61,34 @@ export const metadata: Metadata = {
   },
 };
 
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'WebSite',
+      '@id': 'https://mbti.opentoyapp.kr/#website',
+      url: 'https://mbti.opentoyapp.kr',
+      name: 'PersonaLens',
+      description: '무의식 마우스 궤적과 망설임 시간으로 분석하는 신개념 MBTI 성향 검사',
+      inLanguage: 'ko-KR',
+    },
+    {
+      '@type': 'WebApplication',
+      '@id': 'https://mbti.opentoyapp.kr/#app',
+      name: 'PersonaLens MBTI',
+      url: 'https://mbti.opentoyapp.kr',
+      applicationCategory: 'LifestyleApplication',
+      operatingSystem: 'All',
+      browserRequirements: 'Requires JavaScript. Requires HTML5.',
+      offers: {
+        '@type': 'Offer',
+        price: '0',
+        priceCurrency: 'KRW',
+      },
+    },
+  ],
+};
+
 export interface RootLayoutProps {
   children: ReactNode;
 }
@@ -55,6 +100,9 @@ export default function RootLayout({ children }: Readonly<RootLayoutProps>) {
       suppressHydrationWarning
       className={`${plusJakartaSans.variable} font-sans h-full antialiased selection:bg-emerald-500/20 selection:text-emerald-300 dark:selection:text-emerald-200`}
     >
+      <head>
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      </head>
       <body className="min-h-full flex flex-col bg-background text-foreground relative overflow-x-hidden transition-colors duration-300">
         <ReactQueryProvider>
           <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
