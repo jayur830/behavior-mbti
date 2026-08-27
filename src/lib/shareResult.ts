@@ -71,7 +71,11 @@ interface SecurePayloadEnvelope {
 }
 
 /**
- * 분석 결과를 육안 식별이 불가능하며 위변조 검증 서명이 포함된 압축 문자열로 직렬화합니다.
+ * 분석 결과 객체를 육안 식별이 불가능하도록 난독화(XOR Scramble)하고
+ * FNV-1a 위변조 방지 디지털 서명을 첨부하여 URL 친화적인 압축 문자열로 직렬화합니다.
+ *
+ * @param result 직렬화할 {@link FullAnalysisResult} 종합 분석 결과
+ * @returns URL 쿼리스트링에 안전하게 삽입 가능한 압축 인코딩 문자열
  */
 export function encodeResultToCompressedString(result: FullAnalysisResult): string {
   const questionsToEncode =
@@ -138,7 +142,11 @@ export function encodeResultToCompressedString(result: FullAnalysisResult): stri
 }
 
 /**
- * 압축 문자열로부터 디지털 서명을 검증하고 위변조가 감지되면 null을 반환합니다.
+ * URL 압축 문자열로부터 디지털 무결성 서명을 검증하고, 난독화를 해제하여 원본 종합 분석 결과 객체를 복원합니다.
+ * 위변조가 감지되거나 데이터가 손상된 경우 `null`을 반환합니다.
+ *
+ * @param compressedStr URL 파라미터로 전달된 압축 문자열
+ * @returns 복원된 {@link FullAnalysisResult} 객체 또는 실패 시 `null`
  */
 export function decodeResultFromCompressedString(compressedStr: string): FullAnalysisResult | null {
   if (!compressedStr) return null;

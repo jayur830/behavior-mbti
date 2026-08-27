@@ -4,14 +4,22 @@ import { useEffect, useRef } from 'react';
 import { deleteResultApi, saveResultApi } from '@/lib/api/results';
 import type { FullAnalysisResult } from '@/types';
 
+/**
+ * 결과 진단서 저장 생명주기 관리 훅 옵션
+ */
 export interface UseResultSaveLifecycleOptions {
+  /** 분석 완료된 최종 MBTI 및 행동 궤적 결과 데이터 */
   result: FullAnalysisResult;
+  /** 타인에게 공유받은 결과 뷰 여부 (공유 뷰일 때는 자동 저장/삭제 생명주기 스킵) */
   isSharedView?: boolean;
 }
 
 /**
  * TanStack React Query의 useMutation을 활용하여
- * 결과 진단서의 자동 저장 및 페이지 이탈(미공유 시 삭제) 생명주기를 관리하는 훅
+ * 결과 진단서의 자동 적재, 세션 관리 및 페이지 이탈(미공유 시 DB row 정리) 생명주기를 전담하는 커스텀 훅
+ *
+ * @param options {@link UseResultSaveLifecycleOptions}
+ * @returns `markAsSaved`: 링크 복사 시 호출하여 결과를 영구 보존하고 식별자를 반환하는 함수, `isSaving`: 저장 중 여부
  */
 export function useResultSaveLifecycle({ result, isSharedView = false }: UseResultSaveLifecycleOptions) {
   const savedDbIdRef = useRef<string | null>(null);

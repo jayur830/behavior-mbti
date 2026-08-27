@@ -12,14 +12,29 @@ import type {
   TouchMetrics,
 } from '@/types';
 
+/**
+ * 문항 컴포넌트의 행동 추적을 위한 훅 입력 Props
+ */
 export interface UseBehaviorTrackerProps {
+  /** 측정 대상 문항 ID */
   questionId: number;
+  /** 좌표 정규화의 기준이 되는 질문 카드 컨테이너 Ref */
   containerRef: RefObject<HTMLDivElement | null>;
+  /** 이전 응답값이 존재할 경우 초기값 (-3 ~ +3) */
   initialValue?: number | null;
+  /** 이미 기록된 이전 행동 로그가 존재할 경우 전달 */
   existingLog?: QuestionBehaviorLog | null;
+  /** 답변 선택 시 자동 다음 이동 콜백 (선택) */
   onAutoSubmit?: () => void;
 }
 
+/**
+ * 단일 문항 진행 중 사용자의 마우스 궤적, 선택 번복, 체류 시간, 호버 지속 시간,
+ * 터치 제스처 및 키보드 입력을 실시간으로 추적하고 망설임 지수를 산출하는 커스텀 훅
+ *
+ * @param props {@link UseBehaviorTrackerProps}
+ * @returns 현재 선택값, 선택/호버 이벤트 핸들러, 최종 로그 추출 함수(`finalizeLog`)
+ */
 export function useBehaviorTracker({
   questionId,
   containerRef,

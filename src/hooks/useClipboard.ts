@@ -1,11 +1,18 @@
 import { useCallback, useState } from 'react';
 
+/**
+ * 클립보드 복사 훅 옵션
+ */
 export interface UseClipboardOptions {
+  /** 복사 완료 상태 유지 시간 (기본값: 2000ms) */
   timeoutMs?: number;
 }
 
 /**
- * 클립보드 텍스트 복사 및 복사 성공 피드백 상태를 관리하는 커스텀 훅
+ * 클립보드 텍스트 복사 및 복사 성공 피드백(일시적 플래그) 상태를 관리하는 커스텀 훅
+ *
+ * @param options {@link UseClipboardOptions}
+ * @returns `copied`: 복사 완료 피드백 상태, `copy`: 텍스트 복사 실행 함수
  */
 export function useClipboard({ timeoutMs = 2000 }: UseClipboardOptions = {}) {
   const [copied, setCopied] = useState<boolean>(false);

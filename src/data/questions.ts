@@ -10,6 +10,12 @@ export const LIKERT_OPTIONS = [
   { value: 3, label: '매우 그렇다', color: '#22c55e', size: 'w-12 h-12' },
 ];
 
+/**
+ * 리커트 척도 수치(-3 ~ +3)에 해당하는 사용자 친화적인 라벨 텍스트를 반환합니다.
+ *
+ * @param value 리커트 척도 값 (-3 ~ +3)
+ * @returns '매우 그렇다', '보통 / 중립' 등의 표시 문자열
+ */
 export function getOptionLabel(value: number): string {
   const found = LIKERT_OPTIONS.find((opt) => opt.value === value);
   return found ? found.label : `${value}`;
@@ -1838,8 +1844,10 @@ export const QUESTIONS_POOL: Question[] = [
 export const QUESTIONS: Question[] = QUESTIONS_POOL.slice(0, 40);
 
 /**
- * 200개 대규모 문항 풀에서 각 성향 축(EI, SN, TF, JP)별로 균형 있게 countPerDimension 개씩 무작위 추출하여 섞습니다.
+ * 200개 대규모 문항 풀에서 각 4대 성향 축(EI, SN, TF, JP)별로 균형 있게 `countPerDimension`개씩 무작위 추출하여 셔플합니다.
+ *
  * @param countPerDimension 축당 추출할 문항 수 (기본값: 10개 -> 총 40문항)
+ * @returns 무작위로 섞인 {@link Question} 배열
  */
 export function getRandomQuestions(countPerDimension = 10): Question[] {
   const pickRandom = (arr: Question[], n: number) => {

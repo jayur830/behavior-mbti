@@ -8,7 +8,18 @@ import { getResultFromDb } from '@/lib/db';
 import { decodeResultFromCompressedString } from '@/lib/shareResult';
 import type { FullAnalysisResult, PageProps } from '@/types';
 
-export type Props = PageProps<{ hash: string }>;
+/**
+ * /s/[hash] 동적 라우트 URL 파라미터(params) 인터페이스
+ */
+export interface ShareRouteParams {
+  /** DB에 저장된 단축 식별자(5~15자) 또는 압축 인코딩된 결과 해시 문자열 */
+  hash: string;
+}
+
+/**
+ * /s/[hash] 공유 결과 페이지 Props 타입
+ */
+export type Props = PageProps<ShareRouteParams>;
 
 async function resolveResult(hash: string): Promise<FullAnalysisResult | null> {
   if (!hash) return null;

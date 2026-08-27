@@ -7,8 +7,10 @@ const globalForPg = globalThis as unknown as {
 };
 
 /**
- * PostgreSQL 커넥션 풀 싱글톤 인스턴스 반환
+ * PostgreSQL 커넥션 풀 싱글톤 인스턴스를 반환합니다.
  * DIRECT_URL (세션 모드 5432) 또는 DATABASE_URL을 최우선으로 사용하여 persona 스키마에 직접 연결합니다.
+ *
+ * @returns 연결된 {@link Pool} 인스턴스 또는 연결 정보 부재 시 `null`
  */
 export function getPgPool(): Pool | null {
   const connectionString =
@@ -32,7 +34,10 @@ export function getPgPool(): Pool | null {
 }
 
 /**
- * 10자리 영문 대소문자 + 숫자 난수 ID 생성
+ * URL 공유용 10자리 영문 대소문자 + 숫자 난수 식별자 ID를 생성합니다.
+ *
+ * @param length 생성할 ID 길이 (기본값: 10)
+ * @returns 생성된 영숫자 식별자 문자열
  */
 export function generateShortId(length = 10): string {
   const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -40,7 +45,11 @@ export function generateShortId(length = 10): string {
 }
 
 /**
- * persona.mbti_results 테이블에 진단 결과 적재
+ * persona.mbti_results 테이블에 진단 결과 전체를 적재합니다.
+ *
+ * @param result 저장할 종합 분석 결과 객체
+ * @param customId 이미 발급된 단축 ID가 있는 경우 지정
+ * @returns 저장 완료된 단축 ID 문자열 또는 실패 시 `null`
  */
 export async function saveResultToDb(result: FullAnalysisResult, customId?: string): Promise<string | null> {
   const shortId = customId || generateShortId(10);
@@ -74,7 +83,10 @@ export async function saveResultToDb(result: FullAnalysisResult, customId?: stri
 }
 
 /**
- * persona.mbti_results 테이블에서 10자리 단축 ID로 결과 조회
+ * persona.mbti_results 테이블에서 단축 ID로 진단 결과 객체를 조회합니다.
+ *
+ * @param id 조회할 진단서 고유 ID
+ * @returns 복원된 {@link FullAnalysisResult} 객체 또는 데이터 부재 시 `null`
  */
 export async function getResultFromDb(id: string): Promise<FullAnalysisResult | null> {
   if (!id) return null;
@@ -103,7 +115,10 @@ export async function getResultFromDb(id: string): Promise<FullAnalysisResult | 
 }
 
 /**
- * 미공유 진단서 row 삭제 (페이지 이탈 시 실행)
+ * 링크 미공유 상태의 임시 진단서 row를 DB에서 삭제합니다. (사용자 이탈 시 실행)
+ *
+ * @param id 삭제 대상 진단서 ID
+ * @returns 삭제 성공 여부
  */
 export async function deleteResultFromDb(id: string): Promise<boolean> {
   if (!id) return false;

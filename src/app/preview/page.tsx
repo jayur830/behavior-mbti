@@ -5,7 +5,20 @@ import type { PageProps } from '@/types';
 
 import PreviewClient from './_components/PreviewClient';
 
-export type Props = PageProps<Record<string, never>, { data?: string; r?: string }>;
+/**
+ * /preview 페이지 쿼리스트링(searchParams) 인터페이스
+ */
+export interface PreviewSearchParams {
+  /** 압축 인코딩된 검사 결과 데이터 (우선순위 1) */
+  data?: string;
+  /** 압축 인코딩된 검사 결과 데이터 단축 파라미터 (우선순위 2) */
+  r?: string;
+}
+
+/**
+ * /preview 페이지 컴포넌트 Props 타입
+ */
+export type Props = PageProps<Record<string, never>, PreviewSearchParams>;
 
 export async function generateMetadata({ searchParams }: Props): Promise<Metadata> {
   const params = (await searchParams) || {};

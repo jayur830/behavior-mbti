@@ -13,6 +13,14 @@ import type {
   QuestionBehaviorLog,
 } from '@/types';
 
+/**
+ * 사용자가 테스트를 진행하며 기록된 문항별 행동 추적 로그(Telemetry)와 문항 풀을 분석하여
+ * 최종 MBTI 성향, 4대 축 점수/확신도, 행동 페르소나, 호버 심리, 페르소나 갭 및 벤치마크 통계를 산출합니다.
+ *
+ * @param logs 문항별 실측 행동 로그 배열 (체류 시간, 궤적, 번복 횟수 등)
+ * @param questions 분석 대상 문항 목록 (기본값: QUESTIONS_POOL)
+ * @returns {@link FullAnalysisResult} 종합 심리/행동 분석 결과 구조체
+ */
 export function analyzeBehaviorAndMBTI(logs: QuestionBehaviorLog[], questions = QUESTIONS_POOL): FullAnalysisResult {
   // Ensure safe fallback if logs are empty
   const safeLogs: QuestionBehaviorLog[] =

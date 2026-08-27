@@ -5,7 +5,20 @@ import type { PageProps } from '@/types';
 
 import ResultClient from './_components/ResultClient';
 
-export type Props = PageProps<Record<string, never>, { data?: string; r?: string }>;
+/**
+ * /result 페이지 쿼리스트링(searchParams) 인터페이스
+ */
+export interface ResultSearchParams {
+  /** URL을 통해 전달된 압축 인코딩 검사 결과 데이터 (우선순위 1) */
+  data?: string;
+  /** URL을 통해 전달된 압축 인코딩 검사 결과 데이터 단축 파라미터 (우선순위 2) */
+  r?: string;
+}
+
+/**
+ * /result 결과 리포트 페이지 Props 타입
+ */
+export type Props = PageProps<Record<string, never>, ResultSearchParams>;
 
 export async function generateMetadata({ searchParams }: Props): Promise<Metadata> {
   const params = (await searchParams) || {};
