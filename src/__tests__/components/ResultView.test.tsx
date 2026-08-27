@@ -1,7 +1,22 @@
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { fireEvent, render, screen } from '@testing-library/react';
+import type { ReactElement } from 'react';
 
 import { ResultView } from '@/components/ResultView';
 import type { FullAnalysisResult } from '@/types';
+
+const createTestQueryClient = () =>
+  new QueryClient({
+    defaultOptions: {
+      queries: { retry: false },
+      mutations: { retry: false },
+    },
+  });
+
+function renderWithClient(ui: ReactElement) {
+  const testClient = createTestQueryClient();
+  return render(<QueryClientProvider client={testClient}>{ui}</QueryClientProvider>);
+}
 
 const mockResult: FullAnalysisResult = {
   mbti: 'INTJ',
@@ -178,7 +193,7 @@ describe('ResultView 컴포넌트 테스트', () => {
   it('MBTI 유형, 4대 성향 분석, 행동 인터랙션 데이터 요약이 렌더링되어야 한다', () => {
     const handleRestart = jest.fn();
 
-    render(<ResultView result={mockResult} onRestart={handleRestart} isSharedView={false} />);
+    renderWithClient(<ResultView result={mockResult} onRestart={handleRestart} isSharedView={false} />);
 
     // MBTI 타이틀 및 카드 렌더링
     expect(screen.getAllByText('INTJ').length).toBeGreaterThanOrEqual(1);
@@ -196,7 +211,7 @@ describe('ResultView 컴포넌트 테스트', () => {
   it('홈으로 이동 버튼 클릭 시 onHome 콜백이 호출되어야 한다', () => {
     const handleHome = jest.fn();
 
-    render(<ResultView result={mockResult} onHome={handleHome} isSharedView={false} />);
+    renderWithClient(<ResultView result={mockResult} onHome={handleHome} isSharedView={false} />);
 
     const homeButton = screen.getByRole('button', { name: /홈으로 이동/i });
     fireEvent.click(homeButton);
@@ -205,7 +220,7 @@ describe('ResultView 컴포넌트 테스트', () => {
   });
 
   it('히트맵 모드를 선택한 후 다른 문항 번호를 클릭해도 히트맵 모드가 유지되어야 한다', () => {
-    render(<ResultView result={mockResult} isSharedView={false} />);
+    renderWithClient(<ResultView result={mockResult} isSharedView={false} />);
 
     const heatmapButton = screen.getByRole('button', { name: /히트맵/i });
     fireEvent.click(heatmapButton);

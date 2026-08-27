@@ -1,11 +1,13 @@
 'use client';
 
+import { useMutation } from '@tanstack/react-query';
 import { Activity, ArrowRight, Compass } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Suspense, useMemo, useSyncExternalStore } from 'react';
 
 import { ResultView } from '@/components/ResultView';
 import { ThemeToggle } from '@/components/ThemeToggle';
+import { deleteResultApi } from '@/lib/api/results';
 import { decodeResultFromCompressedString } from '@/lib/shareResult';
 import type { FullAnalysisResult } from '@/types';
 
@@ -24,6 +26,10 @@ function ResultContent({ onHome }: { onHome?: () => void }) {
   const searchParams = useSearchParams();
   const compressedData = searchParams.get('data') || searchParams.get('r');
   const isMounted = useClientMounted();
+
+  const deleteMutation = useMutation({
+    mutationFn: (id: string) => deleteResultApi(id),
+  });
 
   const result = useMemo<FullAnalysisResult | null>(() => {
     if (!isMounted) return null;
@@ -48,10 +54,7 @@ function ResultContent({ onHome }: { onHome?: () => void }) {
     try {
       const unsavedId = sessionStorage.getItem('unsaved_mbti_id');
       if (unsavedId) {
-        fetch(`/api/results?id=${encodeURIComponent(unsavedId)}`, {
-          method: 'DELETE',
-          keepalive: true,
-        }).catch(() => {});
+        deleteMutation.mutate(unsavedId);
         sessionStorage.removeItem('unsaved_mbti_id');
       }
     } catch {}

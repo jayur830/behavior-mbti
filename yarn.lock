@@ -2387,6 +2387,18 @@
     postcss "^8.5.16"
     tailwindcss "4.3.3"
 
+"@tanstack/query-core@5.102.7":
+  version "5.102.7"
+  resolved "https://registry.yarnpkg.com/@tanstack/query-core/-/query-core-5.102.7.tgz#a65a32394067230acefff3fa53bc9f133975bf1d"
+  integrity sha512-4TH8KQrCLoNs9Zvl1LW1iaZ9cZx3dGTgfZ1BnLrcRxMNnX/toe/dGbfvF/DkvbzRyfLfpMKZkembz3o0rnugtw==
+
+"@tanstack/react-query@^5.102.7":
+  version "5.102.7"
+  resolved "https://registry.yarnpkg.com/@tanstack/react-query/-/react-query-5.102.7.tgz#932d3541cf43d8909c4792aa6ba0810165f8cd88"
+  integrity sha512-bbd8T4jDIj9aPbNn11SsjNH8apKY4zspkrw63JRsNDXjpW5SRF7X0ipi7yrGd8DCs8QhYfhQJKqEj1YLru1DbQ==
+  dependencies:
+    "@tanstack/query-core" "5.102.7"
+
 "@testing-library/dom@^10.4.1":
   version "10.4.1"
   resolved "https://registry.yarnpkg.com/@testing-library/dom/-/dom-10.4.1.tgz#d444f8a889e9a46e9a3b4f3b88e0fcb3efb6cf95"

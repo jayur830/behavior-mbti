@@ -1,5 +1,7 @@
+import { useMutation } from '@tanstack/react-query';
 import { useEffect, useRef } from 'react';
 
+import { deleteResultApi, saveResultApi } from '@/lib/api/results';
 import type { FullAnalysisResult } from '@/types';
 
 export interface UseResultSaveLifecycleOptions {
@@ -8,15 +10,43 @@ export interface UseResultSaveLifecycleOptions {
 }
 
 /**
+ * TanStack React Query의 useMutation을 활용하여
  * 결과 진단서의 자동 저장 및 페이지 이탈(미공유 시 삭제) 생명주기를 관리하는 훅
  */
 export function useResultSaveLifecycle({ result, isSharedView = false }: UseResultSaveLifecycleOptions) {
   const savedDbIdRef = useRef<string | null>(null);
   const isCopiedRef = useRef<boolean>(false);
   const hasSavedRef = useRef<boolean>(false);
-  const isSavingRef = useRef<boolean>(false);
 
-  // 링크 복사를 하지 않고 이탈할 경우 DB에서 해당 row 삭제
+  // TanStack React Query Mutation for Saving
+  const saveMutation = useMutation({
+    mutationFn: (payload: { result: FullAnalysisResult; id?: string }) => saveResultApi(payload.result, payload.id),
+    onSuccess: (data) => {
+      if (data?.id) {
+        savedDbIdRef.current = data.id;
+        hasSavedRef.current = true;
+        try {
+          sessionStorage.setItem('unsaved_mbti_id', data.id);
+        } catch {}
+      }
+    },
+    onError: (err) => {
+      console.error('React Query Save Mutation Error:', err);
+    },
+  });
+
+  // TanStack React Query Mutation for Deleting
+  const deleteMutation = useMutation({
+    mutationFn: (id: string) => deleteResultApi(id),
+    onError: (err) => {
+      console.error('React Query Delete Mutation Error:', err);
+    },
+  });
+
+  const { mutate: mutateSave } = saveMutation;
+  const { mutate: mutateDelete } = deleteMutation;
+
+  // 링크 복사를 하지 않고 이탈할 경우 DB에서 해당 row 삭제 (sendBeacon / keepalive 유지)
   const triggerDeleteIfUnsaved = () => {
     const getTargetId = (): string | null => {
       if (savedDbIdRef.current) return savedDbIdRef.current;
@@ -36,7 +66,7 @@ export function useResultSaveLifecycle({ result, isSharedView = false }: UseResu
       const origin = typeof window !== 'undefined' ? window.location.origin : '';
       const deleteUrl = `${origin}/api/results?id=${encodeURIComponent(idToDelete)}`;
 
-      // 1. sendBeacon (CORS preflight 없는 탭 닫기 전송)
+      // 1. sendBeacon (브라우저 탭 닫기 전송 보장)
       if (typeof navigator !== 'undefined' && navigator.sendBeacon) {
         try {
           const blob = new Blob([idToDelete], { type: 'text/plain;charset=UTF-8' });
@@ -46,19 +76,7 @@ export function useResultSaveLifecycle({ result, isSharedView = false }: UseResu
         }
       }
 
-      // 2. fetch keepalive POST
-      if (typeof fetch !== 'undefined') {
-        try {
-          fetch(deleteUrl, {
-            method: 'POST',
-            keepalive: true,
-            headers: { 'Content-Type': 'text/plain' },
-            body: idToDelete,
-          }).catch(() => {});
-        } catch {}
-      }
-
-      // 3. fetch keepalive DELETE
+      // 2. fetch keepalive
       if (typeof fetch !== 'undefined') {
         try {
           fetch(deleteUrl, {
@@ -77,42 +95,18 @@ export function useResultSaveLifecycle({ result, isSharedView = false }: UseResu
   useEffect(() => {
     if (isSharedView) return;
 
-    // 0. 이전 세션에서 미공유 상태로 남아있던 ID가 있다면 즉시 DB 정리
+    // 0. 이전 세션에서 미공유 상태로 남아있던 ID가 있다면 Mutation으로 즉시 정리
     try {
       const prevUnsavedId = sessionStorage.getItem('unsaved_mbti_id');
       if (prevUnsavedId) {
-        const origin = typeof window !== 'undefined' ? window.location.origin : '';
-        fetch(`${origin}/api/results?id=${encodeURIComponent(prevUnsavedId)}`, {
-          method: 'DELETE',
-          keepalive: true,
-        }).catch(() => {});
+        deleteMutation.mutate(prevUnsavedId);
         sessionStorage.removeItem('unsaved_mbti_id');
       }
     } catch {}
 
-    if (hasSavedRef.current || isSavingRef.current) return;
-    isSavingRef.current = true;
+    if (hasSavedRef.current || saveMutation.isPending) return;
 
-    // 1. 결과 페이지 진입 후 DB에 단 1회만 자동 적재
-    fetch('/api/results', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ result }),
-    })
-      .then((res) => (res.ok ? res.json() : null))
-      .then((data) => {
-        if (data?.id) {
-          savedDbIdRef.current = data.id;
-          hasSavedRef.current = true;
-          try {
-            sessionStorage.setItem('unsaved_mbti_id', data.id);
-          } catch {}
-        }
-      })
-      .catch((err) => console.error('Auto save error:', err))
-      .finally(() => {
-        isSavingRef.current = false;
-      });
+    mutateSave({ result });
 
     // 2. 브라우저 탭 닫기, 창 닫기, 새로고침, 백그라운드 전환 감지
     const handleExit = () => {
@@ -137,7 +131,7 @@ export function useResultSaveLifecycle({ result, isSharedView = false }: UseResu
       document.removeEventListener('visibilitychange', handleVisibilityChange);
       triggerDeleteIfUnsaved();
     };
-  }, [isSharedView, result]);
+  }, [isSharedView, result, mutateDelete, mutateSave, saveMutation.isPending, deleteMutation]);
 
   // 링크 복사 시 호출하여 DB row를 영구 보존하고 short ID를 반환하는 함수
   const markAsSaved = async (): Promise<string | null> => {
@@ -150,7 +144,7 @@ export function useResultSaveLifecycle({ result, isSharedView = false }: UseResu
       return savedDbIdRef.current;
     }
 
-    if (isSavingRef.current) {
+    if (saveMutation.isPending) {
       for (let i = 0; i < 10; i++) {
         if (savedDbIdRef.current) {
           try {
@@ -162,30 +156,19 @@ export function useResultSaveLifecycle({ result, isSharedView = false }: UseResu
       }
     }
 
-    if (!hasSavedRef.current && !isSavingRef.current) {
-      isSavingRef.current = true;
+    if (!hasSavedRef.current) {
       try {
-        const res = await fetch('/api/results', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ result }),
-        });
-
-        if (res.ok) {
-          const json = await res.json();
-          if (json.id) {
-            savedDbIdRef.current = json.id;
-            hasSavedRef.current = true;
-            try {
-              sessionStorage.removeItem('unsaved_mbti_id');
-            } catch {}
-            return json.id;
-          }
+        const data = await saveMutation.mutateAsync({ result });
+        if (data?.id) {
+          savedDbIdRef.current = data.id;
+          hasSavedRef.current = true;
+          try {
+            sessionStorage.removeItem('unsaved_mbti_id');
+          } catch {}
+          return data.id;
         }
       } catch (err) {
         console.error('Instant save error:', err);
-      } finally {
-        isSavingRef.current = false;
       }
     }
 
@@ -195,5 +178,6 @@ export function useResultSaveLifecycle({ result, isSharedView = false }: UseResu
   return {
     markAsSaved,
     savedDbIdRef,
+    isSaving: saveMutation.isPending,
   };
 }
