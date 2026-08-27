@@ -1,6 +1,6 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 
-import { StoryCardModal } from '@/components/StoryCardModal';
+import StoryCardModal from '@/components/StoryCardModal';
 import type { FullAnalysisResult } from '@/types';
 
 const mockResult: FullAnalysisResult = {

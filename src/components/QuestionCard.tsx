@@ -1,12 +1,11 @@
 'use client';
 
 import { ArrowLeft, ArrowRight, Check, Keyboard, Mouse, Smartphone } from 'lucide-react';
-import type { FC } from 'react';
 import { useCallback, useRef } from 'react';
 
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Progress } from '@/components/ui/progress';
+import Badge from '@/components/ui/badge';
+import Button from '@/components/ui/button';
+import Progress from '@/components/ui/progress';
 import { useBehaviorTracker } from '@/hooks/useBehaviorTracker';
 import type { Question, QuestionBehaviorLog } from '@/types';
 
@@ -30,7 +29,7 @@ const LIKERT_OPTIONS = [
   { value: 3, label: '매우 그렇다' },
 ];
 
-export const QuestionCard: FC<QuestionCardProps> = ({
+export default function QuestionCard({
   question,
   currentIndex,
   totalQuestions,
@@ -38,7 +37,7 @@ export const QuestionCard: FC<QuestionCardProps> = ({
   onPrev,
   initialValue = null,
   existingLog = null,
-}) => {
+}: QuestionCardProps) {
   const containerRef = useRef<HTMLDivElement | null>(null);
 
   const {
@@ -233,4 +232,4 @@ export const QuestionCard: FC<QuestionCardProps> = ({
       </div>
     </div>
   );
-};
+}

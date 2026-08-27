@@ -2,10 +2,10 @@
 
 import { useRouter } from 'next/navigation';
 
-import { TestCatalogGrid } from '@/components/TestCatalogGrid';
-import { TestIntro } from '@/components/TestIntro';
-import { ThemeToggle } from '@/components/ThemeToggle';
-import { Button } from '@/components/ui/button';
+import TestCatalogGrid from '@/components/TestCatalogGrid';
+import TestIntro from '@/components/TestIntro';
+import ThemeToggle from '@/components/ThemeToggle';
+import Button from '@/components/ui/button';
 
 export default function Page() {
   const router = useRouter();

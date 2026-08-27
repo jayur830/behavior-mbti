@@ -2,10 +2,9 @@
 
 import { ArrowRight, Clock, HelpCircle, Lock, Sparkles } from 'lucide-react';
 import Link from 'next/link';
-import type { FC } from 'react';
 
-import { Badge } from '@/components/ui/badge';
-import { Card } from '@/components/ui/card';
+import Badge from '@/components/ui/badge';
+import Card from '@/components/ui/card';
 import type { TestCatalogItem } from '@/data/tests';
 import { TEST_CATALOG } from '@/data/tests';
 
@@ -13,7 +12,7 @@ export interface TestCatalogGridProps {
   onSelectTest?: (test: TestCatalogItem) => void;
 }
 
-export const TestCatalogGrid: FC<TestCatalogGridProps> = () => {
+export default function TestCatalogGrid() {
   return (
     <section className="w-full max-w-5xl mx-auto px-4 py-8">
       {/* Section Header */}
@@ -129,4 +128,4 @@ export const TestCatalogGrid: FC<TestCatalogGridProps> = () => {
       </div>
     </section>
   );
-};
+}

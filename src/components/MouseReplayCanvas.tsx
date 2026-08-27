@@ -2,11 +2,10 @@
 
 import { Crosshair, Flame, MousePointer, Pause, Play, RotateCcw } from 'lucide-react';
 import { useTheme } from 'next-themes';
-import type { FC } from 'react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
+import Button from '@/components/ui/button';
+import Card from '@/components/ui/card';
 import { getOptionLabel } from '@/data/questions';
 import type { AnswerSelectionEvent, MousePoint, QuestionBehaviorLog } from '@/types';
 
@@ -20,13 +19,13 @@ export interface MouseReplayCanvasProps {
   onViewModeChange?: (mode: MouseCanvasViewMode) => void;
 }
 
-export const MouseReplayCanvas: FC<MouseReplayCanvasProps> = ({
+export default function MouseReplayCanvas({
   behaviorLog,
   width = 800,
   height = 400,
   viewMode: controlledViewMode,
   onViewModeChange,
-}) => {
+}: MouseReplayCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [internalViewMode, setInternalViewMode] = useState<MouseCanvasViewMode>('replay');
   const viewMode = controlledViewMode ?? internalViewMode;
@@ -635,4 +634,4 @@ export const MouseReplayCanvas: FC<MouseReplayCanvasProps> = ({
       )}
     </Card>
   );
-};
+}

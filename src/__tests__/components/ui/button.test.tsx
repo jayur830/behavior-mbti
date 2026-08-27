@@ -1,6 +1,6 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 
-import { Button } from '@/components/ui/button';
+import Button from '@/components/ui/button';
 
 describe('shadcn Button 컴포넌트 테스트', () => {
   it('기본 버튼이 정상적으로 렌더링되어야 한다', () => {

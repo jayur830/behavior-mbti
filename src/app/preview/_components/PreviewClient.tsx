@@ -4,8 +4,8 @@ import { Activity, ArrowRight, Compass } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Suspense } from 'react';
 
-import { ResultView } from '@/components/ResultView';
-import { ThemeToggle } from '@/components/ThemeToggle';
+import ResultView from '@/components/ResultView';
+import ThemeToggle from '@/components/ThemeToggle';
 import { decodeResultFromCompressedString } from '@/lib/shareResult';
 
 function PreviewContent() {

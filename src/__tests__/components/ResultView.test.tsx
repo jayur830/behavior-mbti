@@ -2,7 +2,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { fireEvent, render, screen } from '@testing-library/react';
 import type { ReactElement } from 'react';
 
-import { ResultView } from '@/components/ResultView';
+import ResultView from '@/components/ResultView';
 import type { FullAnalysisResult } from '@/types';
 
 const createTestQueryClient = () =>

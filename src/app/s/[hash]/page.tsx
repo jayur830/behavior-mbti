@@ -1,9 +1,9 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 
-import { ResultView } from '@/components/ResultView';
-import { ThemeToggle } from '@/components/ThemeToggle';
-import { Button } from '@/components/ui/button';
+import ResultView from '@/components/ResultView';
+import ThemeToggle from '@/components/ThemeToggle';
+import Button from '@/components/ui/button';
 import { getResultFromDb } from '@/lib/db';
 import { decodeResultFromCompressedString } from '@/lib/shareResult';
 import type { FullAnalysisResult, PageProps } from '@/types';

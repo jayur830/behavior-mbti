@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import Card, { CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
 describe('shadcn Card 컴포넌트 테스트', () => {
   it('카드 내부 구성 요소들이 정상적으로 렌더링되어야 한다', () => {

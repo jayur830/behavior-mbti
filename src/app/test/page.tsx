@@ -2,17 +2,24 @@
 
 import { Activity, Compass } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useState, useSyncExternalStore } from 'react';
 
-import { QuestionCard } from '@/components/QuestionCard';
-import { ThemeToggle } from '@/components/ThemeToggle';
-import { Badge } from '@/components/ui/badge';
+import QuestionCard from '@/components/QuestionCard';
+import ThemeToggle from '@/components/ThemeToggle';
+import Badge from '@/components/ui/badge';
 import { getRandomQuestions } from '@/data/questions';
 import { analyzeBehaviorAndMBTI } from '@/lib/analyzer';
-import { Question, QuestionBehaviorLog } from '@/types';
+import type { Question, QuestionBehaviorLog } from '@/types';
+
+const emptySubscribe = () => () => {};
 
 export default function Page() {
   const router = useRouter();
+  const isMounted = useSyncExternalStore(
+    emptySubscribe,
+    () => true,
+    () => false,
+  );
   const [questions] = useState<Question[]>(() => getRandomQuestions(10));
   const [currentQuestionIdx, setCurrentQuestionIdx] = useState<number>(0);
   const [behaviorLogs, setBehaviorLogs] = useState<(QuestionBehaviorLog | null)[]>([]);
@@ -107,7 +114,7 @@ export default function Page() {
 
       {/* Main Content Area */}
       <main className="flex-1 flex flex-col justify-center items-center px-4 py-8">
-        {isAnalyzing || !activeQuestion ? (
+        {isAnalyzing || !isMounted || !activeQuestion ? (
           <div className="flex flex-col items-center justify-center text-center p-8 max-w-sm animate-fade-in">
             <div className="w-12 h-12 rounded-full border border-border bg-card flex items-center justify-center mb-6 shadow-inner">
               <Activity className="w-5 h-5 text-emerald-500 animate-pulse" />

@@ -4,8 +4,8 @@ import type { Metadata } from 'next';
 import { Plus_Jakarta_Sans } from 'next/font/google';
 import type { ReactNode } from 'react';
 
-import { ReactQueryProvider } from '@/components/ReactQueryProvider';
-import { ThemeProvider } from '@/components/ThemeProvider';
+import ReactQueryProvider from '@/components/ReactQueryProvider';
+import ThemeProvider from '@/components/ThemeProvider';
 
 const plusJakartaSans = Plus_Jakarta_Sans({
   variable: '--font-sans',

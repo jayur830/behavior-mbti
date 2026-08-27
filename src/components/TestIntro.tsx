@@ -1,18 +1,17 @@
 'use client';
 
 import { ArrowRight, BarChart3, GitBranch, MousePointer2, ShieldCheck } from 'lucide-react';
-import type { FC } from 'react';
 
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
+import Badge from '@/components/ui/badge';
+import Button from '@/components/ui/button';
+import Card from '@/components/ui/card';
 
 export interface TestIntroProps {
   onStart: () => void;
   onExploreCatalog?: () => void;
 }
 
-export const TestIntro: FC<TestIntroProps> = ({ onStart, onExploreCatalog }) => {
+export default function TestIntro({ onStart, onExploreCatalog }: TestIntroProps) {
   return (
     <div className="w-full max-w-3xl mx-auto px-4 py-8 sm:py-16 flex flex-col items-center text-center">
       {/* Top Tag */}
@@ -103,4 +102,4 @@ export const TestIntro: FC<TestIntroProps> = ({ onStart, onExploreCatalog }) => 
       </div>
     </div>
   );
-};
+}

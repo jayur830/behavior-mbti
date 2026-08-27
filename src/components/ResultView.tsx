@@ -15,20 +15,19 @@ import {
   Sparkles,
   Zap,
 } from 'lucide-react';
-import type { FC } from 'react';
 import { useEffect, useState } from 'react';
 
-import { PersonaIcon } from '@/components/PersonaIcon';
-import { Button } from '@/components/ui/button';
+import PersonaIcon from '@/components/PersonaIcon';
+import Button from '@/components/ui/button';
 import { useClipboard } from '@/hooks/useClipboard';
 import { useResultSaveLifecycle } from '@/hooks/useResultSaveLifecycle';
 import { encodeResultToCompressedString } from '@/lib/shareResult';
 import type { FullAnalysisResult } from '@/types';
 
 import type { MouseCanvasViewMode } from './MouseReplayCanvas';
-import { MouseReplayCanvas } from './MouseReplayCanvas';
-import { StoryCardModal } from './StoryCardModal';
-import { TouchTimelinePlayer } from './TouchTimelinePlayer';
+import MouseReplayCanvas from './MouseReplayCanvas';
+import StoryCardModal from './StoryCardModal';
+import TouchTimelinePlayer from './TouchTimelinePlayer';
 
 export interface ResultViewProps {
   result: FullAnalysisResult;
@@ -37,7 +36,7 @@ export interface ResultViewProps {
   onHome?: () => void;
 }
 
-export const ResultView: FC<ResultViewProps> = ({ result, isSharedView = false, onRestart, onHome }) => {
+export default function ResultView({ result, isSharedView = false, onRestart, onHome }: ResultViewProps) {
   const [selectedQuestionIdx, setSelectedQuestionIdx] = useState<number>(0);
   const [isStoryModalOpen, setIsStoryModalOpen] = useState<boolean>(false);
 
@@ -607,4 +606,4 @@ export const ResultView: FC<ResultViewProps> = ({ result, isSharedView = false, 
       <StoryCardModal result={result} isOpen={isStoryModalOpen} onClose={() => setIsStoryModalOpen(false)} />
     </div>
   );
-};
+}

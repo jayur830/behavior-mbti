@@ -1,18 +1,17 @@
 'use client';
 
 import { Clock, Fingerprint, Pause, Play, RotateCcw, Smartphone, Timer } from 'lucide-react';
-import type { FC } from 'react';
 import { useEffect, useRef, useState } from 'react';
 
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
+import Button from '@/components/ui/button';
+import Card from '@/components/ui/card';
 import type { QuestionBehaviorLog } from '@/types';
 
 export interface TouchTimelinePlayerProps {
   behaviorLog: QuestionBehaviorLog;
 }
 
-export const TouchTimelinePlayer: FC<TouchTimelinePlayerProps> = ({ behaviorLog }) => {
+export default function TouchTimelinePlayer({ behaviorLog }: TouchTimelinePlayerProps) {
   const [isPlaying, setIsPlaying] = useState<boolean>(true);
   const [progress, setProgress] = useState<number>(0);
   const animRef = useRef<number | null>(null);
@@ -191,4 +190,4 @@ export const TouchTimelinePlayer: FC<TouchTimelinePlayerProps> = ({ behaviorLog 
       </div>
     </Card>
   );
-};
+}

@@ -1,6 +1,6 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 
-import { QuestionCard } from '@/components/QuestionCard';
+import QuestionCard from '@/components/QuestionCard';
 import type { Question } from '@/types';
 
 const mockQuestion: Question = {

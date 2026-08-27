@@ -9,7 +9,7 @@ export interface ProgressProps extends ComponentPropsWithoutRef<typeof ProgressP
   indicatorClassName?: string;
 }
 
-export function Progress({ className, value, indicatorClassName, ...props }: ProgressProps) {
+export default function Progress({ className, value, indicatorClassName, ...props }: ProgressProps) {
   return (
     <ProgressPrimitive.Root
       className={cn('relative h-2 w-full overflow-hidden rounded-full bg-slate-800', className)}

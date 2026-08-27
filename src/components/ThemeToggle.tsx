@@ -2,7 +2,6 @@
 
 import { Moon, Sun } from 'lucide-react';
 import { useTheme } from 'next-themes';
-import type { FC } from 'react';
 import { useSyncExternalStore } from 'react';
 
 export interface ThemeToggleProps {
@@ -11,7 +10,7 @@ export interface ThemeToggleProps {
 
 const emptySubscribe = () => () => {};
 
-export const ThemeToggle: FC<ThemeToggleProps> = ({ className }) => {
+export default function ThemeToggle({ className }: ThemeToggleProps) {
   const { theme, setTheme, resolvedTheme } = useTheme();
   const isMounted = useSyncExternalStore(
     emptySubscribe,
@@ -68,4 +67,4 @@ export const ThemeToggle: FC<ThemeToggleProps> = ({ className }) => {
       </span>
     </button>
   );
-};
+}

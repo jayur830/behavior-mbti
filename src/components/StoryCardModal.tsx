@@ -2,11 +2,10 @@
 
 import { toPng } from 'html-to-image';
 import { Compass, Download, ShieldCheck, Sparkles } from 'lucide-react';
-import type { FC } from 'react';
 import { useRef, useState } from 'react';
 
-import { PersonaIcon } from '@/components/PersonaIcon';
-import { Button } from '@/components/ui/button';
+import PersonaIcon from '@/components/PersonaIcon';
+import Button from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import type { FullAnalysisResult } from '@/types';
 
@@ -16,7 +15,7 @@ export interface StoryCardModalProps {
   onClose: () => void;
 }
 
-export const StoryCardModal: FC<StoryCardModalProps> = ({ result, isOpen, onClose }) => {
+export default function StoryCardModal({ result, isOpen, onClose }: StoryCardModalProps) {
   const cardRef = useRef<HTMLDivElement>(null);
   const [isExporting, setIsExporting] = useState<boolean>(false);
 
@@ -187,4 +186,4 @@ export const StoryCardModal: FC<StoryCardModalProps> = ({ result, isOpen, onClos
       </DialogContent>
     </Dialog>
   );
-};
+}

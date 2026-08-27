@@ -1,6 +1,6 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 
-import { TestIntro } from '@/components/TestIntro';
+import TestIntro from '@/components/TestIntro';
 
 describe('TestIntro 컴포넌트 테스트', () => {
   it('검사 타이틀과 설명이 정상적으로 렌더링되어야 한다', () => {

@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 
-import { TestCatalogGrid } from '@/components/TestCatalogGrid';
+import TestCatalogGrid from '@/components/TestCatalogGrid';
 
 describe('TestCatalogGrid 컴포넌트 테스트', () => {
   it('카탈로그 헤더 및 4개 검사 항목이 렌더링되어야 한다', () => {
