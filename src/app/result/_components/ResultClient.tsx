@@ -66,9 +66,9 @@ function ResultContent({ onHome }: { onHome?: () => void }) {
     return (
       <div className="flex flex-col items-center justify-center p-12 text-center">
         <div className="w-12 h-12 rounded-full border border-white/10 bg-neutral-900 flex items-center justify-center mb-6 shadow-inner animate-pulse">
-          <Activity className="w-5 h-5 text-indigo-400" />
+          <Activity className="w-5 h-5 text-emerald-400" />
         </div>
-        <h3 className="text-sm font-semibold text-slate-300">리포트 데이터를 불러오는 중입니다...</h3>
+        <h3 className="text-sm font-semibold text-muted-foreground">리포트 데이터를 불러오는 중입니다...</h3>
       </div>
     );
   }
@@ -80,12 +80,12 @@ function ResultContent({ onHome }: { onHome?: () => void }) {
           <span className="text-2xl font-black text-amber-400">?</span>
         </div>
         <h2 className="text-xl font-bold text-white mb-2">분석 결과를 찾을 수 없습니다</h2>
-        <p className="text-xs text-slate-400 mb-6 leading-relaxed">
+        <p className="text-xs text-muted-foreground mb-6 leading-relaxed">
           저장된 검사 세션이 만료되었거나 올바르지 않은 접근입니다. 새로운 성향 검사를 진행해보세요.
         </p>
         <Button
           onClick={handleRestart}
-          className="inline-flex items-center gap-2 px-6 py-3 rounded-full font-semibold text-xs sm:text-sm bg-linear-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white shadow-lg shadow-indigo-500/25 transition-all"
+          className="inline-flex items-center gap-2 px-6 py-3 rounded-full font-semibold text-xs sm:text-sm bg-linear-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white shadow-lg shadow-emerald-500/25 transition-all"
         >
           <span>MBTI 검사 시작하기</span>
           <ArrowRight className="w-4 h-4" />
@@ -115,20 +115,20 @@ export default function ResultClient() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col justify-between selection:bg-indigo-500/20 selection:text-indigo-200 relative">
+    <div className="min-h-screen flex flex-col justify-between selection:bg-emerald-500/20 selection:text-emerald-300 dark:selection:text-emerald-200 relative">
       {/* Navigation Header */}
       <header className="w-full border-b border-border backdrop-blur-xl sticky top-0 z-40 bg-background/80">
         <div className="max-w-5xl mx-auto px-6 h-16 flex items-center justify-between">
           <Button
             variant="ghost"
             onClick={handleHome}
-            className="h-auto p-0 hover:bg-transparent flex items-center gap-3 font-semibold text-foreground hover:text-indigo-500 transition-colors"
+            className="h-auto p-0 hover:bg-transparent flex items-center gap-3 font-semibold text-foreground hover:text-emerald-500 transition-colors"
           >
-            <div className="w-8 h-8 rounded-xl bg-linear-to-tr from-indigo-600 to-violet-500 flex items-center justify-center text-white shadow-lg shadow-indigo-500/20">
+            <div className="w-9 h-9 rounded-full bg-foreground text-background flex items-center justify-center font-bold text-xs">
               <Compass className="w-4 h-4" />
             </div>
             <span className="tracking-tight text-base font-bold text-foreground">
-              Persona<span className="text-indigo-500 dark:text-indigo-400 font-normal">Lens</span>
+              Persona<span className="accent-ink font-normal">Lens</span>
             </span>
           </Button>
 
@@ -141,7 +141,7 @@ export default function ResultClient() {
         <Suspense
           fallback={
             <div className="flex flex-col items-center justify-center gap-4 text-xs font-medium text-muted-foreground my-auto py-20">
-              <Activity className="w-6 h-6 text-indigo-500 animate-spin" />
+              <Activity className="w-6 h-6 text-emerald-500 animate-spin" />
               <span>진단 결과 리포트를 불러오는 중입니다...</span>
             </div>
           }

@@ -467,13 +467,13 @@ export default function MouseReplayCanvas({
       {/* Header Bar */}
       <div className="flex items-center justify-between mb-3 text-xs font-mono text-muted-foreground">
         <div className="flex items-center gap-2">
-          <Crosshair className="w-3.5 h-3.5 text-indigo-500 dark:text-indigo-400" />
+          <Crosshair className="w-3.5 h-3.5 text-emerald-500 dark:text-emerald-400" />
           <span className="text-foreground font-semibold uppercase tracking-wider">Mouse Telemetry Canvas</span>
         </div>
 
         <div className="flex items-center gap-3">
           {viewMode === 'replay' && (
-            <span className="text-xs font-mono font-medium text-indigo-600 dark:text-indigo-400 bg-indigo-500/10 px-2 py-0.5 rounded-md">
+            <span className="text-xs font-mono font-medium text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-md">
               {currentTimeSec}s / {totalDurationSec}s
             </span>
           )}
@@ -485,7 +485,7 @@ export default function MouseReplayCanvas({
               variant={viewMode === 'replay' ? 'default' : 'ghost'}
               onClick={() => handleSwitchViewMode('replay')}
               className={`h-6.5 px-2.5 text-xs rounded-md ${
-                viewMode === 'replay' ? 'bg-indigo-600 text-white font-semibold shadow-xs' : ''
+                viewMode === 'replay' ? 'bg-emerald-600 text-white font-semibold shadow-xs' : ''
               }`}
             >
               궤적 재생
@@ -516,7 +516,7 @@ export default function MouseReplayCanvas({
         {/* Empty Trajectory Fallback Notice */}
         {trajectory.length === 0 && (
           <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 text-muted-foreground text-xs font-mono">
-            <MousePointer className="w-6 h-6 opacity-30 text-indigo-500" />
+            <MousePointer className="w-6 h-6 opacity-30 text-emerald-500" />
             <span>이 문항에는 기록된 마우스 궤적이 없습니다</span>
           </div>
         )}
@@ -536,20 +536,20 @@ export default function MouseReplayCanvas({
             onPointerUp={handlePointerUp}
             onPointerCancel={handlePointerUp}
             className={`group relative w-full h-3 bg-muted rounded-full cursor-grab active:cursor-grabbing overflow-visible touch-none transition-all ${
-              isDragging ? 'ring-2 ring-indigo-500/50' : ''
+              isDragging ? 'ring-2 ring-emerald-500/50' : ''
             }`}
           >
             {/* Active playback sweep gauge */}
             <div className="relative w-full h-full rounded-full overflow-hidden">
               <div
-                className="h-full bg-linear-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-full"
+                className="h-full bg-linear-to-r from-emerald-500 via-teal-500 to-lime-500 rounded-full"
                 style={{ width: `${playbackProgress * 100}%` }}
               />
             </div>
 
             {/* Drag Handle Thumb */}
             <div
-              className={`absolute top-1/2 -translate-y-1/2 w-4 h-4 bg-white dark:bg-slate-100 rounded-full border-2 border-indigo-600 shadow-md transition-transform pointer-events-none -ml-2 ${
+              className={`absolute top-1/2 -translate-y-1/2 w-4 h-4 bg-white dark:bg-white rounded-full border-2 border-emerald-600 shadow-md transition-transform pointer-events-none -ml-2 ${
                 isDragging ? 'scale-125' : 'group-hover:scale-110'
               }`}
               style={{ left: `${playbackProgress * 100}%` }}
@@ -561,9 +561,9 @@ export default function MouseReplayCanvas({
               return (
                 <div
                   key={idx}
-                  title={`#${idx + 1} 선택 클릭: ${(c.timestamp / 1000).toFixed(1)}s`}
-                  className="absolute top-0 bottom-0 w-1.5 -ml-0.75 bg-amber-400 shadow-[0_0_6px_rgba(245,158,11,0.9)] rounded-full pointer-events-none"
+                  className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-2.5 h-2.5 rounded-full bg-rose-500 ring-2 ring-white dark:ring-neutral-900 pointer-events-none z-10"
                   style={{ left: `${clickRatio * 100}%` }}
+                  title={`답변 선택 (#${c.value})`}
                 />
               );
             })}
@@ -626,7 +626,7 @@ export default function MouseReplayCanvas({
             <span>붉은 영역일수록 마우스가 오래 머물며 고민한 지점입니다.</span>
           </div>
           <div className="text-[11px]">
-            총 체류 시간: <strong className="text-indigo-500 font-bold">{(duration / 1000).toFixed(1)}초</strong>
+            총 체류 시간: <strong className="text-emerald-500 font-bold">{(duration / 1000).toFixed(1)}초</strong>
           </div>
         </div>
       )}

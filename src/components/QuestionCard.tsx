@@ -89,12 +89,12 @@ export default function QuestionCard({
   const getDeviceIcon = () => {
     switch (primaryDevice) {
       case 'touch':
-        return <Smartphone className="w-3.5 h-3.5 text-indigo-500 dark:text-indigo-400" />;
+        return <Smartphone className="w-3.5 h-3.5 text-lime-600 dark:text-lime-300" />;
       case 'keyboard':
-        return <Keyboard className="w-3.5 h-3.5 text-indigo-500 dark:text-indigo-400" />;
+        return <Keyboard className="w-3.5 h-3.5 text-lime-600 dark:text-lime-300" />;
       case 'mouse':
       default:
-        return <Mouse className="w-3.5 h-3.5 text-indigo-500 dark:text-indigo-400" />;
+        return <Mouse className="w-3.5 h-3.5 text-lime-600 dark:text-lime-300" />;
     }
   };
 
@@ -144,10 +144,10 @@ export default function QuestionCard({
         <div className="flex justify-between items-center text-xs font-semibold mb-4 px-2">
           <span className="text-rose-500 dark:text-rose-400">비동의 (그렇지 않다)</span>
           <span className="text-muted-foreground font-normal text-[11px]">중립</span>
-          <span className="text-indigo-600 dark:text-indigo-400">동의 (매우 그렇다)</span>
+          <span className="text-lime-700 dark:text-lime-300">동의 (매우 그렇다)</span>
         </div>
 
-        <div className="flex items-center justify-between gap-1.5 sm:gap-3 px-3 sm:px-6 py-6 bg-slate-100/80 dark:bg-slate-900/60 rounded-2xl border border-slate-200 dark:border-slate-800/80 backdrop-blur-md">
+        <div className="flex items-center justify-between gap-1.5 sm:gap-3 px-3 sm:px-6 py-6 bg-muted/60 dark:bg-card/90 rounded-2xl border border-border backdrop-blur-md">
           {LIKERT_OPTIONS.map((opt, idx) => {
             const isSelected = selectedVal === opt.value;
             const sizeClass =
@@ -174,8 +174,8 @@ export default function QuestionCard({
                     ${sizeClass}
                     ${
                       isSelected
-                        ? 'bg-linear-to-tr from-indigo-500 to-violet-500 text-white shadow-lg shadow-indigo-500/40 ring-4 ring-indigo-500/20 scale-110 hover:from-indigo-600 hover:to-violet-600'
-                        : 'bg-white dark:bg-slate-800/80 border border-slate-300 dark:border-slate-700/60 hover:border-indigo-400 text-transparent hover:scale-105 active:scale-95 hover:bg-slate-50 dark:hover:bg-slate-800'
+                        ? 'bg-linear-to-tr from-lime-300 to-lime-500 text-neutral-950 shadow-lg shadow-lime-500/30 ring-4 ring-lime-500/20 scale-110 hover:from-lime-200 hover:to-lime-400'
+                        : 'bg-card border border-border hover:border-lime-400 text-transparent hover:scale-105 active:scale-95 hover:bg-muted'
                     }
                   `}
                 >
@@ -184,14 +184,14 @@ export default function QuestionCard({
                 <span
                   className={`text-[11px] sm:text-xs text-center transition-colors hidden sm:block ${
                     isSelected
-                      ? 'text-indigo-600 dark:text-indigo-300 font-semibold'
+                      ? 'text-lime-700 dark:text-lime-300 font-semibold'
                       : 'text-muted-foreground group-hover:text-foreground'
                   }`}
                 >
                   {opt.label}
                 </span>
                 {/* Keyboard Shortcut Hint */}
-                <span className="hidden sm:inline text-[9px] text-muted-foreground bg-white dark:bg-slate-800/80 px-1.5 py-0.5 rounded border border-border shadow-xs">
+                <span className="hidden sm:inline text-[9px] text-muted-foreground bg-card px-1.5 py-0.5 rounded border border-border shadow-xs">
                   {idx + 1}
                 </span>
               </div>
@@ -222,7 +222,7 @@ export default function QuestionCard({
             disabled={selectedVal === null}
             onClick={onSubmit}
             variant={selectedVal !== null ? 'gradient' : 'secondary'}
-            className="rounded-full px-6 py-3 text-xs sm:text-sm font-semibold shadow-lg shadow-indigo-500/25"
+            className="rounded-full px-6 py-3 text-xs sm:text-sm font-semibold shadow-lg shadow-lime-500/20"
           >
             <span>{currentIndex + 1 === totalQuestions ? '결과 분석하기' : '다음 문항'}</span>
             <ArrowRight className="w-4 h-4" />

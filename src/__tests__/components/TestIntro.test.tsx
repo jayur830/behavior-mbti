@@ -9,7 +9,7 @@ describe('TestIntro 컴포넌트 테스트', () => {
     render(<TestIntro onStart={handleStart} />);
 
     expect(screen.getByText(/무의식 궤적 기반 MBTI 성향 검사/i)).toBeInTheDocument();
-    expect(screen.getByText(/마우스의 망설임을 분석합니다/i)).toBeInTheDocument();
+    expect(screen.getByText(/클릭하기 전의 머뭇거림/i)).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /MBTI 성향 검사 시작하기/i })).toBeInTheDocument();
   });
 

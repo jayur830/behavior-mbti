@@ -13,17 +13,19 @@ export interface TestIntroProps {
 
 export default function TestIntro({ onStart, onExploreCatalog }: TestIntroProps) {
   return (
-    <div className="w-full max-w-3xl mx-auto px-4 py-8 sm:py-16 flex flex-col items-center text-center">
+    <div className="w-full max-w-5xl mx-auto px-4 py-12 sm:py-24 flex flex-col items-center text-center">
       {/* Top Tag */}
-      <Badge variant="indigo" className="mb-8 px-3.5 py-1.5 text-xs font-medium">
-        <span className="w-1.5 h-1.5 rounded-full bg-indigo-500 dark:bg-indigo-400" />
+      <Badge variant="emerald" className="mb-8 px-3.5 py-1.5 text-xs font-medium rounded-full">
+        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 dark:bg-emerald-300" />
         <span>[TEST 01] 무의식 궤적 기반 MBTI 성향 검사</span>
       </Badge>
 
       {/* Main Title */}
-      <h1 className="text-3xl sm:text-5xl font-bold tracking-tight text-foreground mb-6 leading-tight">
-        답변 뒤에 남겨진 <br className="hidden sm:inline" />
-        마우스의 망설임을 분석합니다
+      <p className="eyebrow accent-ink mb-5">Behavioral self-discovery / 01</p>
+      <h1 className="text-4xl sm:text-7xl font-bold tracking-[-0.06em] text-foreground mb-6 leading-[1.05]">
+        당신의 선택에는
+        <br />
+        <span className="accent-ink font-semibold">당신만의 리듬</span>이 있습니다
       </h1>
 
       {/* Subtitle */}
@@ -34,10 +36,10 @@ export default function TestIntro({ onStart, onExploreCatalog }: TestIntroProps)
       </p>
 
       {/* Clean Feature List with Smooth Hover Effects */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full mb-14 text-left">
-        <Card className="group p-6 rounded-2xl bg-card/60 dark:bg-slate-900/50 hover:bg-card dark:hover:bg-slate-900/90 border-border dark:border-slate-800/70 hover:border-border dark:hover:border-slate-600/80 transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-xl flex flex-col justify-between cursor-default">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 w-full mb-14 text-left">
+        <Card className="group p-6 rounded-2xl bg-card/60 dark:bg-card/70 hover:bg-card dark:hover:bg-card/95 border-border hover:border-lime-500/40 transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-xl flex flex-col justify-between cursor-default">
           <div>
-            <div className="w-10 h-10 rounded-xl bg-muted dark:bg-slate-800/80 group-hover:bg-muted/80 dark:group-hover:bg-slate-700/80 border border-border dark:border-slate-700/60 text-foreground dark:text-slate-300 flex items-center justify-center mb-4 transition-colors duration-300">
+            <div className="w-10 h-10 rounded-xl bg-muted group-hover:bg-muted/80 border border-border text-foreground flex items-center justify-center mb-4 transition-colors duration-300">
               <MousePointer2 className="w-4 h-4 transition-transform duration-300 group-hover:scale-110" />
             </div>
             <h3 className="text-sm font-semibold text-foreground mb-1.5 transition-colors">01. 궤적 & 속도 측정</h3>
@@ -47,9 +49,9 @@ export default function TestIntro({ onStart, onExploreCatalog }: TestIntroProps)
           </div>
         </Card>
 
-        <Card className="group p-6 rounded-2xl bg-card/60 dark:bg-slate-900/50 hover:bg-card dark:hover:bg-slate-900/90 border-border dark:border-slate-800/70 hover:border-border dark:hover:border-slate-600/80 transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-xl flex flex-col justify-between cursor-default">
+        <Card className="group p-6 rounded-2xl bg-card/60 dark:bg-card/70 hover:bg-card dark:hover:bg-card/95 border-border hover:border-lime-500/40 transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-xl flex flex-col justify-between cursor-default">
           <div>
-            <div className="w-10 h-10 rounded-xl bg-muted dark:bg-slate-800/80 group-hover:bg-muted/80 dark:group-hover:bg-slate-700/80 border border-border dark:border-slate-700/60 text-foreground dark:text-slate-300 flex items-center justify-center mb-4 transition-colors duration-300">
+            <div className="w-10 h-10 rounded-xl bg-muted group-hover:bg-muted/80 border border-border text-foreground flex items-center justify-center mb-4 transition-colors duration-300">
               <GitBranch className="w-4 h-4 transition-transform duration-300 group-hover:scale-110" />
             </div>
             <h3 className="text-sm font-semibold text-foreground mb-1.5 transition-colors">02. 본능 vs 고민 갭</h3>
@@ -59,9 +61,9 @@ export default function TestIntro({ onStart, onExploreCatalog }: TestIntroProps)
           </div>
         </Card>
 
-        <Card className="group p-6 rounded-2xl bg-card/60 dark:bg-slate-900/50 hover:bg-card dark:hover:bg-slate-900/90 border-border dark:border-slate-800/70 hover:border-border dark:hover:border-slate-600/80 transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-xl flex flex-col justify-between cursor-default">
+        <Card className="group p-6 rounded-2xl bg-card/60 dark:bg-card/70 hover:bg-card dark:hover:bg-card/95 border-border hover:border-lime-500/40 transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-xl flex flex-col justify-between cursor-default">
           <div>
-            <div className="w-10 h-10 rounded-xl bg-muted dark:bg-slate-800/80 group-hover:bg-muted/80 dark:group-hover:bg-slate-700/80 border border-border dark:border-slate-700/60 text-foreground dark:text-slate-300 flex items-center justify-center mb-4 transition-colors duration-300">
+            <div className="w-10 h-10 rounded-xl bg-muted group-hover:bg-muted/80 border border-border text-foreground flex items-center justify-center mb-4 transition-colors duration-300">
               <BarChart3 className="w-4 h-4 transition-transform duration-300 group-hover:scale-110" />
             </div>
             <h3 className="text-sm font-semibold text-foreground mb-1.5 transition-colors">03. 축별 확신도 지표</h3>

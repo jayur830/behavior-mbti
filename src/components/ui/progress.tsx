@@ -12,12 +12,12 @@ export interface ProgressProps extends ComponentPropsWithoutRef<typeof ProgressP
 export default function Progress({ className, value, indicatorClassName, ...props }: ProgressProps) {
   return (
     <ProgressPrimitive.Root
-      className={cn('relative h-2 w-full overflow-hidden rounded-full bg-slate-800', className)}
+      className={cn('relative h-2 w-full overflow-hidden rounded-full bg-muted', className)}
       {...props}
     >
       <ProgressPrimitive.Indicator
         className={cn(
-          'h-full w-full flex-1 bg-linear-to-r from-indigo-500 to-violet-500 transition-all duration-300',
+          'h-full w-full flex-1 bg-linear-to-r from-lime-300 to-lime-500 transition-all duration-300',
           indicatorClassName,
         )}
         style={{ transform: `translateX(-${100 - (value || 0)}%)` }}

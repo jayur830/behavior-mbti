@@ -18,7 +18,7 @@ export default function TestCatalogGrid() {
       {/* Section Header */}
       <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-8 pb-4 border-b border-border gap-4">
         <div>
-          <Badge variant="indigo" className="mb-2 font-semibold">
+          <Badge variant="emerald" className="mb-2 font-semibold">
             <Sparkles className="w-3.5 h-3.5" />
             <span>PersonaLens Test Series</span>
           </Badge>
@@ -40,13 +40,13 @@ export default function TestCatalogGrid() {
             <Card
               className={`relative h-full flex flex-col justify-between p-6 sm:p-7 rounded-3xl overflow-hidden border-border ${
                 isActive
-                  ? 'group transition-all duration-300 bg-card/80 dark:bg-slate-900/60 hover:-translate-y-1 hover:shadow-2xl hover:shadow-indigo-500/10 cursor-pointer'
+                  ? 'group transition-all duration-300 bg-card/80 dark:bg-card/90 hover:-translate-y-1 hover:shadow-2xl hover:shadow-emerald-500/10 cursor-pointer'
                   : 'bg-muted/30 opacity-75 select-none cursor-not-allowed'
               }`}
             >
               {/* Card Ambient Glow for Active Test */}
               {isActive && (
-                <div className="absolute top-0 right-0 w-48 h-48 bg-indigo-500/10 blur-3xl rounded-full pointer-events-none group-hover:bg-indigo-500/20 transition-all duration-500" />
+                <div className="absolute top-0 right-0 w-48 h-48 bg-emerald-500/10 blur-3xl rounded-full pointer-events-none group-hover:bg-emerald-500/20 transition-all duration-500" />
               )}
 
               <div>
@@ -70,7 +70,7 @@ export default function TestCatalogGrid() {
                 {/* Title & Subtitle */}
                 <h3
                   className={`text-lg sm:text-xl font-bold text-foreground mb-2 transition-colors ${
-                    isActive ? 'group-hover:text-indigo-500 dark:group-hover:text-indigo-200' : ''
+                    isActive ? 'group-hover:text-emerald-500 dark:group-hover:text-emerald-300' : ''
                   }`}
                 >
                   {test.title}
@@ -105,7 +105,7 @@ export default function TestCatalogGrid() {
                 </div>
 
                 {isActive ? (
-                  <div className="inline-flex items-center gap-1.5 font-semibold text-indigo-600 dark:text-indigo-400 group-hover:text-indigo-500 transition-colors">
+                  <div className="inline-flex items-center gap-1.5 font-semibold text-emerald-600 dark:text-emerald-400 group-hover:text-emerald-500 transition-colors">
                     <span>검사 시작하기</span>
                     <ArrowRight className="w-4 h-4 transition-transform duration-200 group-hover:translate-x-1" />
                   </div>
@@ -119,16 +119,12 @@ export default function TestCatalogGrid() {
 
               {/* Preparing State: Translucent Glass Overlay Blocking Touch/Click */}
               {!isActive && (
-                <div className="absolute inset-0 bg-white/70 dark:bg-slate-950/70 backdrop-blur-[2px] rounded-3xl z-20 flex flex-col items-center justify-center p-6 text-center cursor-not-allowed select-none transition-all">
-                  <div className="w-11 h-11 rounded-2xl bg-white/90 dark:bg-slate-900/90 border border-slate-200 dark:border-slate-800 flex items-center justify-center mb-2.5 shadow-md text-slate-500 dark:text-slate-400">
+                <div className="absolute inset-0 bg-background/80 dark:bg-background/85 backdrop-blur-[2px] rounded-3xl z-20 flex flex-col items-center justify-center p-6 text-center cursor-not-allowed select-none transition-all">
+                  <div className="w-11 h-11 rounded-2xl bg-card border border-border flex items-center justify-center mb-2.5 shadow-md text-muted-foreground">
                     <Lock className="w-5 h-5" />
                   </div>
-                  <span className="text-xs font-bold text-slate-800 dark:text-slate-200 tracking-wider">
-                    출시 준비 중
-                  </span>
-                  <span className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
-                    곧 새로운 분석 검사가 공개됩니다
-                  </span>
+                  <span className="text-xs font-bold text-foreground tracking-wider">출시 준비 중</span>
+                  <span className="text-[11px] text-muted-foreground mt-0.5">곧 새로운 분석 검사가 공개됩니다</span>
                 </div>
               )}
             </Card>

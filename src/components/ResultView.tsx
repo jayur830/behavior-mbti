@@ -88,7 +88,7 @@ export default function ResultView({ result, isSharedView = false, onRestart, on
   };
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-8 sm:py-16 space-y-12 text-neutral-100 font-sans">
+    <div className="max-w-4xl mx-auto px-4 py-8 sm:py-16 space-y-12 text-foreground font-sans">
       {/* Shared View CTA Banner */}
       {isSharedView && (
         <div className="bg-emerald-500/10 border border-emerald-500/20 p-4 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left shadow-lg">
@@ -109,14 +109,14 @@ export default function ResultView({ result, isSharedView = false, onRestart, on
       {/* 1. Top Dossier Hero */}
       <div className="relative overflow-hidden glass-card rounded-3xl p-6 sm:p-12 shadow-2xl flex flex-col items-center text-center">
         {/* Glow ambient background in card */}
-        <div className="absolute -top-24 left-1/2 -translate-x-1/2 w-96 h-48 bg-linear-to-b from-indigo-500/20 to-transparent blur-3xl pointer-events-none" />
+        <div className="absolute -top-24 left-1/2 -translate-x-1/2 w-96 h-48 bg-linear-to-b from-lime-300/20 to-transparent blur-3xl pointer-events-none" />
 
         <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-muted border border-border text-muted-foreground text-xs font-medium mb-6">
-          <span className="w-1.5 h-1.5 rounded-full bg-indigo-500" />
+          <span className="w-1.5 h-1.5 rounded-full bg-lime-400" />
           <span>성향 분석 리포트</span>
         </div>
 
-        <h1 className="text-6xl sm:text-8xl font-extrabold tracking-tight text-foreground dark:text-transparent dark:bg-clip-text dark:bg-linear-to-r dark:from-white dark:via-slate-100 dark:to-indigo-200 mb-2">
+        <h1 className="text-6xl sm:text-8xl font-extrabold tracking-tight text-foreground dark:text-transparent dark:bg-clip-text dark:bg-linear-to-r dark:from-white dark:via-neutral-100 dark:to-emerald-200 mb-2">
           {result.mbti}
         </h1>
         <div className="text-2xl sm:text-3xl font-bold text-foreground mb-4">{result.mbtiTitle}</div>
@@ -125,7 +125,7 @@ export default function ResultView({ result, isSharedView = false, onRestart, on
         </p>
 
         {/* Global Key Metrics Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 w-full max-w-2xl bg-card/80 dark:bg-slate-900/60 p-4 rounded-2xl border border-border backdrop-blur-md">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 w-full max-w-2xl bg-card/80 dark:bg-card/90 p-4 rounded-2xl border border-border backdrop-blur-md">
           <div className="flex flex-col items-center p-2">
             <span className="text-xs text-muted-foreground mb-1 flex items-center gap-1.5 font-medium">
               <Zap className="w-3.5 h-3.5 text-amber-500" />
@@ -136,7 +136,7 @@ export default function ResultView({ result, isSharedView = false, onRestart, on
 
           <div className="flex flex-col items-center p-2">
             <span className="text-xs text-muted-foreground mb-1 flex items-center gap-1.5 font-medium">
-              <Clock className="w-3.5 h-3.5 text-indigo-500" />총 소요 시간
+              <Clock className="w-3.5 h-3.5 text-lime-500" />총 소요 시간
             </span>
             <span className="text-lg sm:text-xl font-bold text-foreground font-mono">
               {(result.totalTestDuration / 1000).toFixed(1)}초
@@ -145,7 +145,7 @@ export default function ResultView({ result, isSharedView = false, onRestart, on
 
           <div className="flex flex-col items-center p-2">
             <span className="text-xs text-muted-foreground mb-1 flex items-center gap-1.5 font-medium">
-              <Eye className="w-3.5 h-3.5 text-pink-500" />
+              <Eye className="w-3.5 h-3.5 text-amber-500" />
               선택지 탐색
             </span>
             <span className="text-lg sm:text-xl font-bold text-foreground font-mono">
@@ -169,7 +169,7 @@ export default function ResultView({ result, isSharedView = false, onRestart, on
             <BarChart3 className="w-4 h-4 text-emerald-500" />
             <span>나의 행동 데이터 요약</span>
           </div>
-          <span className="text-xs text-indigo-500 dark:text-indigo-400 font-medium">실시간 인터랙션 측정 데이터</span>
+          <span className="text-xs text-lime-700 dark:text-lime-300 font-medium">실시간 인터랙션 측정 데이터</span>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -177,7 +177,7 @@ export default function ResultView({ result, isSharedView = false, onRestart, on
             <div>
               <span className="text-xs text-muted-foreground block mb-1">총 검사 소요 시간</span>
               <div className="flex items-baseline gap-2">
-                <span className="text-2xl sm:text-3xl font-black font-mono text-sky-500 dark:text-sky-400">
+                <span className="text-2xl sm:text-3xl font-black font-mono text-lime-600 dark:text-lime-300">
                   {(result.totalTestDuration / 1000).toFixed(1)}s
                 </span>
                 <span className="text-xs text-muted-foreground">
@@ -234,7 +234,7 @@ export default function ResultView({ result, isSharedView = false, onRestart, on
           <div className="bg-muted/50 dark:bg-neutral-950/60 border border-border p-5 rounded-2xl">
             <div className="flex items-center justify-between mb-2">
               <span className="text-xs text-muted-foreground font-medium">행동 패턴 유형 분석</span>
-              <span className="text-xs font-semibold text-indigo-500 dark:text-indigo-400">
+              <span className="text-xs font-semibold text-emerald-500 dark:text-emerald-400">
                 {result.behaviorPersona.title}
               </span>
             </div>
@@ -296,13 +296,13 @@ export default function ResultView({ result, isSharedView = false, onRestart, on
       {/* 4. Behavior Profile Card */}
       <div className="bg-card/80 dark:bg-neutral-900/60 border border-border rounded-3xl p-6 sm:p-8 shadow-xl">
         <div className="flex items-center gap-2 text-sm font-bold text-foreground mb-4">
-          <Activity className="w-4 h-4 text-indigo-500" />
+          <Activity className="w-4 h-4 text-emerald-500" />
           <span>나의 행동 페르소나 프로필</span>
         </div>
 
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-5">
           <div className="w-12 h-12 rounded-2xl bg-muted border border-border flex items-center justify-center shrink-0">
-            <PersonaIcon name={result.behaviorPersona?.iconName || 'Zap'} className="w-6 h-6 text-indigo-400" />
+            <PersonaIcon name={result.behaviorPersona?.iconName || 'Zap'} className="w-6 h-6 text-emerald-400" />
           </div>
           <div>
             <h3 className="text-lg sm:text-xl font-bold text-foreground mb-1">
@@ -358,18 +358,18 @@ export default function ResultView({ result, isSharedView = false, onRestart, on
                 {/* Score Ratio Bar */}
                 <div className="w-full bg-muted h-2 rounded-full overflow-hidden flex mb-3">
                   <div
-                    className="h-full bg-indigo-500 transition-all duration-500"
+                    className="h-full bg-emerald-500 transition-all duration-500"
                     style={{ width: `${dim.leftScore}%` }}
                   />
                   <div
-                    className="h-full bg-violet-400 transition-all duration-500"
+                    className="h-full bg-teal-400 transition-all duration-500"
                     style={{ width: `${dim.rightScore}%` }}
                   />
                 </div>
 
                 {/* Behavioral Note */}
                 <div className="text-xs text-muted-foreground font-light flex items-start gap-2 bg-card p-2.5 rounded-xl border border-border">
-                  <span className="text-indigo-500 dark:text-indigo-400 text-xs font-semibold shrink-0 mt-0.5">
+                  <span className="text-emerald-500 dark:text-emerald-400 text-xs font-semibold shrink-0 mt-0.5">
                     행동 분석
                   </span>
                   <span>{dim.behaviorInsight}</span>

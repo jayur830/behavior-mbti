@@ -78,7 +78,7 @@ export default async function Page({ params }: Props) {
           <span className="text-2xl font-black text-amber-400">?</span>
         </div>
         <h1 className="text-2xl font-bold text-white mb-2">분석 리포트를 찾을 수 없습니다</h1>
-        <p className="text-sm text-slate-400 max-w-md mb-8">
+        <p className="text-sm text-muted-foreground max-w-md mb-8">
           링크가 만료되었거나 올바르지 않은 주소입니다. 지금 나만의 무의식 행동 MBTI를 직접 검사해보세요!
         </p>
         <Button asChild variant="gradient" size="lg" className="rounded-full px-6 py-3 font-semibold text-sm">
@@ -91,19 +91,19 @@ export default async function Page({ params }: Props) {
   }
 
   return (
-    <div className="min-h-screen flex flex-col justify-between selection:bg-indigo-500/20 selection:text-indigo-200">
+    <div className="min-h-screen flex flex-col justify-between selection:bg-emerald-500/20 selection:text-emerald-300 dark:selection:text-emerald-200">
       {/* Navigation Header */}
       <header className="w-full border-b border-border backdrop-blur-xl sticky top-0 z-40 bg-background/80">
         <div className="max-w-5xl mx-auto px-6 h-16 flex items-center justify-between">
           <Link
             href="/"
-            className="flex items-center gap-3 font-semibold text-foreground hover:text-indigo-500 transition-colors"
+            className="flex items-center gap-3 font-semibold text-foreground hover:text-emerald-500 transition-colors"
           >
-            <div className="w-8 h-8 rounded-xl bg-linear-to-tr from-indigo-600 to-violet-500 flex items-center justify-center text-white shadow-lg shadow-indigo-500/20">
+            <div className="w-8 h-8 rounded-xl bg-linear-to-tr from-emerald-600 to-teal-500 flex items-center justify-center text-white shadow-lg shadow-emerald-500/20">
               <span className="font-bold text-sm">PL</span>
             </div>
             <span className="tracking-tight text-base font-bold text-foreground">
-              Persona<span className="text-indigo-500 dark:text-indigo-400 font-normal">Lens</span>
+              Persona<span className="text-emerald-500 dark:text-emerald-400 font-normal">Lens</span>
             </span>
           </Link>
 

@@ -48,14 +48,14 @@ export default function PreviewClient() {
   const router = useRouter();
 
   return (
-    <div className="min-h-screen bg-background text-foreground flex flex-col justify-between selection:bg-indigo-500/20 selection:text-indigo-200 relative">
+    <div className="min-h-screen bg-background text-foreground flex flex-col justify-between selection:bg-emerald-500/20 selection:text-emerald-300 dark:selection:text-emerald-200 relative">
       {/* Navigation Header */}
       <header className="w-full border-b border-border backdrop-blur-md sticky top-0 z-40 bg-background/80">
         <div className="max-w-4xl mx-auto px-4 h-16 flex items-center justify-between">
           <Button
             variant="ghost"
             onClick={() => router.push('/')}
-            className="h-auto p-0 hover:bg-transparent flex items-center gap-2.5 font-mono text-sm tracking-widest text-foreground hover:text-indigo-500 transition-colors"
+            className="h-auto p-0 hover:bg-transparent flex items-center gap-2.5 font-mono text-sm tracking-widest text-foreground hover:text-emerald-500 transition-colors"
           >
             <div className="w-7 h-7 rounded-lg bg-muted border border-border flex items-center justify-center text-foreground">
               <Compass className="w-4 h-4 text-emerald-500" />

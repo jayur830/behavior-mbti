@@ -53,16 +53,16 @@ export default function RootLayout({ children }: Readonly<RootLayoutProps>) {
     <html
       lang="ko"
       suppressHydrationWarning
-      className={`${plusJakartaSans.variable} font-sans h-full antialiased selection:bg-indigo-500/20 selection:text-indigo-200`}
+      className={`${plusJakartaSans.variable} font-sans h-full antialiased selection:bg-emerald-500/20 selection:text-emerald-300 dark:selection:text-emerald-200`}
     >
       <body className="min-h-full flex flex-col bg-background text-foreground relative overflow-x-hidden transition-colors duration-300">
         <ReactQueryProvider>
           <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
             {/* Ambient background glow */}
             <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden opacity-40 dark:opacity-100 transition-opacity duration-300">
-              <div className="absolute top-[-20%] left-1/2 -translate-x-1/2 w-175 h-125 bg-linear-to-br from-indigo-600/15 via-purple-600/10 to-transparent blur-[120px] rounded-full" />
-              <div className="absolute top-[60%] left-[-10%] w-125 h-125 bg-blue-600/10 blur-[140px] rounded-full" />
-              <div className="absolute top-[40%] right-[-10%] w-125 h-125 bg-violet-600/10 blur-[140px] rounded-full" />
+              <div className="absolute top-[-20%] left-1/2 -translate-x-1/2 w-175 h-125 bg-lime-300/10 blur-[120px] rounded-full" />
+              <div className="absolute top-[60%] left-[-10%] w-125 h-125 bg-amber-200/8 blur-[140px] rounded-full" />
+              <div className="absolute top-[40%] right-[-10%] w-125 h-125 bg-lime-200/8 blur-[140px] rounded-full" />
             </div>
             <div className="relative z-10 flex-1 flex flex-col">{children}</div>
           </ThemeProvider>

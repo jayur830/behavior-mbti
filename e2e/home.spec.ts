@@ -8,7 +8,7 @@ test.describe('홈 랜딩 페이지 E2E 테스트', () => {
     await expect(page.locator('header').getByText('PersonaLens')).toBeVisible();
 
     // 2. 메인 히어로 문구 확인
-    await expect(page.getByText('망설임을 분석합니다')).toBeVisible();
+    await expect(page.getByText('당신만의 리듬')).toBeVisible();
 
     // 3. 카탈로그 섹션 확인
     await expect(page.getByText('무의식 행동 분석 검사 카탈로그')).toBeVisible();

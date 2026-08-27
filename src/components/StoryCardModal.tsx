@@ -47,7 +47,7 @@ export default function StoryCardModal({ result, isOpen, onClose }: StoryCardMod
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="max-w-md bg-black/85 backdrop-blur-xl border-slate-800 p-6 flex flex-col items-center">
+      <DialogContent className="max-w-md bg-black/85 backdrop-blur-xl border-border p-6 flex flex-col items-center">
         <DialogHeader className="w-full flex flex-row items-center justify-between text-xs font-mono text-neutral-400 space-y-0">
           <DialogTitle className="flex items-center gap-1.5 text-xs font-mono text-neutral-400 font-normal">
             <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
@@ -73,11 +73,11 @@ export default function StoryCardModal({ result, isOpen, onClose }: StoryCardMod
           {/* Top Brand Header */}
           <div className="relative z-10 flex items-center justify-between border-b border-white/8 pb-3">
             <div className="flex items-center gap-2">
-              <div className="w-6 h-6 rounded-lg bg-white/8 border border-white/12 flex items-center justify-center text-indigo-400">
+              <div className="w-6 h-6 rounded-lg bg-white/8 border border-white/12 flex items-center justify-center text-emerald-400">
                 <Compass className="w-3.5 h-3.5" />
               </div>
               <span className="font-mono text-xs font-bold tracking-wider">
-                PERSONA<span className="text-indigo-400">LENS</span>
+                PERSONA<span className="text-emerald-400">LENS</span>
               </span>
             </div>
             <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-white/6 text-neutral-400 border border-white/6">
@@ -87,7 +87,7 @@ export default function StoryCardModal({ result, isOpen, onClose }: StoryCardMod
 
           {/* Center MBTI Hero */}
           <div className="relative z-10 text-center my-auto py-2">
-            <div className="inline-block px-3 py-0.5 rounded-full bg-indigo-400/10 border border-indigo-400/20 text-indigo-300 text-[10px] font-mono mb-2">
+            <div className="inline-block px-3 py-0.5 rounded-full bg-emerald-400/10 border border-emerald-400/20 text-emerald-300 text-[10px] font-mono mb-2">
               행동 성향 분석 완료
             </div>
             <h1 className="text-6xl font-black tracking-tight font-mono text-transparent bg-clip-text bg-linear-to-b from-white via-neutral-100 to-neutral-400 drop-shadow-sm">
@@ -99,7 +99,7 @@ export default function StoryCardModal({ result, isOpen, onClose }: StoryCardMod
             {/* Persona Badge */}
             <div className="mt-3.5 p-3 rounded-2xl bg-white/3 border border-white/8 backdrop-blur-sm text-left flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl bg-neutral-900 border border-white/10 flex items-center justify-center shrink-0 shadow-inner">
-                <PersonaIcon name={result.behaviorPersona.iconName} className="w-5 h-5 text-indigo-400" />
+                <PersonaIcon name={result.behaviorPersona.iconName} className="w-5 h-5 text-emerald-400" />
               </div>
               <div className="min-w-0">
                 <span className="text-[9px] text-neutral-400 font-medium block">행동 페르소나</span>

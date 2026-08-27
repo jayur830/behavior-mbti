@@ -29,10 +29,8 @@ export default function ThemeToggle({ className }: ThemeToggleProps) {
 
   if (!isMounted) {
     return (
-      <div
-        className={`w-14 h-8 rounded-full bg-slate-800/80 border border-slate-700/60 p-1 flex items-center ${className || ''}`}
-      >
-        <div className="w-6 h-6 rounded-full bg-slate-700" />
+      <div className={`w-14 h-8 rounded-full bg-muted border border-border p-1 flex items-center ${className || ''}`}>
+        <div className="w-6 h-6 rounded-full bg-muted-foreground/30" />
       </div>
     );
   }
@@ -45,8 +43,8 @@ export default function ThemeToggle({ className }: ThemeToggleProps) {
       aria-label="테마 전환"
       onClick={toggleTheme}
       className={`
-        relative inline-flex items-center justify-start w-14 h-8 min-h-8 max-h-8 p-1 rounded-full transition-colors duration-300 hover:bg-transparent focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 shrink-0
-        ${isDark ? 'bg-slate-900 border border-slate-700/80' : 'bg-slate-200 border border-slate-300'}
+        relative inline-flex items-center justify-start w-14 h-8 min-h-8 max-h-8 p-1 rounded-full transition-colors duration-300 hover:bg-transparent focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 shrink-0
+        ${isDark ? 'bg-card border border-border' : 'bg-muted border border-border'}
         ${className || ''}
       `}
     >
@@ -54,7 +52,7 @@ export default function ThemeToggle({ className }: ThemeToggleProps) {
       <span className="absolute left-2 text-amber-500 opacity-80 pointer-events-none">
         <Sun className="w-3.5 h-3.5" />
       </span>
-      <span className="absolute right-2 text-indigo-400 opacity-80 pointer-events-none">
+      <span className="absolute right-2 text-emerald-400 opacity-80 pointer-events-none">
         <Moon className="w-3.5 h-3.5" />
       </span>
 
@@ -62,7 +60,7 @@ export default function ThemeToggle({ className }: ThemeToggleProps) {
       <span
         className={`
           relative z-10 flex items-center justify-center w-6 h-6 rounded-full shadow-md transition-transform duration-300 ease-in-out
-          ${isDark ? 'translate-x-6 bg-slate-800 text-indigo-300' : 'translate-x-0 bg-white text-amber-500'}
+          ${isDark ? 'translate-x-6 bg-card border border-border text-emerald-400' : 'translate-x-0 bg-white text-amber-500'}
         `}
       >
         {isDark ? <Moon className="w-3.5 h-3.5" /> : <Sun className="w-3.5 h-3.5" />}

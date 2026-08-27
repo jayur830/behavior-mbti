@@ -22,16 +22,16 @@ export default function Page() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col justify-between selection:bg-indigo-500/20 selection:text-indigo-200 relative">
+    <div className="min-h-screen flex flex-col justify-between selection:bg-lime-300/30 relative">
       {/* Modern Floating Navigation */}
       <header className="w-full border-b border-border backdrop-blur-xl sticky top-0 z-40 bg-background/80">
-        <div className="max-w-5xl mx-auto px-6 h-16 flex items-center justify-between">
+        <div className="max-w-6xl mx-auto px-6 h-20 flex items-center justify-between">
           <div className="flex items-center gap-3 font-semibold text-foreground">
-            <div className="w-8 h-8 rounded-xl bg-muted border border-border flex items-center justify-center text-indigo-500 font-bold text-sm tracking-tighter shadow-xs">
-              P
+            <div className="w-9 h-9 rounded-full bg-foreground text-background flex items-center justify-center font-bold text-sm tracking-tighter shadow-xs">
+              PL
             </div>
             <span className="tracking-tight text-base font-bold text-foreground">
-              Persona<span className="text-indigo-500 dark:text-indigo-400 font-normal">Lens</span>
+              Persona<span className="accent-ink font-normal">Lens</span>
             </span>
           </div>
 
@@ -42,7 +42,7 @@ export default function Page() {
               variant="outline"
               size="sm"
               onClick={handleScrollToCatalog}
-              className="text-xs font-semibold px-3.5 py-1.5 rounded-full"
+              className="text-xs font-semibold px-4 py-2 rounded-full"
             >
               검사 목록 둘러보기
             </Button>
