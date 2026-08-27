@@ -45,7 +45,7 @@ export default function ThemeToggle({ className }: ThemeToggleProps) {
       aria-label="테마 전환"
       onClick={toggleTheme}
       className={`
-        relative inline-flex items-center w-14 h-8 rounded-full p-1 transition-colors duration-300 hover:bg-transparent focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500
+        relative inline-flex items-center justify-start w-14 h-8 min-h-8 max-h-8 p-1 rounded-full transition-colors duration-300 hover:bg-transparent focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 shrink-0
         ${isDark ? 'bg-slate-900 border border-slate-700/80' : 'bg-slate-200 border border-slate-300'}
         ${className || ''}
       `}
