@@ -23,11 +23,11 @@ describe('TestCatalogGrid 컴포넌트 테스트', () => {
     expect(mbtiLink).toHaveAttribute('href', '/test');
   });
 
-  it('대표 검사 배지 및 COMING SOON / PREPARING 배지가 표시되어야 한다', () => {
+  it('대표 검사 배지 및 PREPARING 배지가 표시되어야 한다', () => {
     render(<TestCatalogGrid />);
 
     expect(screen.getByText(/HOT · 대표 검사/i)).toBeInTheDocument();
-    expect(screen.getByText(/COMING SOON/i)).toBeInTheDocument();
-    expect(screen.getAllByText(/PREPARING/i).length).toBeGreaterThanOrEqual(1);
+    expect(screen.getAllByText(/PREPARING/i).length).toBe(3);
+    expect(screen.getAllByText(/출시 준비 중/i).length).toBe(3);
   });
 });

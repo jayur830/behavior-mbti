@@ -38,10 +38,10 @@ export default function TestCatalogGrid() {
 
           const cardContent = (
             <Card
-              className={`group relative h-full flex flex-col justify-between p-6 sm:p-7 rounded-3xl transition-all duration-300 overflow-hidden bg-card/80 dark:bg-slate-900/60 border-border ${
+              className={`relative h-full flex flex-col justify-between p-6 sm:p-7 rounded-3xl overflow-hidden border-border ${
                 isActive
-                  ? 'hover:-translate-y-1 hover:shadow-2xl hover:shadow-indigo-500/10 cursor-pointer'
-                  : 'opacity-75 hover:opacity-90 bg-muted/40'
+                  ? 'group transition-all duration-300 bg-card/80 dark:bg-slate-900/60 hover:-translate-y-1 hover:shadow-2xl hover:shadow-indigo-500/10 cursor-pointer'
+                  : 'bg-muted/30 opacity-75 select-none cursor-not-allowed'
               }`}
             >
               {/* Card Ambient Glow for Active Test */}
@@ -68,7 +68,11 @@ export default function TestCatalogGrid() {
                 </div>
 
                 {/* Title & Subtitle */}
-                <h3 className="text-lg sm:text-xl font-bold text-foreground mb-2 group-hover:text-indigo-500 dark:group-hover:text-indigo-200 transition-colors">
+                <h3
+                  className={`text-lg sm:text-xl font-bold text-foreground mb-2 transition-colors ${
+                    isActive ? 'group-hover:text-indigo-500 dark:group-hover:text-indigo-200' : ''
+                  }`}
+                >
                   {test.title}
                 </h3>
                 <p className="text-xs sm:text-sm text-muted-foreground font-medium mb-3 leading-snug">
@@ -112,6 +116,21 @@ export default function TestCatalogGrid() {
                   </div>
                 )}
               </div>
+
+              {/* Preparing State: Translucent Glass Overlay Blocking Touch/Click */}
+              {!isActive && (
+                <div className="absolute inset-0 bg-white/70 dark:bg-slate-950/70 backdrop-blur-[2px] rounded-3xl z-20 flex flex-col items-center justify-center p-6 text-center cursor-not-allowed select-none transition-all">
+                  <div className="w-11 h-11 rounded-2xl bg-white/90 dark:bg-slate-900/90 border border-slate-200 dark:border-slate-800 flex items-center justify-center mb-2.5 shadow-md text-slate-500 dark:text-slate-400">
+                    <Lock className="w-5 h-5" />
+                  </div>
+                  <span className="text-xs font-bold text-slate-800 dark:text-slate-200 tracking-wider">
+                    출시 준비 중
+                  </span>
+                  <span className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
+                    곧 새로운 분석 검사가 공개됩니다
+                  </span>
+                </div>
+              )}
             </Card>
           );
 
@@ -123,7 +142,11 @@ export default function TestCatalogGrid() {
             );
           }
 
-          return <div key={test.id}>{cardContent}</div>;
+          return (
+            <div key={test.id} className="cursor-not-allowed">
+              {cardContent}
+            </div>
+          );
         })}
       </div>
     </section>
