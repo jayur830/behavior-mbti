@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 
+import Logo from '@/assets/logo.svg';
 import ResultView from '@/components/ResultView';
 import ThemeToggle from '@/components/ThemeToggle';
 import Button from '@/components/ui/button';
@@ -104,13 +105,11 @@ export default async function Page({ params }: Props) {
         <div className="max-w-5xl mx-auto px-6 h-16 flex items-center justify-between">
           <Link
             href="/"
-            className="flex items-center gap-3 font-semibold text-foreground hover:text-emerald-500 transition-colors"
+            className="flex items-center gap-3 font-semibold text-foreground hover:opacity-90 transition-opacity"
           >
-            <div className="w-8 h-8 rounded-xl bg-linear-to-tr from-emerald-600 to-teal-500 flex items-center justify-center text-white shadow-lg shadow-emerald-500/20">
-              <span className="font-bold text-sm">PL</span>
-            </div>
+            <Logo className="w-8 h-8 rounded-xl shrink-0" />
             <span className="tracking-tight text-base font-bold text-foreground">
-              Persona<span className="text-emerald-500 dark:text-emerald-400 font-normal">Lens</span>
+              Persona<span className="accent-ink font-normal">Lens</span>
             </span>
           </Link>
 

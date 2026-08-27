@@ -1,9 +1,11 @@
 'use client';
 
-import { Activity, ArrowRight, Compass } from 'lucide-react';
+import { Activity, ArrowRight } from 'lucide-react';
+import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Suspense } from 'react';
 
+import Logo from '@/assets/logo.svg';
 import ResultView from '@/components/ResultView';
 import ThemeToggle from '@/components/ThemeToggle';
 import Button from '@/components/ui/button';
@@ -45,25 +47,20 @@ function PreviewContent() {
 }
 
 export default function PreviewClient() {
-  const router = useRouter();
-
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col justify-between selection:bg-emerald-500/20 selection:text-emerald-300 dark:selection:text-emerald-200 relative">
       {/* Navigation Header */}
       <header className="w-full border-b border-border backdrop-blur-md sticky top-0 z-40 bg-background/80">
         <div className="max-w-4xl mx-auto px-4 h-16 flex items-center justify-between">
-          <Button
-            variant="ghost"
-            onClick={() => router.push('/')}
-            className="h-auto p-0 hover:bg-transparent flex items-center gap-2.5 font-mono text-sm tracking-widest text-foreground hover:text-emerald-500 transition-colors"
+          <Link
+            href="/"
+            className="flex items-center gap-3 font-semibold text-foreground hover:opacity-90 transition-opacity"
           >
-            <div className="w-7 h-7 rounded-lg bg-muted border border-border flex items-center justify-center text-foreground">
-              <Compass className="w-4 h-4 text-emerald-500" />
-            </div>
-            <span className="font-bold">
-              PERSONA<span className="text-muted-foreground">LENS</span>
+            <Logo className="w-8 h-8 rounded-xl shrink-0" />
+            <span className="tracking-tight text-base font-bold text-foreground">
+              Persona<span className="accent-ink font-normal">Lens</span>
             </span>
-          </Button>
+          </Link>
 
           <div className="flex items-center gap-2 text-xs font-mono text-muted-foreground">
             <ThemeToggle />

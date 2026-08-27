@@ -1,13 +1,14 @@
 'use client';
 
-import { Activity, Compass } from 'lucide-react';
+import { Activity } from 'lucide-react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState, useSyncExternalStore } from 'react';
 
+import Logo from '@/assets/logo.svg';
 import QuestionCard from '@/components/QuestionCard';
 import ThemeToggle from '@/components/ThemeToggle';
 import Badge from '@/components/ui/badge';
-import Button from '@/components/ui/button';
 import { getRandomQuestions } from '@/data/questions';
 import { analyzeBehaviorAndMBTI } from '@/lib/analyzer';
 import type { Question, QuestionBehaviorLog } from '@/types';
@@ -90,18 +91,15 @@ export default function Page() {
       {/* Navigation Header */}
       <header className="w-full border-b border-border backdrop-blur-xl sticky top-0 z-40 bg-background/80">
         <div className="max-w-5xl mx-auto px-6 h-16 flex items-center justify-between">
-          <Button
-            variant="ghost"
-            onClick={() => router.push('/')}
-            className="h-auto p-0 hover:bg-transparent flex items-center gap-3 font-semibold text-foreground hover:text-emerald-500 transition-colors"
+          <Link
+            href="/"
+            className="flex items-center gap-3 font-semibold text-foreground hover:opacity-90 transition-opacity"
           >
-            <div className="w-9 h-9 rounded-full bg-foreground text-background flex items-center justify-center font-bold text-xs">
-              <Compass className="w-4 h-4" />
-            </div>
+            <Logo className="w-8 h-8 rounded-xl shrink-0" />
             <span className="tracking-tight text-base font-bold text-foreground">
               Persona<span className="accent-ink font-normal">Lens</span>
             </span>
-          </Button>
+          </Link>
 
           <div className="flex items-center gap-2">
             <ThemeToggle />

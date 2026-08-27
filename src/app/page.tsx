@@ -1,7 +1,9 @@
 'use client';
 
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
+import Logo from '@/assets/logo.svg';
 import TestCatalogGrid from '@/components/TestCatalogGrid';
 import TestIntro from '@/components/TestIntro';
 import ThemeToggle from '@/components/ThemeToggle';
@@ -25,15 +27,16 @@ export default function Page() {
     <div className="min-h-screen flex flex-col justify-between selection:bg-lime-300/30 relative">
       {/* Modern Floating Navigation */}
       <header className="w-full border-b border-border backdrop-blur-xl sticky top-0 z-40 bg-background/80">
-        <div className="max-w-6xl mx-auto px-6 h-20 flex items-center justify-between">
-          <div className="flex items-center gap-3 font-semibold text-foreground">
-            <div className="w-9 h-9 rounded-full bg-foreground text-background flex items-center justify-center font-bold text-sm tracking-tighter shadow-xs">
-              PL
-            </div>
+        <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
+          <Link
+            href="/"
+            className="flex items-center gap-3 font-semibold text-foreground hover:opacity-90 transition-opacity"
+          >
+            <Logo className="w-8 h-8 rounded-xl shadow-xs shrink-0" />
             <span className="tracking-tight text-base font-bold text-foreground">
               Persona<span className="accent-ink font-normal">Lens</span>
             </span>
-          </div>
+          </Link>
 
           <div className="flex items-center gap-2">
             <ThemeToggle />

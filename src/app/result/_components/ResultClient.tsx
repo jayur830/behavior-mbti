@@ -1,10 +1,12 @@
 'use client';
 
 import { useMutation } from '@tanstack/react-query';
-import { Activity, ArrowRight, Compass } from 'lucide-react';
+import { Activity, ArrowRight } from 'lucide-react';
+import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Suspense, useMemo, useSyncExternalStore } from 'react';
 
+import Logo from '@/assets/logo.svg';
 import ResultView from '@/components/ResultView';
 import ThemeToggle from '@/components/ThemeToggle';
 import Button from '@/components/ui/button';
@@ -119,18 +121,16 @@ export default function ResultClient() {
       {/* Navigation Header */}
       <header className="w-full border-b border-border backdrop-blur-xl sticky top-0 z-40 bg-background/80">
         <div className="max-w-5xl mx-auto px-6 h-16 flex items-center justify-between">
-          <Button
-            variant="ghost"
+          <Link
+            href="/"
             onClick={handleHome}
-            className="h-auto p-0 hover:bg-transparent flex items-center gap-3 font-semibold text-foreground hover:text-emerald-500 transition-colors"
+            className="flex items-center gap-3 font-semibold text-foreground hover:opacity-90 transition-opacity"
           >
-            <div className="w-9 h-9 rounded-full bg-foreground text-background flex items-center justify-center font-bold text-xs">
-              <Compass className="w-4 h-4" />
-            </div>
+            <Logo className="w-8 h-8 rounded-xl shrink-0" />
             <span className="tracking-tight text-base font-bold text-foreground">
               Persona<span className="accent-ink font-normal">Lens</span>
             </span>
-          </Button>
+          </Link>
 
           <ThemeToggle />
         </div>

@@ -1,9 +1,10 @@
 'use client';
 
 import { toPng } from 'html-to-image';
-import { Compass, Download, ShieldCheck, Sparkles } from 'lucide-react';
+import { Download, ShieldCheck, Sparkles } from 'lucide-react';
 import { useRef, useState } from 'react';
 
+import Logo from '@/assets/logo.svg';
 import PersonaIcon from '@/components/PersonaIcon';
 import Button from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -73,9 +74,7 @@ export default function StoryCardModal({ result, isOpen, onClose }: StoryCardMod
           {/* Top Brand Header */}
           <div className="relative z-10 flex items-center justify-between border-b border-white/8 pb-3">
             <div className="flex items-center gap-2">
-              <div className="w-6 h-6 rounded-lg bg-white/8 border border-white/12 flex items-center justify-center text-emerald-400">
-                <Compass className="w-3.5 h-3.5" />
-              </div>
+              <Logo className="w-6 h-6 rounded-lg shrink-0" />
               <span className="font-mono text-xs font-bold tracking-wider">
                 PERSONA<span className="text-emerald-400">LENS</span>
               </span>
