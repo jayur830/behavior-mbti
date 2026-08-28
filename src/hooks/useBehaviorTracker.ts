@@ -29,6 +29,18 @@ export interface UseBehaviorTrackerProps {
 }
 
 /**
+ * 행동 추적 훅의 화면 렌더링용 핵심 UI 상태 인터페이스
+ */
+interface TrackerUiState {
+  /** 현재 선택된 리커트 척도 답변 값 (-3 ~ +3 또는 미선택 시 null) */
+  selectedVal: number | null;
+  /** 현재 문항 내 답변 선택 번복 횟수 */
+  changeCount: number;
+  /** 현재까지 감지된 주 입력 장치 (마우스 / 터치 / 키보드) */
+  primaryDevice: InputDevice;
+}
+
+/**
  * 단일 문항 진행 중 사용자의 마우스 궤적, 선택 번복, 체류 시간, 호버 지속 시간,
  * 터치 제스처 및 키보드 입력을 실시간으로 추적하고 망설임 지수를 산출하는 커스텀 훅
  *
@@ -42,19 +54,20 @@ export function useBehaviorTracker({
   existingLog = null,
   onAutoSubmit,
 }: UseBehaviorTrackerProps) {
-  const [selectedVal, setSelectedVal] = useState<number | null>(
-    initialValue !== undefined ? initialValue : (existingLog?.finalValue ?? null),
-  );
-  const [changeCountState, setChangeCountState] = useState<number>(
-    Math.max(0, (existingLog?.selectionHistory?.length || 1) - 1),
-  );
-  const [primaryDeviceState, setPrimaryDeviceState] = useState<InputDevice>(existingLog?.primaryDevice || 'mouse');
   const [prevQuestionId, setPrevQuestionId] = useState<number>(questionId);
+  const [uiState, setUiState] = useState<TrackerUiState>(() => ({
+    selectedVal: initialValue !== undefined ? initialValue : (existingLog?.finalValue ?? null),
+    changeCount: Math.max(0, (existingLog?.selectionHistory?.length || 1) - 1),
+    primaryDevice: existingLog?.primaryDevice || 'mouse',
+  }));
+
   if (prevQuestionId !== questionId) {
     setPrevQuestionId(questionId);
-    setSelectedVal(initialValue !== undefined ? initialValue : (existingLog?.finalValue ?? null));
-    setChangeCountState(Math.max(0, (existingLog?.selectionHistory?.length || 1) - 1));
-    setPrimaryDeviceState(existingLog?.primaryDevice || 'mouse');
+    setUiState({
+      selectedVal: initialValue !== undefined ? initialValue : (existingLog?.finalValue ?? null),
+      changeCount: Math.max(0, (existingLog?.selectionHistory?.length || 1) - 1),
+      primaryDevice: existingLog?.primaryDevice || 'mouse',
+    });
   }
 
   // Time & Trajectory Refs
@@ -239,11 +252,11 @@ export function useBehaviorTracker({
       inputDevice: device,
     });
 
-    setSelectedVal(val);
-    setChangeCountState(Math.max(0, selectionHistoryRef.current.length - 1));
-    if (device) {
-      setPrimaryDeviceState(device);
-    }
+    setUiState({
+      selectedVal: val,
+      changeCount: Math.max(0, selectionHistoryRef.current.length - 1),
+      primaryDevice: device,
+    });
   }, []);
 
   // Keyboard navigation
@@ -258,19 +271,15 @@ export function useBehaviorTracker({
         const mappedVal = keyNum - 4;
         handleSelectOption(mappedVal, 'keyboard');
       } else if (e.key === 'ArrowLeft') {
-        setSelectedVal((prev) => {
-          const nextVal = prev === null ? 0 : Math.max(-3, prev - 1);
-          handleSelectOption(nextVal, 'keyboard');
-          return nextVal;
-        });
+        const prev = uiState.selectedVal;
+        const nextVal = prev === null ? 0 : Math.max(-3, prev - 1);
+        handleSelectOption(nextVal, 'keyboard');
       } else if (e.key === 'ArrowRight') {
-        setSelectedVal((prev) => {
-          const nextVal = prev === null ? 0 : Math.min(3, prev + 1);
-          handleSelectOption(nextVal, 'keyboard');
-          return nextVal;
-        });
+        const prev = uiState.selectedVal;
+        const nextVal = prev === null ? 0 : Math.min(3, prev + 1);
+        handleSelectOption(nextVal, 'keyboard');
       } else if (e.key === 'Enter') {
-        if (selectedVal !== null && onAutoSubmit) {
+        if (uiState.selectedVal !== null && onAutoSubmit) {
           onAutoSubmit();
         }
       }
@@ -280,7 +289,7 @@ export function useBehaviorTracker({
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
     };
-  }, [handleSelectOption, onAutoSubmit, selectedVal]);
+  }, [handleSelectOption, onAutoSubmit, uiState.selectedVal]);
 
   // Option Hover Handlers
   const handleOptionMouseEnter = useCallback((val: number) => {
@@ -349,7 +358,7 @@ export function useBehaviorTracker({
       endTime: Date.now(),
       totalDwellTime,
       firstInteractionTime: firstInteractionTimeRef.current,
-      finalValue: selectedVal,
+      finalValue: uiState.selectedVal,
       selectionHistory: [...selectionHistoryRef.current],
       changeCount,
       hoverLogs: [...hoverLogsRef.current],
@@ -361,15 +370,15 @@ export function useBehaviorTracker({
       keyStrokeCount: keyStrokeCountRef.current,
       touchMetrics,
     };
-  }, [questionId, selectedVal]);
+  }, [questionId, uiState.selectedVal]);
 
   return {
-    selectedVal,
+    selectedVal: uiState.selectedVal,
     handleSelectOption,
     handleOptionMouseEnter,
     handleOptionMouseLeave,
     finalizeLog,
-    changeCount: changeCountState,
-    primaryDevice: primaryDeviceState,
+    changeCount: uiState.changeCount,
+    primaryDevice: uiState.primaryDevice,
   };
 }

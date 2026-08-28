@@ -3,7 +3,7 @@
 import { Activity } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useState, useSyncExternalStore } from 'react';
+import { useMemo, useState, useSyncExternalStore } from 'react';
 
 import Logo from '@/assets/logo.svg';
 import QuestionCard from '@/components/QuestionCard';
@@ -22,7 +22,7 @@ export default function Page() {
     () => true,
     () => false,
   );
-  const [questions] = useState<Question[]>(() => getRandomQuestions(10));
+  const questions = useMemo<Question[]>(() => getRandomQuestions(10), []);
   const [currentQuestionIdx, setCurrentQuestionIdx] = useState<number>(0);
   const [behaviorLogs, setBehaviorLogs] = useState<(QuestionBehaviorLog | null)[]>([]);
   const [isAnalyzing, setIsAnalyzing] = useState<boolean>(false);

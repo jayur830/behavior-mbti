@@ -409,7 +409,7 @@ export default function MouseReplayCanvas({
   };
 
   const scrubberRef = useRef<HTMLDivElement | null>(null);
-  const [isDragging, setIsDragging] = useState<boolean>(false);
+  const isDraggingRef = useRef<boolean>(false);
   const wasPlayingBeforeDragRef = useRef<boolean>(false);
 
   const updateScrubFromClientX = useCallback(
@@ -434,25 +434,25 @@ export default function MouseReplayCanvas({
     } catch {
       // ignore in test env
     }
-    setIsDragging(true);
+    isDraggingRef.current = true;
     wasPlayingBeforeDragRef.current = isPlaying;
     setIsPlaying(false);
     updateScrubFromClientX(e.clientX);
   };
 
   const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
-    if (!isDragging) return;
+    if (!isDraggingRef.current) return;
     updateScrubFromClientX(e.clientX);
   };
 
   const handlePointerUp = (e: React.PointerEvent<HTMLDivElement>) => {
-    if (!isDragging) return;
+    if (!isDraggingRef.current) return;
     try {
       e.currentTarget.releasePointerCapture?.(e.pointerId);
     } catch {
       // ignore
     }
-    setIsDragging(false);
+    isDraggingRef.current = false;
     if (wasPlayingBeforeDragRef.current && playbackProgress < 1) {
       playStartTimeRef.current = performance.now();
       setIsPlaying(true);
@@ -535,9 +535,7 @@ export default function MouseReplayCanvas({
             onPointerMove={handlePointerMove}
             onPointerUp={handlePointerUp}
             onPointerCancel={handlePointerUp}
-            className={`group relative w-full h-3 bg-muted rounded-full cursor-grab active:cursor-grabbing overflow-visible touch-none transition-all ${
-              isDragging ? 'ring-2 ring-emerald-500/50' : ''
-            }`}
+            className="group relative w-full h-3 bg-muted rounded-full cursor-grab active:cursor-grabbing overflow-visible touch-none transition-all active:ring-2 active:ring-emerald-500/50"
           >
             {/* Active playback sweep gauge */}
             <div className="relative w-full h-full rounded-full overflow-hidden">
@@ -549,9 +547,7 @@ export default function MouseReplayCanvas({
 
             {/* Drag Handle Thumb */}
             <div
-              className={`absolute top-1/2 -translate-y-1/2 w-4 h-4 bg-white dark:bg-white rounded-full border-2 border-emerald-600 shadow-md transition-transform pointer-events-none -ml-2 ${
-                isDragging ? 'scale-125' : 'group-hover:scale-110'
-              }`}
+              className="absolute top-1/2 -translate-y-1/2 w-4 h-4 bg-white dark:bg-white rounded-full border-2 border-emerald-600 shadow-md transition-transform pointer-events-none -ml-2 group-hover:scale-110 group-active:scale-125"
               style={{ left: `${playbackProgress * 100}%` }}
             />
 
