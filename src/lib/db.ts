@@ -113,28 +113,3 @@ export async function getResultFromDb(id: string): Promise<FullAnalysisResult | 
     return null;
   }
 }
-
-/**
- * 링크 미공유 상태의 임시 진단서 row를 DB에서 삭제합니다. (사용자 이탈 시 실행)
- *
- * @param id 삭제 대상 진단서 ID
- * @returns 삭제 성공 여부
- */
-export async function deleteResultFromDb(id: string): Promise<boolean> {
-  if (!id) return false;
-  const pool = getPgPool();
-  if (!pool) return false;
-
-  try {
-    const query = `
-      DELETE FROM persona.mbti_results
-      WHERE id = $1;
-    `;
-    await pool.query(query, [id]);
-    return true;
-  } catch (err: unknown) {
-    const errorMsg = err instanceof Error ? err.message : String(err);
-    console.error('Failed to delete from persona.mbti_results:', errorMsg);
-    return false;
-  }
-}

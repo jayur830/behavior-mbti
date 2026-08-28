@@ -1,7 +1,7 @@
 import { useMutation } from '@tanstack/react-query';
 import { useEffect, useRef } from 'react';
 
-import { deleteResultApi, saveResultApi } from '@/lib/api/results';
+import { saveResultApi } from '@/lib/api/results';
 import type { FullAnalysisResult } from '@/types';
 
 /**
@@ -43,103 +43,25 @@ export function useResultSaveLifecycle({ result, isSharedView = false }: UseResu
     },
   });
 
-  // TanStack React Query Mutation for Deleting
-  const deleteMutation = useMutation({
-    mutationFn: (id: string) => deleteResultApi(id),
-    onError: (err) => {
-      console.error('React Query Delete Mutation Error:', err);
-    },
-  });
-
   const { mutate: mutateSave } = saveMutation;
-  const { mutate: mutateDelete } = deleteMutation;
-
-  // 링크 복사를 하지 않고 이탈할 경우 DB에서 해당 row 삭제 (sendBeacon / keepalive 유지)
-  const triggerDeleteIfUnsaved = () => {
-    const getTargetId = (): string | null => {
-      if (savedDbIdRef.current) return savedDbIdRef.current;
-      if (typeof window !== 'undefined') {
-        try {
-          return sessionStorage.getItem('unsaved_mbti_id');
-        } catch {
-          return null;
-        }
-      }
-      return null;
-    };
-
-    const idToDelete = getTargetId();
-
-    if (!isCopiedRef.current && idToDelete) {
-      const origin = typeof window !== 'undefined' ? window.location.origin : '';
-      const deleteUrl = `${origin}/api/results?id=${encodeURIComponent(idToDelete)}`;
-
-      // 1. sendBeacon (브라우저 탭 닫기 전송 보장)
-      if (typeof navigator !== 'undefined' && navigator.sendBeacon) {
-        try {
-          const blob = new Blob([idToDelete], { type: 'text/plain;charset=UTF-8' });
-          navigator.sendBeacon(deleteUrl, blob);
-        } catch {
-          // fallback
-        }
-      }
-
-      // 2. fetch keepalive
-      if (typeof fetch !== 'undefined') {
-        try {
-          fetch(deleteUrl, {
-            method: 'DELETE',
-            keepalive: true,
-          }).catch(() => {});
-        } catch {}
-      }
-
-      try {
-        sessionStorage.removeItem('unsaved_mbti_id');
-      } catch {}
-    }
-  };
 
   useEffect(() => {
     if (isSharedView) return;
 
-    // 0. 이전 세션에서 미공유 상태로 남아있던 ID가 있다면 Mutation으로 즉시 정리
+    // 1. 이미 세션에 unsaved_mbti_id가 존재하면 (새로고침 등), 중복 저장하지 않고 해당 ID를 유지
     try {
-      const prevUnsavedId = sessionStorage.getItem('unsaved_mbti_id');
-      if (prevUnsavedId) {
-        deleteMutation.mutate(prevUnsavedId);
-        sessionStorage.removeItem('unsaved_mbti_id');
+      const existingUnsavedId = sessionStorage.getItem('unsaved_mbti_id');
+      if (existingUnsavedId) {
+        savedDbIdRef.current = existingUnsavedId;
+        hasSavedRef.current = true;
+        return;
       }
     } catch {}
 
     if (hasSavedRef.current || saveMutation.isPending) return;
 
     mutateSave({ result });
-
-    // 2. 브라우저 탭 닫기, 창 닫기, 새로고침, 백그라운드 전환 감지
-    const handleExit = () => {
-      triggerDeleteIfUnsaved();
-    };
-
-    const handleVisibilityChange = () => {
-      if (document.visibilityState === 'hidden') {
-        triggerDeleteIfUnsaved();
-      }
-    };
-
-    window.addEventListener('pagehide', handleExit);
-    window.addEventListener('beforeunload', handleExit);
-    window.addEventListener('unload', handleExit);
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-
-    return () => {
-      window.removeEventListener('pagehide', handleExit);
-      window.removeEventListener('beforeunload', handleExit);
-      window.removeEventListener('unload', handleExit);
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
-      triggerDeleteIfUnsaved();
-    };
-  }, [isSharedView, result, mutateDelete, mutateSave, saveMutation.isPending, deleteMutation]);
+  }, [isSharedView, result, mutateSave, saveMutation.isPending]);
 
   // 링크 복사 시 호출하여 DB row를 영구 보존하고 short ID를 반환하는 함수
   const markAsSaved = async (): Promise<string | null> => {

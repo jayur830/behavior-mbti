@@ -1,16 +1,14 @@
 'use client';
 
-import { useMutation } from '@tanstack/react-query';
 import { Activity, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { Suspense, useMemo, useSyncExternalStore } from 'react';
+import { Suspense, useEffect, useMemo, useSyncExternalStore } from 'react';
 
 import Logo from '@/assets/logo.svg';
 import ResultView from '@/components/ResultView';
 import ThemeToggle from '@/components/ThemeToggle';
 import Button from '@/components/ui/button';
-import { deleteResultApi } from '@/lib/api/results';
 import { decodeResultFromCompressedString } from '@/lib/shareResult';
 import type { FullAnalysisResult } from '@/types';
 
@@ -24,15 +22,15 @@ function useClientMounted(): boolean {
   );
 }
 
-function ResultContent({ onHome }: { onHome?: () => void }) {
-  const router = useRouter();
+export interface ResultContentProps {
+  onHome: () => void;
+  onRestart: () => void;
+}
+
+function ResultContent({ onHome, onRestart }: ResultContentProps) {
   const searchParams = useSearchParams();
   const compressedData = searchParams.get('data') || searchParams.get('r');
   const isMounted = useClientMounted();
-
-  const deleteMutation = useMutation({
-    mutationFn: (id: string) => deleteResultApi(id),
-  });
 
   const result = useMemo<FullAnalysisResult | null>(() => {
     if (!isMounted) return null;
@@ -52,17 +50,6 @@ function ResultContent({ onHome }: { onHome?: () => void }) {
     }
     return null;
   }, [compressedData, isMounted]);
-
-  const handleRestart = () => {
-    try {
-      const unsavedId = sessionStorage.getItem('unsaved_mbti_id');
-      if (unsavedId) {
-        deleteMutation.mutate(unsavedId);
-        sessionStorage.removeItem('unsaved_mbti_id');
-      }
-    } catch {}
-    router.push('/test');
-  };
 
   if (!isMounted) {
     return (
@@ -86,7 +73,7 @@ function ResultContent({ onHome }: { onHome?: () => void }) {
           저장된 검사 세션이 만료되었거나 올바르지 않은 접근입니다. 새로운 성향 검사를 진행해보세요.
         </p>
         <Button
-          onClick={handleRestart}
+          onClick={onRestart}
           className="inline-flex items-center gap-2 px-6 py-3 rounded-full font-semibold text-xs sm:text-sm bg-linear-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white shadow-lg shadow-emerald-500/25 transition-all"
         >
           <span>MBTI 검사 시작하기</span>
@@ -96,25 +83,74 @@ function ResultContent({ onHome }: { onHome?: () => void }) {
     );
   }
 
-  return <ResultView result={result} onRestart={handleRestart} onHome={onHome} />;
+  return <ResultView result={result} onRestart={onRestart} onHome={onHome} />;
 }
 
 export default function ResultClient() {
   const router = useRouter();
 
-  const handleHome = () => {
+  const confirmLeave = (targetPath: string) => {
+    const isConfirmed = window.confirm(
+      '이 페이지를 나가시겠습니까?\n지금 페이지를 벗어나면 검사 결과가 사라질 수 있습니다.',
+    );
+
+    if (!isConfirmed) {
+      // '아니오' 클릭 시 아무 동작도 하지 않고 현재 페이지 유지
+      return;
+    }
+
+    // '네' 클릭 시: 결과 세션 정리 후 목적지 페이지로 이동 (DB row는 삭제하지 않고 유지)
     try {
-      const unsavedId = sessionStorage.getItem('unsaved_mbti_id');
-      if (unsavedId) {
-        fetch(`/api/results?id=${encodeURIComponent(unsavedId)}`, {
-          method: 'DELETE',
-          keepalive: true,
-        }).catch(() => {});
-        sessionStorage.removeItem('unsaved_mbti_id');
-      }
+      sessionStorage.removeItem('current_mbti_result');
     } catch {}
-    router.push('/');
+
+    router.push(targetPath);
   };
+
+  const handleHome = (e?: React.MouseEvent) => {
+    if (e) {
+      e.preventDefault();
+    }
+    confirmLeave('/');
+  };
+
+  const handleRestart = () => {
+    confirmLeave('/test');
+  };
+
+  useEffect(() => {
+    // 1. 브라우저 탭 닫기 / 새로고침 시 이탈 경고 (표준 preventDefault 방식)
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      e.preventDefault();
+    };
+
+    // 2. 브라우저 뒤로가기 버튼 감지 및 확인창 띄우기
+    window.history.pushState(null, '', window.location.href);
+
+    const handlePopState = () => {
+      const isConfirmed = window.confirm(
+        '이 페이지를 나가시겠습니까?\n지금 페이지를 벗어나면 검사 결과가 사라질 수 있습니다.',
+      );
+
+      if (isConfirmed) {
+        try {
+          sessionStorage.removeItem('current_mbti_result');
+        } catch {}
+        router.push('/');
+      } else {
+        // '아니오' 클릭 시 결과 페이지 상태 복구
+        window.history.pushState(null, '', window.location.href);
+      }
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    window.addEventListener('popstate', handlePopState);
+
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+      window.removeEventListener('popstate', handlePopState);
+    };
+  }, [router]);
 
   return (
     <div className="min-h-screen flex flex-col justify-between selection:bg-emerald-500/20 selection:text-emerald-300 dark:selection:text-emerald-200 relative">
@@ -146,7 +182,7 @@ export default function ResultClient() {
             </div>
           }
         >
-          <ResultContent onHome={handleHome} />
+          <ResultContent onHome={handleHome} onRestart={handleRestart} />
         </Suspense>
       </main>
 

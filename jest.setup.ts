@@ -43,6 +43,11 @@ if (typeof window !== 'undefined') {
     configurable: true,
   });
 
+  Object.defineProperty(window, 'confirm', {
+    writable: true,
+    value: jest.fn().mockReturnValue(true),
+  });
+
   Object.defineProperty(window, 'matchMedia', {
     writable: true,
     value: jest.fn().mockImplementation((query) => ({
