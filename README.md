@@ -53,7 +53,7 @@
 ## 📂 프로젝트 구조 (Directory Structure)
 
 ```
-behavior-mbti/
+persona-lens/
 ├── src/
 │   ├── app/
 │   │   ├── globals.css          # 에디토리얼 미니멀리즘 테마 & 그리드 패턴
