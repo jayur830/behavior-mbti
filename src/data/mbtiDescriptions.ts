@@ -7,6 +7,9 @@ export interface MBTIProfile {
   traits: string[];
   certaintyInsight: string;
   hesitationAnalysis: string;
+  workStyle: string;
+  relationshipStyle: string;
+  stressTip: string;
 }
 
 export const MBTI_PROFILES: Record<string, MBTIProfile> = {
@@ -18,6 +21,10 @@ export const MBTI_PROFILES: Record<string, MBTIProfile> = {
     traits: ['장기적 비전 설계', '독립적 의사결정', '논리적 분석력', '원칙주의적 태도'],
     certaintyInsight: '대부분의 문항에서 즉각적이고 확신에 찬 선택을 보였으며, 내면의 기준이 매우 확고합니다.',
     hesitationAnalysis: '선택 번복률이 가장 낮은 그룹에 속하며, 빠른 시간 내에 결론을 도출했습니다.',
+    workStyle: '비효율적인 절차를 극도로 지양하며, 거시적인 로드맵과 체계적인 원칙을 세워 독립적으로 완수합니다.',
+    relationshipStyle:
+      '소수의 깊고 지적인 대화를 나누는 관계를 선호하며, 솔직하고 논리적인 피드백을 주고받을 때 편안함을 느낍니다.',
+    stressTip: '모든 변수를 통제하려 하기보다, 예상치 못한 상황을 탐색의 기회로 받아들이는 유연성이 큰 도움이 됩니다.',
   },
   INTP: {
     title: '논리적인 사색가',
@@ -27,6 +34,9 @@ export const MBTI_PROFILES: Record<string, MBTIProfile> = {
     traits: ['지적 호기심', '창의적 문제해결', '객관적 분석', '자유로운 탐구'],
     certaintyInsight: '복잡하거나 모호한 문항에서 충분한 사고 시간을 가지며 신중하게 점수를 결정했습니다.',
     hesitationAnalysis: '선택지 간 체류 시간이 길고 미세한 조정을 거쳤으나, 최종 결정은 논리적 일관성을 유지합니다.',
+    workStyle: '정형화된 루틴보다 복잡하고 도전적인 알고리즘이나 이론적 문제를 파고들 때 최고의 몰입력을 발휘합니다.',
+    relationshipStyle: '지적 흥미를 공유하는 사람들과 깊은 토론을 즐기며, 감정적 강요 없는 자유로운 소통을 추구합니다.',
+    stressTip: '생각이 꼬리를 물어 결정을 미루기 쉬우므로, 80% 확신이 들었을 때 일단 실행해보는 연습이 효과적입니다.',
   },
   ENTJ: {
     title: '대담한 통솔자',
@@ -36,6 +46,10 @@ export const MBTI_PROFILES: Record<string, MBTIProfile> = {
     traits: ['강력한 추진력', '전략적 통솔력', '결단력 있는 실행', '목표 지향성'],
     certaintyInsight: '자신의 판단에 대해 압도적인 확신을 가지고 있으며, 행동 궤적에서도 단호함이 돋보입니다.',
     hesitationAnalysis: '문항을 읽는 즉시 판단을 내렸으며, 극단 척도(+3 또는 -3)를 주저 없이 선택했습니다.',
+    workStyle: '명확한 목표와 기한을 설정하고 팀 전체를 일사불란하게 이끌며, 문제 발생 시 즉각 결단을 내립니다.',
+    relationshipStyle:
+      '자기계발에 열정적이고 비전을 나눌 수 있는 동료를 높이 평가하며, 직설적이고 명료하게 소통합니다.',
+    stressTip: '속도와 성과에 집착해 번아웃이 오기 쉬우므로, 타인의 속도와 감정적 호흡을 존중하는 쉼표가 필요합니다.',
   },
   ENTP: {
     title: '뜨거운 논쟁을 즐기는 변론가',
@@ -46,6 +60,10 @@ export const MBTI_PROFILES: Record<string, MBTIProfile> = {
     certaintyInsight: '다양한 관점에서 문항을 검토하려는 경향이 있어 커서의 궤적이 넓고 다이나믹합니다.',
     hesitationAnalysis:
       '순간적인 생각의 전환으로 선택을 바꾼 문항이 일부 관찰되나 전반적으로 빠른 페이스를 유지합니다.',
+    workStyle:
+      '기존 관행을 뒤흔드는 기발한 아이디어 기획과 브레인스토밍에 강하며, 끊임없이 새로운 프로젝트를 시도합니다.',
+    relationshipStyle: '위트 넘치는 대화와 지적 핑퐁을 즐기며, 토론을 통해 서로의 논리를 검증하는 것을 선호합니다.',
+    stressTip: '벌려놓은 일의 마무리가 버거워질 수 있으니, 우선순위 상위 2가지에 집중해 완성하는 습관을 들이세요.',
   },
   INFJ: {
     title: '선의의 옹호자',
@@ -55,6 +73,11 @@ export const MBTI_PROFILES: Record<string, MBTIProfile> = {
     traits: ['깊은 통찰력', '따뜻한 공감 능력', '이상주의적 신념', '도덕적 진실성'],
     certaintyInsight: '도덕적 가치나 인간관계 문항에서 섬세하고 신중한 고민 시간을 보였습니다.',
     hesitationAnalysis: '첫 느낌과 내면의 이상 사이에서 균형을 맞추며 신중하게 선택지를 확정했습니다.',
+    workStyle:
+      '세상을 긍정적으로 변화시키는 일에 헌신하며, 조용하지만 깊이 있는 몰입으로 완성도 높은 결과물을 만듭니다.',
+    relationshipStyle:
+      '상대방의 숨은 감정까지 세심하게 헤아리며, 진정성과 상호 신뢰를 바탕으로 한 소수 정예 관계를 유지합니다.',
+    stressTip: '타인의 감정 쓰레기통이 되지 않도록 심리적 경계선을 긋고, 온전한 혼자만의 충전 시간을 확보하세요.',
   },
   INFP: {
     title: '열정적인 중재자',
@@ -64,6 +87,10 @@ export const MBTI_PROFILES: Record<string, MBTIProfile> = {
     traits: ['풍부한 감수성', '진정성 있는 태도', '사려 깊은 공감', '창의적 표현력'],
     certaintyInsight: '감정적 질문과 가치관 질문에서 깊은 몰입과 숙고의 흔적이 궤적에 기록되었습니다.',
     hesitationAnalysis: '본능적 선택 후 사회적 기대와 조율하는 과정에서 약간의 답변 수정이 탐지되었습니다.',
+    workStyle:
+      '자신의 핵심 가치관과 부합하는 창의적인 분야에서 독보적인 잠재력을 발휘하며, 자율적인 환경을 선호합니다.',
+    relationshipStyle: '따뜻하고 무조건적인 지지를 보내는 든든한 조력자이며, 진심이 통하는 깊은 교감을 중요시합니다.',
+    stressTip: '비판을 개인적인 거절로 받아들이지 않도록 사실과 감정을 분리하여 해석하는 연습이 도움이 됩니다.',
   },
   ENFJ: {
     title: '정의로운 주인공',
@@ -73,6 +100,9 @@ export const MBTI_PROFILES: Record<string, MBTIProfile> = {
     traits: ['이타적 헌신', '탁월한 소통 능력', '조화와 협력 추구', '따뜻한 카리스마'],
     certaintyInsight: '공감과 협력 관련 문항에서 매우 신속하고 확고한 결정을 내렸습니다.',
     hesitationAnalysis: '자신의 감정 표현에 솔직하며 일관되게 긍정적 척도로 빠르게 이동했습니다.',
+    workStyle: '팀원 개개인의 강점을 발굴하고 동기부여하며, 따뜻한 협력 분위기를 조성해 시너지를 극대화합니다.',
+    relationshipStyle: '주변 사람들의 기분을 세심하게 살피고 챙기며, 다정하고 친절한 소통으로 넓은 인망을 얻습니다.',
+    stressTip: '모든 사람을 만족시킬 수는 없음을 인정하고, 자신의 욕구와 휴식을 1순위에 두는 연습을 해보세요.',
   },
   ENFP: {
     title: '재기발랄한 활동가',
@@ -82,6 +112,9 @@ export const MBTI_PROFILES: Record<string, MBTIProfile> = {
     traits: ['자유로운 영혼', '열정적인 호기심', '풍부한 상상력', '긍정적 에너지'],
     certaintyInsight: '즉흥적이고 직관적인 선택을 선호하며, 문항을 즐겁게 풀어나가는 경쾌한 흐름이 나타납니다.',
     hesitationAnalysis: '흥미로운 선택지 사이에서 잠시 춤추듯 커서가 맴돌았으나 결국 마음이 이끄는 대로 결정했습니다.',
+    workStyle: '새롭고 혁신적인 아이디어를 제안하고 사람들에게 열정을 불어넣는 기획/스파크 역할에 최적화되어 있습니다.',
+    relationshipStyle: '사람에 대한 순수한 호기심과 친화력으로 누구와도 금방 친해지며, 긍정적인 바이브를 전파합니다.',
+    stressTip: '과도한 열정으로 에너지가 고갈될 수 있으니, 하루 일과 중 정적인 휴식 루틴을 정해두세요.',
   },
   ISTJ: {
     title: '청렴결백한 논리주의자',
@@ -91,6 +124,9 @@ export const MBTI_PROFILES: Record<string, MBTIProfile> = {
     traits: ['철저한 책임감', '체계적인 일 처리', '현실적 판단력', '신뢰성과 신중함'],
     certaintyInsight: '모든 문항을 일정한 속도로 침착하게 풀어나갔으며, 일관성이 매우 뛰어납니다.',
     hesitationAnalysis: '방황이나 불필요한 흔들림이 전혀 없이 안정적인 궤적을 보였습니다.',
+    workStyle: '명확한 매뉴얼과 사실에 기반하여 한 치의 오차도 없이 마감 기한을 준수하며 신뢰를 쌓습니다.',
+    relationshipStyle: '말보다 묵묵한 행동과 약속 이행으로 신뢰를 증명하며, 안정적이고 예측 가능한 관계를 선호합니다.',
+    stressTip: '원칙에서 벗어나는 돌발 상황에 지나치게 스트레스받지 않도록 플랜 B를 미리 마련해두는 것이 좋습니다.',
   },
   ISFJ: {
     title: '용감한 수호자',
@@ -100,6 +136,10 @@ export const MBTI_PROFILES: Record<string, MBTIProfile> = {
     traits: ['세심한 배려심', '성실한 헌신', '안정적인 인내력', '실용적 지원'],
     certaintyInsight: '자신의 역할과 책임에 관련된 문항에서 깊은 확신과 진정성을 보였습니다.',
     hesitationAnalysis: '타인과의 조화를 고려하느라 중립과 동의 사이에서 살짝 고민한 흔적이 관찰됩니다.',
+    workStyle: '보이지 않는 곳에서도 세부 사항을 꼼꼼하게 챙기며, 조직의 안정과 서포트에 탁월한 역량을 발휘합니다.',
+    relationshipStyle:
+      '기념일이나 사소한 취향을 잘 기억해 챙겨주며, 헌신적이고 한결같은 태도로 깊은 유대를 형성합니다.',
+    stressTip: '거절하지 못해 혼자 짐을 떠안기 쉬우니, 정중하게 거절하고 자신의 한계를 표현하는 연습을 해보세요.',
   },
   ESTJ: {
     title: '엄격한 관리자',
@@ -108,6 +148,9 @@ export const MBTI_PROFILES: Record<string, MBTIProfile> = {
     traits: ['뛰어난 조직화 능력', '실용적 실행력', '명확한 규칙 준수', '확고한 결단력'],
     certaintyInsight: '계획성과 원칙에 관한 질문에서 최고 수준의 확신도를 기록했습니다.',
     hesitationAnalysis: '고민 시간이 매우 짧고 즉시 실행으로 옮기는 단호한 결정을 내렸습니다.',
+    workStyle: '프로세스를 체계화하고 역할을 명확히 분배하여 가장 효율적인 방식으로 실질적 성과를 만들어냅니다.',
+    relationshipStyle: '솔직하고 명확한 의사전달을 선호하며, 약속과 신의를 지키는 상호 존중의 관계를 맺습니다.',
+    stressTip: '과도한 통제 욕구로 주변을 압박하지 않도록 다른 방식의 일 처리도 너그럽게 수용하는 여유를 가져보세요.',
   },
   ESFJ: {
     title: '사교적인 외교관',
@@ -117,6 +160,10 @@ export const MBTI_PROFILES: Record<string, MBTIProfile> = {
     traits: ['뛰어난 친화력', '세심한 관찰력', '화합과 봉사 정신', '따뜻한 유대감'],
     certaintyInsight: '인간관계와 모임 관련 질문에서 막힘없이 시원하게 답변을 확정했습니다.',
     hesitationAnalysis: '갈등 상황 질문에서 상대방의 입장을 배려하느라 잠시 머뭇거림이 발생했습니다.',
+    workStyle:
+      '팀원 간의 화합을 도모하고 실용적인 지원을 아끼지 않으며, 고객이나 동료 응대에 최상의 능력을 발휘합니다.',
+    relationshipStyle: '따뜻한 칭찬과 리액션으로 분위기를 화기애애하게 이끌며, 주변 사람들을 살뜰히 보살핍니다.',
+    stressTip: '타인의 인정에 자존감이 좌우되지 않도록, 스스로를 인정하고 칭찬해주는 자존감 일기를 써보세요.',
   },
   ISTP: {
     title: '만능 재주꾼',
@@ -126,6 +173,9 @@ export const MBTI_PROFILES: Record<string, MBTIProfile> = {
     traits: ['뛰어난 관찰력', '효율적 문제해결', '침착한 위기대응', '자율적 행동력'],
     certaintyInsight: '복잡하게 고민하지 않고 직관적인 팩트에 근거해 쿨하게 선택했습니다.',
     hesitationAnalysis: '체류 시간이 짧고 간결한 궤적으로 높은 에너지 효율을 나타냈습니다.',
+    workStyle: '위기 상황에서 침착하게 원인을 분석하고 실질적인 해결책을 빠르게 적용하는 문제 해결사입니다.',
+    relationshipStyle: '간섭받지 않는 개인 공간을 중시하며, 필요할 때 쿨하고 담백하게 도움을 주는 스타일입니다.',
+    stressTip: '감정 표현을 억누르다 한 번에 폭발하지 않도록 평소에 솔직한 감정을 가볍게 공유하는 습관을 들이세요.',
   },
   ISFP: {
     title: '호기심 많은 예술가',
@@ -135,6 +185,9 @@ export const MBTI_PROFILES: Record<string, MBTIProfile> = {
     traits: ['풍부한 감수성', '유연한 적응력', '온화한 포용력', '심미적 안목'],
     certaintyInsight: '자신의 개성과 취향에 관한 문항에서 확고하고 독창적인 선호도를 나타냈습니다.',
     hesitationAnalysis: '압박감 없이 편안한 페이스로 문항을 음미하며 답변을 완성했습니다.',
+    workStyle: '감각적이고 미적인 감수성을 살릴 수 있는 자유로운 환경에서 뛰어난 집중력과 완성도를 발휘합니다.',
+    relationshipStyle: '상대방의 의견을 존중하고 편안하게 감싸주며, 말보다는 감각적인 배려로 마음을 전합니다.',
+    stressTip: '갈등을 피하려고 무조건 참기보다, 부드럽지만 단호하게 자신의 감정을 제때 전달하세요.',
   },
   ESTP: {
     title: '모험을 즐기는 사업가',
@@ -144,6 +197,10 @@ export const MBTI_PROFILES: Record<string, MBTIProfile> = {
     traits: ['뛰어난 순발력', '대담한 행동력', '현실적 기회 포착', '스릴과 도전 추구'],
     certaintyInsight: '망설임 점수(Hesitation)가 최저 수준으로, 즉각적인 본능에 따라 반응했습니다.',
     hesitationAnalysis: '생각보다 행동이 앞서는 유형답게 번복 없이 첫 판단을 밀어붙였습니다.',
+    workStyle: '이론보다 직접 부딪치며 현장감 있게 문제를 해결하고, 긴급한 상황에서 최고의 기량을 뽐냅니다.',
+    relationshipStyle:
+      '유쾌하고 뒤끝 없는 쿨한 성격으로 주변에 사람이 많으며, 액티비티를 함께 즐기는 관계를 선호합니다.',
+    stressTip: '순간적인 충동으로 결정을 서두르지 않도록 중요한 계약이나 결정 전 10초간 심호흡하는 시간을 가지세요.',
   },
   ESFP: {
     title: '자유로운 영혼의 연예인',
@@ -152,6 +209,9 @@ export const MBTI_PROFILES: Record<string, MBTIProfile> = {
     traits: ['생동감 넘치는 매력', '순간을 즐기는 열정', '친화적 소통', '낙천적 마인드'],
     certaintyInsight: '즐거움과 사교성에 관한 문항에서 거침없이 강한 긍정 점수를 부여했습니다.',
     hesitationAnalysis: '선택 과정 전반이 경쾌하고 밝은 리듬을 타며 빠르게 진행되었습니다.',
+    workStyle: '사람들과 직접 호흡하고 활기찬 에너지를 주고받는 환경에서 최고의 성과와 동기부여를 창출합니다.',
+    relationshipStyle: '풍부한 리액션과 공감으로 상대방을 기분 좋게 만들며, 즐거운 추억을 함께 만드는 것을 좋아합니다.',
+    stressTip: '장기적인 계획 수립이 지루하더라도 목표를 작게 쪼개어 단계별 보상을 주며 진행해보세요.',
   },
 };
 

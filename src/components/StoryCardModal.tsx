@@ -95,20 +95,33 @@ export default function StoryCardModal({ result, isOpen, onClose }: StoryCardMod
             <h2 className="text-base font-bold text-neutral-100 mt-1">{result.mbtiTitle}</h2>
             <p className="text-[11px] text-neutral-400 font-light mt-0.5 line-clamp-1">{result.mbtiDescription}</p>
 
-            {/* Persona Badge */}
-            <div className="mt-3.5 p-3 rounded-2xl bg-white/3 border border-white/8 backdrop-blur-sm text-left flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-neutral-900 border border-white/10 flex items-center justify-center shrink-0 shadow-inner">
-                <PersonaIcon name={result.behaviorPersona.iconName} className="w-5 h-5 text-emerald-400" />
+            {/* Persona Badge / Persona Gap Highlight */}
+            {result.personaGap?.detected ? (
+              <div className="mt-3 p-2.5 rounded-2xl bg-amber-500/10 border border-amber-500/20 backdrop-blur-sm text-left flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-xl bg-amber-500/20 border border-amber-500/30 flex items-center justify-center shrink-0">
+                  <Sparkles className="w-4 h-4 text-amber-400" />
+                </div>
+                <div className="min-w-0">
+                  <span className="text-[9px] text-amber-300 font-bold block">본능 vs 이성 갭 감지</span>
+                  <span className="text-[10px] text-neutral-300 block truncate">
+                    {result.personaGap.summary || '사회적 페르소나와 본능의 미세한 조율'}
+                  </span>
+                </div>
               </div>
-              <div className="min-w-0">
-                <span className="text-[9px] text-neutral-400 font-medium block">행동 페르소나</span>
-                <span className="text-xs font-bold text-white block truncate">{result.behaviorPersona.title}</span>
-                <span className="text-[10px] text-neutral-400 block truncate">{result.behaviorPersona.subtitle}</span>
+            ) : (
+              <div className="mt-3 p-2.5 rounded-2xl bg-white/4 border border-white/8 backdrop-blur-sm text-left flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-xl bg-neutral-900 border border-white/10 flex items-center justify-center shrink-0 shadow-inner">
+                  <PersonaIcon name={result.behaviorPersona.iconName} className="w-4 h-4 text-emerald-400" />
+                </div>
+                <div className="min-w-0">
+                  <span className="text-[9px] text-neutral-400 font-medium block">행동 페르소나</span>
+                  <span className="text-xs font-bold text-white block truncate">{result.behaviorPersona.title}</span>
+                </div>
               </div>
-            </div>
+            )}
 
             {/* 4-Axis Certainty Mini Bars */}
-            <div className="mt-3 grid grid-cols-2 gap-1.5 text-left">
+            <div className="mt-2.5 grid grid-cols-2 gap-1.5 text-left">
               {Object.entries(result.dimensions).map(([key, dim]) => (
                 <div key={key} className="bg-neutral-950/80 p-1.5 px-2.5 rounded-xl border border-white/4">
                   <div className="flex justify-between text-[10px] font-mono mb-1">

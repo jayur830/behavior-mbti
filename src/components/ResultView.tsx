@@ -5,10 +5,13 @@ import {
   Activity,
   ArrowRight,
   BarChart3,
+  Briefcase,
   Check,
   Clock,
   Eye,
+  Heart,
   Home,
+  Lightbulb,
   MousePointer,
   RotateCcw,
   Share2,
@@ -19,6 +22,7 @@ import { useEffect, useState } from 'react';
 
 import PersonaIcon from '@/components/PersonaIcon';
 import Button from '@/components/ui/button';
+import { MBTI_PROFILES } from '@/data/mbtiDescriptions';
 import { useClipboard } from '@/hooks/useClipboard';
 import { useResultSaveLifecycle } from '@/hooks/useResultSaveLifecycle';
 import { encodeResultToCompressedString } from '@/lib/shareResult';
@@ -87,6 +91,10 @@ export default function ResultView({ result, isSharedView = false, onRestart, on
     }
   };
 
+  const totalQuestionsCount = questionsList.length || 10;
+  const avgDurationPerQuestion = (result.totalTestDuration / 1000 / totalQuestionsCount).toFixed(1);
+  const changeRatePercent = Math.min(100, Math.round(((result.totalAnswerChanges || 0) / totalQuestionsCount) * 100));
+
   return (
     <div className="max-w-4xl mx-auto px-4 py-8 sm:py-16 space-y-12 text-foreground font-sans">
       {/* Shared View CTA Banner */}
@@ -113,7 +121,7 @@ export default function ResultView({ result, isSharedView = false, onRestart, on
 
         <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-muted border border-border text-muted-foreground text-xs font-medium mb-6">
           <span className="w-1.5 h-1.5 rounded-full bg-lime-400" />
-          <span>성향 분석 리포트</span>
+          <span>무의식 행동 분석 리포트</span>
         </div>
 
         <h1 className="text-6xl sm:text-8xl font-extrabold tracking-tight text-foreground dark:text-transparent dark:bg-clip-text dark:bg-linear-to-r dark:from-white dark:via-neutral-100 dark:to-emerald-200 mb-2">
@@ -124,8 +132,8 @@ export default function ResultView({ result, isSharedView = false, onRestart, on
           {result.mbtiDescription}
         </p>
 
-        {/* Global Key Metrics Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 w-full max-w-2xl bg-card/80 dark:bg-card/90 p-4 rounded-2xl border border-border backdrop-blur-md">
+        {/* Global Key Metrics Summary Badges */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 w-full max-w-xl bg-card/80 dark:bg-card/90 p-3.5 rounded-2xl border border-border backdrop-blur-md">
           <div className="flex flex-col items-center p-2">
             <span className="text-xs text-muted-foreground mb-1 flex items-center gap-1.5 font-medium">
               <Zap className="w-3.5 h-3.5 text-amber-500" />
@@ -143,19 +151,10 @@ export default function ResultView({ result, isSharedView = false, onRestart, on
             </span>
           </div>
 
-          <div className="flex flex-col items-center p-2">
+          <div className="col-span-2 sm:col-span-1 flex flex-col items-center p-2">
             <span className="text-xs text-muted-foreground mb-1 flex items-center gap-1.5 font-medium">
-              <Eye className="w-3.5 h-3.5 text-amber-500" />
-              선택지 탐색
-            </span>
-            <span className="text-lg sm:text-xl font-bold text-foreground font-mono">
-              {result.hoverAnalysis?.totalHoverCount ?? 0}회
-            </span>
-          </div>
-
-          <div className="flex flex-col items-center p-2">
-            <span className="text-xs text-muted-foreground mb-1 flex items-center gap-1.5 font-medium">
-              <MousePointer className="w-3.5 h-3.5 text-emerald-500" />주 입력 수단
+              <MousePointer className="w-3.5 h-3.5 text-emerald-500" />
+              입력 환경
             </span>
             <span className="text-xs font-semibold text-foreground mt-1">{getDeviceLabel()}</span>
           </div>
@@ -169,24 +168,32 @@ export default function ResultView({ result, isSharedView = false, onRestart, on
             <BarChart3 className="w-4 h-4 text-emerald-500" />
             <span>나의 행동 데이터 요약</span>
           </div>
-          <span className="text-xs text-lime-700 dark:text-lime-300 font-medium">실시간 인터랙션 측정 데이터</span>
+          <span className="text-xs text-lime-700 dark:text-lime-300 font-medium">
+            총 {totalQuestionsCount}문항 실측 데이터
+          </span>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div className="bg-muted/50 dark:bg-neutral-950/70 border border-border p-4.5 rounded-2xl flex flex-col justify-between">
             <div>
-              <span className="text-xs text-muted-foreground block mb-1">총 검사 소요 시간</span>
+              <span className="text-xs text-muted-foreground block mb-1">문항별 응답 템포</span>
               <div className="flex items-baseline gap-2">
                 <span className="text-2xl sm:text-3xl font-black font-mono text-lime-600 dark:text-lime-300">
-                  {(result.totalTestDuration / 1000).toFixed(1)}s
+                  {avgDurationPerQuestion}s
                 </span>
                 <span className="text-xs text-muted-foreground">
-                  (문항당 평균 {(result.totalTestDuration / 1000 / 40).toFixed(1)}초)
+                  (
+                  {Number(avgDurationPerQuestion) < 3.0
+                    ? '신속한 직관파'
+                    : Number(avgDurationPerQuestion) < 6.0
+                      ? '안정적 템포'
+                      : '심사숙고형'}
+                  )
                 </span>
               </div>
             </div>
             <p className="text-[11px] text-muted-foreground mt-3 font-light">
-              문항을 읽고 최종 클릭을 완료하기까지의 순수 인터랙션 소요 시간입니다.
+              문항을 읽고 최종 클릭을 완료하기까지 문항당 평균 순수 인터랙션 소요 시간입니다.
             </p>
           </div>
 
@@ -197,19 +204,17 @@ export default function ResultView({ result, isSharedView = false, onRestart, on
                 <span className="text-2xl sm:text-3xl font-black font-mono text-rose-500 dark:text-rose-400">
                   {result.totalAnswerChanges || 0}회
                 </span>
-                <span className="text-xs text-muted-foreground">
-                  (번복률 {(((result.totalAnswerChanges || 0) / 40) * 100).toFixed(0)}%)
-                </span>
+                <span className="text-xs text-muted-foreground">(번복률 {changeRatePercent}%)</span>
               </div>
             </div>
             <p className="text-[11px] text-muted-foreground mt-3 font-light">
-              첫 번째 선택지를 클릭한 후 다른 보기를 다시 누르며 생각을 조정한 횟수입니다.
+              첫 번째 선택지를 클릭한 후 다른 보기를 다시 누르며 생각을 수정한 횟수입니다.
             </p>
           </div>
 
           <div className="bg-muted/50 dark:bg-neutral-950/70 border border-border p-4.5 rounded-2xl flex flex-col justify-between">
             <div>
-              <span className="text-xs text-muted-foreground block mb-1">종합 결정 확신도</span>
+              <span className="text-xs text-muted-foreground block mb-1">내면의 결정 확신도</span>
               <div className="flex items-baseline gap-2">
                 <span className="text-2xl sm:text-3xl font-black font-mono text-amber-500 dark:text-amber-400">
                   {result.overallCertainty}%
@@ -224,7 +229,7 @@ export default function ResultView({ result, isSharedView = false, onRestart, on
               </div>
             </div>
             <p className="text-[11px] text-muted-foreground mt-3 font-light">
-              마우스 커서의 떨림, 머뭇거림, 체류 시간 패턴을 종합하여 산출된 내면의 확신도입니다.
+              마우스 커서의 떨림, 머뭇거림 궤적 및 체류 시간 패턴을 분석해 도출된 확신도입니다.
             </p>
           </div>
         </div>
@@ -328,7 +333,64 @@ export default function ResultView({ result, isSharedView = false, onRestart, on
         </div>
       </div>
 
-      {/* 5. 4 MBTI Dimensions */}
+      {/* 5. Real-world Life & Work Action Guide */}
+      {MBTI_PROFILES[result.mbti] && (
+        <div className="bg-card/80 dark:bg-neutral-900/60 border border-border rounded-3xl p-6 sm:p-8 shadow-xl space-y-6">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2 text-sm font-bold text-foreground">
+              <Sparkles className="w-4 h-4 text-lime-500" />
+              <span>실생활 행동 양식 & 라이프스타일 가이드</span>
+            </div>
+            <span className="text-xs text-muted-foreground">{result.mbti} 맞춤 행동 처방</span>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="bg-muted/50 dark:bg-neutral-950/70 border border-border p-5 rounded-2xl flex flex-col justify-between">
+              <div>
+                <div className="flex items-center gap-2 text-xs font-bold text-foreground mb-2.5">
+                  <div className="w-7 h-7 rounded-lg bg-lime-500/10 flex items-center justify-center text-lime-600 dark:text-lime-400">
+                    <Briefcase className="w-3.5 h-3.5" />
+                  </div>
+                  <span>업무 및 협업 스타일</span>
+                </div>
+                <p className="text-xs text-muted-foreground font-light leading-relaxed">
+                  {MBTI_PROFILES[result.mbti].workStyle}
+                </p>
+              </div>
+            </div>
+
+            <div className="bg-muted/50 dark:bg-neutral-950/70 border border-border p-5 rounded-2xl flex flex-col justify-between">
+              <div>
+                <div className="flex items-center gap-2 text-xs font-bold text-foreground mb-2.5">
+                  <div className="w-7 h-7 rounded-lg bg-rose-500/10 flex items-center justify-center text-rose-500 dark:text-rose-400">
+                    <Heart className="w-3.5 h-3.5" />
+                  </div>
+                  <span>대인관계 & 소통 방식</span>
+                </div>
+                <p className="text-xs text-muted-foreground font-light leading-relaxed">
+                  {MBTI_PROFILES[result.mbti].relationshipStyle}
+                </p>
+              </div>
+            </div>
+
+            <div className="bg-muted/50 dark:bg-neutral-950/70 border border-border p-5 rounded-2xl flex flex-col justify-between">
+              <div>
+                <div className="flex items-center gap-2 text-xs font-bold text-foreground mb-2.5">
+                  <div className="w-7 h-7 rounded-lg bg-amber-500/10 flex items-center justify-center text-amber-500 dark:text-amber-400">
+                    <Lightbulb className="w-3.5 h-3.5" />
+                  </div>
+                  <span>스트레스 극복 솔루션</span>
+                </div>
+                <p className="text-xs text-muted-foreground font-light leading-relaxed">
+                  {MBTI_PROFILES[result.mbti].stressTip}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 6. 4 MBTI Dimensions */}
       <div className="bg-card/80 dark:bg-neutral-900/60 border border-border rounded-3xl p-6 sm:p-8 shadow-xl">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-lg font-bold text-foreground">4대 성향 축 선호도 및 확신도 분석</h2>
