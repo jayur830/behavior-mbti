@@ -477,7 +477,7 @@ export default function ResultView({ result, isSharedView = false, onRestart, on
             </div>
           </div>
 
-          {/* 40-Question Responsive Grid Selector Pills */}
+          {/* Question Responsive Grid Selector Pills */}
           <div className="flex flex-wrap gap-1.5 mb-6 p-3 bg-muted/60 dark:bg-neutral-950/80 rounded-2xl border border-border max-h-43.75 overflow-y-auto">
             {questionsList.map((qDetail, idx) => {
               const isSelected = selectedQuestionIdx === idx;

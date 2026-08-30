@@ -316,7 +316,7 @@ export function analyzeBehaviorAndMBTI(logs: QuestionBehaviorLog[], questions = 
   };
 
   // 10. Benchmark calculation
-  const benchmark = calculateUserBenchmark(totalTestDuration, totalAnswerChanges);
+  const benchmark = calculateUserBenchmark(totalTestDuration, totalAnswerChanges, safeLogs.length);
 
   return {
     mbti: mbti as MBTIType,

@@ -1,6 +1,6 @@
 import type { BenchmarkStats } from '@/types';
 
-import { QUESTIONS } from './questions';
+import { QUESTIONS_POOL } from './questions';
 
 export const GLOBAL_BENCHMARK_BASE = {
   averageTestDurationSec: 54.2,
@@ -13,38 +13,46 @@ export const GLOBAL_BENCHMARK_BASE = {
     { personaCode: 'THE_STEALTH', name: '미니멀 스텔스형', percentage: 9 },
   ],
   revisedQuestionRates: [
-    { questionId: 7, revisionRate: 41.2 }, // T vs F (친구 고민 vs 해결책)
-    { questionId: 2, revisionRate: 36.8 }, // E vs I (주말 혼자 있기)
-    { questionId: 9, revisionRate: 33.5 }, // T vs F (솔직한 비판 vs 칭찬)
-    { questionId: 10, revisionRate: 29.4 }, // J vs P (여행 계획 엑셀)
-    { questionId: 5, revisionRate: 27.1 }, // S vs N (화성 이주 상상)
+    { questionId: 7, revisionRate: 41.2 }, // T vs F
+    { questionId: 2, revisionRate: 36.8 }, // E vs I
+    { questionId: 9, revisionRate: 33.5 }, // T vs F
+    { questionId: 10, revisionRate: 29.4 }, // J vs P
+    { questionId: 5, revisionRate: 27.1 }, // S vs N
   ],
 };
 
-function calculateSpeedPercentile(durationSec: number): number {
-  if (durationSec < 25) return 96;
-  if (durationSec < 35) return 85;
-  if (durationSec < 45) return 70;
-  if (durationSec < 55) return 50;
-  if (durationSec < 75) return 30;
+function calculateSpeedPercentile(avgSecPerQuestion: number): number {
+  if (avgSecPerQuestion < 2.0) return 96;
+  if (avgSecPerQuestion < 3.2) return 85;
+  if (avgSecPerQuestion < 4.5) return 70;
+  if (avgSecPerQuestion < 6.0) return 50;
+  if (avgSecPerQuestion < 8.5) return 30;
   return 12;
 }
 
-function calculateDecisivenessPercentile(totalChanges: number): number {
-  if (totalChanges === 0) return 92;
-  if (totalChanges === 1) return 75;
-  if (totalChanges === 2) return 55;
-  if (totalChanges === 3) return 35;
+function calculateDecisivenessPercentile(changeRatePercent: number): number {
+  if (changeRatePercent === 0) return 92;
+  if (changeRatePercent <= 10) return 75;
+  if (changeRatePercent <= 25) return 55;
+  if (changeRatePercent <= 40) return 35;
   return 15;
 }
 
-export function calculateUserBenchmark(totalDurationMs: number, totalChanges: number): BenchmarkStats {
+export function calculateUserBenchmark(
+  totalDurationMs: number,
+  totalChanges: number,
+  questionCount = 10,
+): BenchmarkStats {
   const durationSec = totalDurationMs / 1000;
-  const speedPercentile = calculateSpeedPercentile(durationSec);
-  const decisivenessPercentile = calculateDecisivenessPercentile(totalChanges);
+  const safeCount = Math.max(1, questionCount);
+  const avgSecPerQuestion = durationSec / safeCount;
+  const changeRatePercent = (totalChanges / safeCount) * 100;
+
+  const speedPercentile = calculateSpeedPercentile(avgSecPerQuestion);
+  const decisivenessPercentile = calculateDecisivenessPercentile(changeRatePercent);
 
   const topRevisedQuestions = GLOBAL_BENCHMARK_BASE.revisedQuestionRates.map((item, idx) => {
-    const q = QUESTIONS.find((qItem) => qItem.id === item.questionId);
+    const q = QUESTIONS_POOL.find((qItem) => qItem.id === item.questionId);
     return {
       rank: idx + 1,
       questionId: item.questionId,
