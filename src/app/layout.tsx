@@ -4,6 +4,7 @@ import type { Metadata } from 'next';
 import { Plus_Jakarta_Sans } from 'next/font/google';
 import type { ReactNode } from 'react';
 
+import AmbientCursorBlob from '@/components/AmbientCursorBlob';
 import ReactQueryProvider from '@/components/ReactQueryProvider';
 import ThemeProvider from '@/components/ThemeProvider';
 
@@ -95,23 +96,14 @@ export interface RootLayoutProps {
 
 export default function RootLayout({ children }: Readonly<RootLayoutProps>) {
   return (
-    <html
-      lang="ko"
-      suppressHydrationWarning
-      className={`${plusJakartaSans.variable} font-sans h-full antialiased selection:bg-emerald-500/20 selection:text-emerald-300 dark:selection:text-emerald-200`}
-    >
+    <html lang="ko" suppressHydrationWarning className={`${plusJakartaSans.variable} font-sans h-full antialiased`}>
       <head>
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       </head>
       <body className="min-h-full flex flex-col bg-background text-foreground relative overflow-x-hidden transition-colors duration-300">
         <ReactQueryProvider>
-          <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
-            {/* Ambient background glow */}
-            <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden opacity-40 dark:opacity-100 transition-opacity duration-300">
-              <div className="absolute top-[-20%] left-1/2 -translate-x-1/2 w-175 h-125 bg-lime-300/10 blur-[120px] rounded-full" />
-              <div className="absolute top-[60%] left-[-10%] w-125 h-125 bg-amber-200/8 blur-[140px] rounded-full" />
-              <div className="absolute top-[40%] right-[-10%] w-125 h-125 bg-lime-200/8 blur-[140px] rounded-full" />
-            </div>
+          <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
+            <AmbientCursorBlob />
             <div className="relative z-10 flex-1 flex flex-col">{children}</div>
           </ThemeProvider>
         </ReactQueryProvider>

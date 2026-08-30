@@ -1,11 +1,10 @@
 'use client';
 
-import { ArrowLeft, ArrowRight, Check, Keyboard, Mouse, Smartphone } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Keyboard, Mouse, Radio, Smartphone } from 'lucide-react';
 import { useCallback, useRef } from 'react';
 
 import Badge from '@/components/ui/badge';
 import Button from '@/components/ui/button';
-import Progress from '@/components/ui/progress';
 import { useBehaviorTracker } from '@/hooks/useBehaviorTracker';
 import type { Question, QuestionBehaviorLog } from '@/types';
 
@@ -29,6 +28,25 @@ const LIKERT_OPTIONS = [
   { value: 3, label: '매우 그렇다' },
 ];
 
+function getCategoryLabel(category: Question['category']) {
+  switch (category) {
+    case 'social':
+      return '사회적 상호작용 및 에너지';
+    case 'cognition':
+      return '인식 및 정보 수용 방식';
+    case 'decision':
+      return '의사 결정 및 판단 기준';
+    case 'lifestyle':
+      return '생활 양식 및 계획성';
+  }
+}
+
+function DeviceIcon({ device }: { device: 'mouse' | 'touch' | 'keyboard' }) {
+  if (device === 'touch') return <Smartphone className="h-3 w-3" />;
+  if (device === 'keyboard') return <Keyboard className="h-3 w-3" />;
+  return <Mouse className="h-3 w-3" />;
+}
+
 export default function QuestionCard({
   question,
   currentIndex,
@@ -39,7 +57,6 @@ export default function QuestionCard({
   existingLog = null,
 }: QuestionCardProps) {
   const containerRef = useRef<HTMLDivElement | null>(null);
-
   const {
     selectedVal,
     handleSelectOption,
@@ -47,6 +64,9 @@ export default function QuestionCard({
     handleOptionMouseLeave,
     finalizeLog,
     primaryDevice,
+    changeCount,
+    directionChanges,
+    hoverLogs,
   } = useBehaviorTracker({
     questionId: question.id,
     containerRef,
@@ -62,172 +82,183 @@ export default function QuestionCard({
 
   const onSubmit = useCallback(() => {
     if (selectedVal === null) return;
-    const log = finalizeLog();
-    onNext(log);
+    onNext(finalizeLog());
   }, [selectedVal, finalizeLog, onNext]);
 
   const onGoBack = useCallback(() => {
-    const log = finalizeLog();
-    if (onPrev) {
-      onPrev(log);
-    }
+    if (onPrev) onPrev(finalizeLog());
   }, [finalizeLog, onPrev]);
 
-  const getCategoryLabel = (cat: Question['category']) => {
-    switch (cat) {
-      case 'social':
-        return '사회적 상호작용 및 에너지';
-      case 'cognition':
-        return '인식 및 정보 수용 방식';
-      case 'decision':
-        return '의사 결정 및 판단 기준';
-      case 'lifestyle':
-        return '생활 양식 및 계획성';
-    }
-  };
-
-  const getDeviceIcon = () => {
-    switch (primaryDevice) {
-      case 'touch':
-        return <Smartphone className="w-3.5 h-3.5 text-lime-600 dark:text-lime-300" />;
-      case 'keyboard':
-        return <Keyboard className="w-3.5 h-3.5 text-lime-600 dark:text-lime-300" />;
-      case 'mouse':
-      default:
-        return <Mouse className="w-3.5 h-3.5 text-lime-600 dark:text-lime-300" />;
-    }
-  };
-
   return (
-    <div
-      ref={containerRef}
-      className="relative w-full max-w-2xl mx-auto glass-card rounded-3xl p-6 sm:p-10 shadow-2xl transition-all duration-300 text-foreground flex flex-col justify-between min-h-125"
-    >
-      {/* Top Header: Progress & Category */}
-      <div>
-        <div className="flex items-center justify-between text-xs text-muted-foreground mb-4 font-medium">
-          <Badge variant="indigo" className="font-medium">
-            {getCategoryLabel(question.category)}
-          </Badge>
-          <div className="flex items-center gap-2">
-            <Badge variant="secondary" className="flex items-center gap-1.5 text-xs font-normal">
-              {getDeviceIcon()}
-              <span>{primaryDevice === 'touch' ? '터치 감지' : '움직임 분석 중'}</span>
-            </Badge>
-            <span className="font-semibold text-sm">
-              <span className="text-foreground">{currentIndex + 1}</span>
-              <span className="text-muted-foreground font-normal"> / {totalQuestions}</span>
+    <div ref={containerRef} className="w-full max-w-5xl mx-auto px-5 py-4 sm:px-8 sm:py-8">
+      {/* Top Telemetry & Progress Bar */}
+      <div className="mb-8 flex flex-wrap items-center justify-between gap-4 border-b border-border/60 pb-5">
+        <div>
+          <div className="text-xs font-bold text-accent-ink">실시간 무의식 성향 검사</div>
+          <div className="mt-2.5 flex items-center gap-3">
+            <span className="text-xs font-medium text-neutral-600 dark:text-neutral-400">진행률</span>
+            <div className="h-2 w-36 overflow-hidden rounded-full bg-muted">
+              <div
+                className="h-full bg-accent-ink transition-all duration-300 rounded-full"
+                style={{ width: `${progressPercent}%` }}
+              />
+            </div>
+            <span className="font-mono text-xs font-extrabold text-foreground">
+              {currentIndex + 1} / {totalQuestions}
             </span>
           </div>
         </div>
 
-        {/* Smooth Modern Progress Bar */}
-        <div className="mb-8">
-          <Progress value={progressPercent} className="h-1.5 bg-muted" />
-        </div>
-
-        {/* Question Text */}
-        <div className="mb-8">
-          <h2 className="text-xl sm:text-2xl font-bold text-foreground leading-relaxed tracking-tight">
-            {question.title}
-          </h2>
-          {question.description && (
-            <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed mt-2 font-normal">
-              {question.description}
-            </p>
-          )}
+        <div className="flex items-center gap-3 text-xs text-muted-foreground">
+          <Badge variant="outline" className="text-xs font-bold border-border/80 text-foreground bg-muted/40">
+            {getCategoryLabel(question.category)}
+          </Badge>
+          <span className="flex items-center gap-1.5 text-accent-ink font-semibold">
+            <DeviceIcon device={primaryDevice} />
+            <span className="pulse-dot" />{' '}
+            {primaryDevice === 'mouse' ? '마우스' : primaryDevice === 'touch' ? '터치' : '키보드'} 연결됨
+          </span>
+          <span className="hidden sm:flex items-center gap-1.5 text-warning font-medium">
+            <Radio className="w-3.5 h-3.5" /> 실시간 분석 중
+          </span>
         </div>
       </div>
 
-      {/* Likert Scale Choices */}
-      <div className="my-auto py-4">
-        <div className="flex justify-between items-center text-xs font-semibold mb-4 px-2">
-          <span className="text-rose-500 dark:text-rose-400">비동의 (그렇지 않다)</span>
-          <span className="text-muted-foreground font-normal text-[11px]">중립</span>
-          <span className="text-lime-700 dark:text-lime-300">동의 (매우 그렇다)</span>
-        </div>
+      {/* Main Grid Layout: Question on Left, Telemetry Aside on Right */}
+      <div className="grid gap-6 lg:grid-cols-[1fr_260px]">
+        {/* Left: Main Question Section */}
+        <section className="rounded-2xl border border-border bg-card/80 p-6 sm:p-10 shadow-xl flex flex-col justify-between">
+          <div>
+            <div className="mb-8 flex items-center justify-between text-xs font-bold text-muted-foreground">
+              <span className="text-accent-ink">문항 #{String(currentIndex + 1).padStart(2, '0')}</span>
+              <span className="text-warning flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-warning animate-pulse" /> 실시간 관측 중
+              </span>
+            </div>
 
-        <div className="flex items-center justify-between gap-1.5 sm:gap-3 px-3 sm:px-6 py-6 bg-muted/60 dark:bg-card/90 rounded-2xl border border-border backdrop-blur-md">
-          {LIKERT_OPTIONS.map((opt, idx) => {
-            const isSelected = selectedVal === opt.value;
-            const sizeClass =
-              Math.abs(opt.value) === 3
-                ? 'w-12 h-12 sm:w-13 sm:h-13'
-                : Math.abs(opt.value) === 2
-                  ? 'w-10 h-10 sm:w-11 sm:h-11'
-                  : opt.value === 0
-                    ? 'w-8 h-8 sm:w-9 sm:h-9'
-                    : 'w-9 h-9 sm:w-10 sm:h-10';
+            <h1 className="max-w-2xl text-balance text-2xl font-extrabold leading-snug tracking-tight sm:text-3xl lg:text-4xl text-foreground">
+              {question.title}
+            </h1>
 
-            return (
-              <div
-                key={opt.value}
-                className="flex flex-col items-center gap-2 group flex-1"
-                onMouseEnter={() => handleOptionMouseEnter(opt.value)}
-                onMouseLeave={() => handleOptionMouseLeave(opt.value)}
-              >
-                <Button
-                  aria-label={opt.label}
-                  onClick={() => handleSelectOption(opt.value, 'mouse')}
-                  className={`
-                    relative rounded-full transition-all duration-200 p-0 flex items-center justify-center touch-manipulation shadow-xs
-                    ${sizeClass}
-                    ${
-                      isSelected
-                        ? 'bg-linear-to-tr from-lime-300 to-lime-500 text-neutral-950 shadow-lg shadow-lime-500/30 ring-4 ring-lime-500/20 scale-110 hover:from-lime-200 hover:to-lime-400'
-                        : 'bg-card border border-border hover:border-lime-400 text-transparent hover:scale-105 active:scale-95 hover:bg-muted'
-                    }
-                  `}
-                >
-                  {isSelected && <Check className="w-5 h-5 stroke-3 text-white" />}
-                </Button>
-                <span
-                  className={`text-[11px] sm:text-xs text-center transition-colors hidden sm:block ${
-                    isSelected
-                      ? 'text-lime-700 dark:text-lime-300 font-semibold'
-                      : 'text-muted-foreground group-hover:text-foreground'
-                  }`}
-                >
-                  {opt.label}
-                </span>
-                {/* Keyboard Shortcut Hint */}
-                <span className="hidden sm:inline text-[9px] text-muted-foreground bg-card px-1.5 py-0.5 rounded border border-border shadow-xs">
-                  {idx + 1}
-                </span>
+            {question.description && (
+              <p className="mt-4 text-xs sm:text-sm text-neutral-600 dark:text-neutral-300 font-medium leading-relaxed">
+                {question.description}
+              </p>
+            )}
+
+            {/* 7-Point Likert Scale Grid */}
+            <div className="mt-10 grid grid-cols-7 gap-1.5 sm:gap-2">
+              {LIKERT_OPTIONS.map((option, index) => {
+                const isSelected = selectedVal === option.value;
+                return (
+                  <button
+                    key={option.value}
+                    type="button"
+                    onClick={() => handleSelectOption(option.value, 'mouse')}
+                    onMouseEnter={() => handleOptionMouseEnter(option.value)}
+                    onMouseLeave={() => handleOptionMouseLeave(option.value)}
+                    aria-label={option.label}
+                    className={`likert ${isSelected ? 'selected' : ''}`}
+                  >
+                    <span>{index + 1}</span>
+                    <small className="hidden sm:block text-[9px] font-bold mt-1 text-center">{option.label}</small>
+                  </button>
+                );
+              })}
+            </div>
+
+            <div className="mt-4 flex justify-between text-xs font-semibold text-neutral-600 dark:text-neutral-400">
+              <span className="text-rose-500 font-bold">← 전혀 아니다</span>
+              <span className="text-neutral-500">중립</span>
+              <span className="text-emerald-500 font-bold">매우 그렇다 →</span>
+            </div>
+          </div>
+
+          {/* Footer Controls */}
+          <div className="mt-12 flex items-center justify-between border-t border-border/80 pt-6">
+            <Button
+              type="button"
+              variant="ghost"
+              onClick={onGoBack}
+              disabled={currentIndex === 0}
+              className="flex items-center gap-1.5 text-xs font-semibold text-neutral-600 dark:text-neutral-400 hover:text-foreground cursor-pointer disabled:opacity-30"
+            >
+              <ArrowLeft className="w-4 h-4" /> 이전 문항
+            </Button>
+
+            <Button
+              type="button"
+              disabled={selectedVal === null}
+              onClick={onSubmit}
+              className="bg-emerald-600 hover:bg-emerald-700 text-white dark:bg-lime-400 dark:hover:bg-lime-300 dark:text-neutral-950 text-xs font-bold px-7 py-5 rounded-xl shadow-md cursor-pointer disabled:opacity-40"
+            >
+              <span>{currentIndex + 1 === totalQuestions ? '결과 분석하기' : '다음 문항'}</span>
+              <ArrowRight className="w-4 h-4 ml-1" />
+            </Button>
+          </div>
+        </section>
+
+        {/* Right Aside: Telemetry Live Monitor */}
+        <aside className="flex flex-col gap-4">
+          <div className="rounded-2xl border border-border bg-card/60 p-5 shadow-sm">
+            <div className="flex items-center justify-between text-xs font-bold text-foreground border-b border-border/60 pb-3">
+              <span className="flex items-center gap-1.5 text-accent-ink">
+                <span className="pulse-dot" /> 실시간 센서
+              </span>
+              <span className="text-warning font-mono">99.1%</span>
+            </div>
+
+            <div className="mt-5 space-y-4 text-xs font-medium">
+              <div>
+                <div className="flex justify-between text-neutral-600 dark:text-neutral-400">
+                  <span>커서 흔들림</span>
+                  <span className="text-foreground font-bold">{directionChanges > 2 ? '고민 발생' : '안정적'}</span>
+                </div>
+                <div className="mt-1.5 h-1.5 rounded-full bg-muted overflow-hidden">
+                  <div
+                    className="h-full bg-accent-ink transition-all"
+                    style={{ width: `${Math.min(100, Math.max(20, directionChanges * 25))}%` }}
+                  />
+                </div>
               </div>
-            );
-          })}
-        </div>
-      </div>
 
-      {/* Footer Navigation Controls */}
-      <div className="flex items-center justify-between pt-6 border-t border-border mt-6">
-        {currentIndex > 0 ? (
-          <Button
-            type="button"
-            variant="ghost"
-            onClick={onGoBack}
-            className="flex items-center gap-2 text-xs sm:text-sm font-medium text-muted-foreground hover:text-foreground"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            <span>이전 문항</span>
-          </Button>
-        ) : (
-          <div />
-        )}
+              <div>
+                <div className="flex justify-between text-neutral-600 dark:text-neutral-400">
+                  <span>선택 번복 신호</span>
+                  <span className="text-foreground font-bold">{changeCount > 0 ? '재고민' : '직진형'}</span>
+                </div>
+                <div className="mt-1.5 h-1.5 rounded-full bg-muted overflow-hidden">
+                  <div
+                    className="h-full bg-warning transition-all"
+                    style={{ width: `${changeCount > 0 ? 88 : 30}%` }}
+                  />
+                </div>
+              </div>
 
-        <div className="flex items-center gap-3">
-          <Button
-            type="button"
-            disabled={selectedVal === null}
-            onClick={onSubmit}
-            variant={selectedVal !== null ? 'gradient' : 'secondary'}
-            className="rounded-full px-6 py-3 text-xs sm:text-sm font-semibold shadow-lg shadow-lime-500/20"
-          >
-            <span>{currentIndex + 1 === totalQuestions ? '결과 분석하기' : '다음 문항'}</span>
-            <ArrowRight className="w-4 h-4" />
-          </Button>
-        </div>
+              <div>
+                <div className="flex justify-between text-neutral-600 dark:text-neutral-400">
+                  <span>선택지 탐색</span>
+                  <span className="text-foreground font-bold font-mono">{hoverLogs?.length || 0}회 이벤트</span>
+                </div>
+                <div className="mt-1.5 h-1.5 rounded-full bg-muted overflow-hidden">
+                  <div
+                    className="h-full bg-foreground transition-all"
+                    style={{ width: `${Math.min(100, (hoverLogs?.length || 0) * 20)}%` }}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="rounded-2xl border border-border/80 bg-card/40 p-5">
+            <Keyboard className="mb-2.5 w-4 h-4 text-warning" />
+            <p className="text-xs leading-relaxed text-neutral-600 dark:text-neutral-300 font-medium">
+              숫자키 <span className="text-foreground font-extrabold">1 — 7</span> 로 즉시 선택하고,{' '}
+              <span className="text-foreground font-extrabold">Enter</span> 또는{' '}
+              <span className="text-foreground font-extrabold">→</span> 로 빠르게 다음으로 이동할 수 있습니다.
+            </p>
+          </div>
+        </aside>
       </div>
     </div>
   );

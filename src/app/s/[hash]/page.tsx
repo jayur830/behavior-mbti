@@ -1,9 +1,9 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 
-import Logo from '@/assets/logo.svg';
+import AppFooter from '@/components/AppFooter';
+import AppHeader from '@/components/AppHeader';
 import ResultView from '@/components/ResultView';
-import ThemeToggle from '@/components/ThemeToggle';
 import Button from '@/components/ui/button';
 import { getResultFromDb } from '@/lib/db';
 import { decodeResultFromCompressedString } from '@/lib/shareResult';
@@ -81,63 +81,35 @@ export default async function Page({ params }: Props) {
 
   if (!result) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center p-6 text-center">
-        <div className="w-16 h-16 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center mb-6">
-          <span className="text-2xl font-black text-amber-400">?</span>
-        </div>
-        <h1 className="text-2xl font-bold text-white mb-2">분석 리포트를 찾을 수 없습니다</h1>
-        <p className="text-sm text-muted-foreground max-w-md mb-8">
-          링크가 만료되었거나 올바르지 않은 주소입니다. 지금 나만의 무의식 행동 MBTI를 직접 검사해보세요!
-        </p>
-        <Button asChild variant="gradient" size="lg" className="rounded-full px-6 py-3 font-semibold text-sm">
-          <Link href="/test">
-            <span>내 성향 직접 검사해보기</span>
-          </Link>
-        </Button>
+      <div className="app-shell flex min-h-screen flex-col">
+        <AppHeader mode="shared" />
+        <main className="analysis-state my-auto mx-auto w-full max-w-2xl border-0 bg-transparent shadow-none">
+          <div>
+            <div className="analysis-state__icon mx-auto">
+              <span className="text-2xl font-black">?</span>
+            </div>
+            <h2>분석 리포트를 찾을 수 없습니다</h2>
+            <p>링크가 만료되었거나 올바르지 않은 주소입니다. 지금 나만의 무의식 행동 MBTI를 직접 검사해보세요!</p>
+            <Button asChild variant="gradient" size="lg" className="mt-8 rounded-full px-6 py-3 font-semibold text-sm">
+              <Link href="/test">내 성향 직접 검사해보기</Link>
+            </Button>
+          </div>
+        </main>
+        <AppFooter />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen flex flex-col justify-between selection:bg-emerald-500/20 selection:text-emerald-300 dark:selection:text-emerald-200">
-      {/* Navigation Header */}
-      <header className="w-full border-b border-border backdrop-blur-xl sticky top-0 z-40 bg-background/80">
-        <div className="max-w-5xl mx-auto px-6 h-16 flex items-center justify-between">
-          <Link
-            href="/"
-            className="flex items-center gap-3 font-semibold text-foreground hover:opacity-90 transition-opacity"
-          >
-            <Logo className="w-8 h-8 rounded-xl shrink-0" />
-            <span className="tracking-tight text-base font-bold text-foreground">
-              Persona<span className="accent-ink font-normal">Lens</span>
-            </span>
-          </Link>
-
-          <div className="flex items-center gap-2">
-            <ThemeToggle />
-            <Button asChild variant="gradient" size="sm" className="rounded-full px-4 py-2 text-xs font-semibold">
-              <Link href="/test">
-                <span>나도 검사하기</span>
-              </Link>
-            </Button>
-          </div>
-        </div>
-      </header>
+    <div className="app-shell flex min-h-screen flex-col">
+      <AppHeader mode="shared" />
 
       {/* Main Shared Result View */}
-      <main className="flex-1 flex flex-col items-center justify-center px-4 py-10">
+      <main className="flex-1">
         <ResultView result={result} isSharedView />
       </main>
 
-      {/* Minimal Footer */}
-      <footer className="w-full border-t border-border py-8 text-center text-xs text-muted-foreground">
-        <div className="max-w-5xl mx-auto px-6 flex flex-col items-center justify-between gap-3 sm:flex-row">
-          <p>© 2026 PersonaLens. All rights reserved.</p>
-          <p className="text-[11px] text-muted-foreground">
-            본 서비스는 행동 궤적 분석을 통한 흥미 및 자기 탐색용 서비스이며, 공식 MBTI® 검사와는 무관합니다.
-          </p>
-        </div>
-      </footer>
+      <AppFooter />
     </div>
   );
 }

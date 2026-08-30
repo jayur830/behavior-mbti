@@ -1,14 +1,12 @@
 'use client';
 
 import { Activity } from 'lucide-react';
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useMemo, useState, useSyncExternalStore } from 'react';
 
-import Logo from '@/assets/logo.svg';
+import AppFooter from '@/components/AppFooter';
+import AppHeader from '@/components/AppHeader';
 import QuestionCard from '@/components/QuestionCard';
-import ThemeToggle from '@/components/ThemeToggle';
-import Badge from '@/components/ui/badge';
 import { getRandomQuestions } from '@/data/questions';
 import { analyzeBehaviorAndMBTI } from '@/lib/analyzer';
 import type { Question, QuestionBehaviorLog } from '@/types';
@@ -74,11 +72,18 @@ export default function Page() {
 
   if (questions.length === 0) {
     return (
-      <div className="min-h-screen bg-[#090a0f] text-neutral-100 flex flex-col justify-center items-center font-mono text-xs">
-        <div className="flex items-center gap-2 text-neutral-400">
-          <Activity className="w-4 h-4 text-emerald-400 animate-pulse" />
-          <span>GENERATING RANDOMIZED QUESTION SET...</span>
-        </div>
+      <div className="app-shell flex min-h-screen flex-col">
+        <AppHeader mode="testing" />
+        <main className="analysis-state flex-1">
+          <div>
+            <div className="analysis-state__icon mx-auto">
+              <Activity className="h-5 w-5 animate-pulse" />
+            </div>
+            <h2>문항 세트를 준비하고 있어요</h2>
+            <p>잠시만 기다려주세요.</p>
+          </div>
+        </main>
+        <AppFooter />
       </div>
     );
   }
@@ -87,63 +92,56 @@ export default function Page() {
   const activeQuestion = questions[currentQuestionIdx];
 
   return (
-    <div className="min-h-screen flex flex-col justify-between selection:bg-lime-300/30 relative">
-      {/* Navigation Header */}
-      <header className="w-full border-b border-border backdrop-blur-xl sticky top-0 z-40 bg-background/80">
-        <div className="max-w-5xl mx-auto px-6 h-16 flex items-center justify-between">
-          <Link
-            href="/"
-            className="flex items-center gap-3 font-semibold text-foreground hover:opacity-90 transition-opacity"
-          >
-            <Logo className="w-8 h-8 rounded-xl shrink-0" />
-            <span className="tracking-tight text-base font-bold text-foreground">
-              Persona<span className="accent-ink font-normal">Lens</span>
-            </span>
-          </Link>
+    <div className="app-shell flex min-h-screen flex-col">
+      <AppHeader mode="testing" />
 
-          <div className="flex items-center gap-2">
-            <ThemeToggle />
-            <Badge variant="secondary" className="flex items-center gap-2 text-xs font-medium">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-              <span>실시간 측정 중</span>
-            </Badge>
+      <main className="test-main flex-1">
+        <div className="test-main__inner">
+          <aside className="test-rail" aria-label="검사 안내">
+            <div>
+              <p className="test-rail__eyebrow">Live session / 01</p>
+              <h1>당신의 선택 리듬을 읽는 중</h1>
+              <p>정답은 없습니다. 지금 가장 가까운 답을 고르면 돼요.</p>
+            </div>
+            <span className="status-chip status-chip--live">
+              <span className="status-chip__dot" />
+              비공개 분석
+            </span>
+            <ul className="test-rail__list">
+              <li className="is-active">문항을 읽고 솔직하게 선택</li>
+              <li>머뭇거림과 수정도 함께 기록</li>
+              <li>완료 후 개인 리포트 확인</li>
+            </ul>
+          </aside>
+
+          <div className="test-stage">
+            {isAnalyzing || !isMounted || !activeQuestion ? (
+              <div className="analysis-state">
+                <div>
+                  <div className="analysis-state__icon mx-auto">
+                    <Activity className="h-5 w-5 animate-pulse" />
+                  </div>
+                  <h2>선택의 리듬을 분석하고 있어요</h2>
+                  <p>마우스 궤적, 체류 시간, 상호작용 데이터를 종합해 나만의 리포트를 만드는 중입니다.</p>
+                </div>
+              </div>
+            ) : (
+              <QuestionCard
+                key={activeQuestion.id}
+                question={activeQuestion}
+                currentIndex={currentQuestionIdx}
+                totalQuestions={questions.length}
+                initialValue={currentLog?.finalValue ?? null}
+                existingLog={currentLog}
+                onNext={handleQuestionNext}
+                onPrev={handleQuestionPrev}
+              />
+            )}
           </div>
         </div>
-      </header>
-
-      {/* Main Content Area */}
-      <main className="flex-1 flex flex-col justify-center items-center px-4 py-8">
-        {isAnalyzing || !isMounted || !activeQuestion ? (
-          <div className="flex flex-col items-center justify-center text-center p-8 max-w-sm animate-fade-in">
-            <div className="w-12 h-12 rounded-full border border-border bg-card flex items-center justify-center mb-6 shadow-inner">
-              <Activity className="w-5 h-5 text-emerald-500 animate-pulse" />
-            </div>
-            <h3 className="text-base font-bold text-foreground mb-1.5 font-mono">ANALYZING TELEMETRY...</h3>
-            <p className="text-xs text-muted-foreground font-light leading-relaxed">
-              마우스 궤적, 문항별 체류 시간, 세부 상호작용 데이터를 종합하여 무의식적 성향을 분석하고 있습니다.
-            </p>
-          </div>
-        ) : (
-          <QuestionCard
-            key={activeQuestion.id}
-            question={activeQuestion}
-            currentIndex={currentQuestionIdx}
-            totalQuestions={questions.length}
-            initialValue={currentLog?.finalValue ?? null}
-            existingLog={currentLog}
-            onNext={handleQuestionNext}
-            onPrev={handleQuestionPrev}
-          />
-        )}
       </main>
 
-      {/* Minimal Footer */}
-      <footer className="w-full border-t border-border py-6 text-center text-xs text-muted-foreground font-mono">
-        <div className="max-w-4xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
-          <span>© 2026 PersonaLens. All rights reserved.</span>
-          <span className="text-[11px]">BEHAVIORAL INTERACTION ANALYSIS</span>
-        </div>
-      </footer>
+      <AppFooter />
     </div>
   );
 }

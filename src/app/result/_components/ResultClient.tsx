@@ -1,13 +1,12 @@
 'use client';
 
 import { Activity, ArrowRight } from 'lucide-react';
-import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Suspense, useEffect, useMemo, useSyncExternalStore } from 'react';
 
-import Logo from '@/assets/logo.svg';
+import AppFooter from '@/components/AppFooter';
+import AppHeader from '@/components/AppHeader';
 import ResultView from '@/components/ResultView';
-import ThemeToggle from '@/components/ThemeToggle';
 import Button from '@/components/ui/button';
 import { decodeResultFromCompressedString } from '@/lib/shareResult';
 import type { FullAnalysisResult } from '@/types';
@@ -53,32 +52,34 @@ function ResultContent({ onHome, onRestart }: ResultContentProps) {
 
   if (!isMounted) {
     return (
-      <div className="flex flex-col items-center justify-center p-12 text-center">
-        <div className="w-12 h-12 rounded-full border border-white/10 bg-neutral-900 flex items-center justify-center mb-6 shadow-inner animate-pulse">
-          <Activity className="w-5 h-5 text-emerald-400" />
+      <div className="analysis-state my-auto w-full max-w-2xl border-0 bg-transparent shadow-none">
+        <div>
+          <div className="analysis-state__icon mx-auto">
+            <Activity className="h-5 w-5 animate-pulse" />
+          </div>
+          <h2>리포트 데이터를 불러오는 중입니다...</h2>
         </div>
-        <h3 className="text-sm font-semibold text-muted-foreground">리포트 데이터를 불러오는 중입니다...</h3>
       </div>
     );
   }
 
   if (!result) {
     return (
-      <div className="flex flex-col items-center justify-center p-8 text-center max-w-md mx-auto">
-        <div className="w-16 h-16 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center mb-6">
-          <span className="text-2xl font-black text-amber-400">?</span>
+      <div className="analysis-state my-auto w-full max-w-2xl border-0 bg-transparent shadow-none">
+        <div>
+          <div className="analysis-state__icon mx-auto">
+            <span className="text-2xl font-black">?</span>
+          </div>
+          <h2>분석 결과를 찾을 수 없습니다</h2>
+          <p>저장된 검사 세션이 만료되었거나 올바르지 않은 접근입니다. 새로운 성향 검사를 진행해보세요.</p>
+          <Button
+            onClick={onRestart}
+            className="mt-8 inline-flex rounded-full px-6 py-3 text-xs font-semibold sm:text-sm"
+          >
+            <span>MBTI 검사 시작하기</span>
+            <ArrowRight className="h-4 w-4" />
+          </Button>
         </div>
-        <h2 className="text-xl font-bold text-white mb-2">분석 결과를 찾을 수 없습니다</h2>
-        <p className="text-xs text-muted-foreground mb-6 leading-relaxed">
-          저장된 검사 세션이 만료되었거나 올바르지 않은 접근입니다. 새로운 성향 검사를 진행해보세요.
-        </p>
-        <Button
-          onClick={onRestart}
-          className="inline-flex items-center gap-2 px-6 py-3 rounded-full font-semibold text-xs sm:text-sm bg-linear-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white shadow-lg shadow-emerald-500/25 transition-all"
-        >
-          <span>MBTI 검사 시작하기</span>
-          <ArrowRight className="w-4 h-4" />
-        </Button>
       </div>
     );
   }
@@ -153,32 +154,18 @@ export default function ResultClient() {
   }, [router]);
 
   return (
-    <div className="min-h-screen flex flex-col justify-between selection:bg-emerald-500/20 selection:text-emerald-300 dark:selection:text-emerald-200 relative">
-      {/* Navigation Header */}
-      <header className="w-full border-b border-border backdrop-blur-xl sticky top-0 z-40 bg-background/80">
-        <div className="max-w-5xl mx-auto px-6 h-16 flex items-center justify-between">
-          <Link
-            href="/"
-            onClick={handleHome}
-            className="flex items-center gap-3 font-semibold text-foreground hover:opacity-90 transition-opacity"
-          >
-            <Logo className="w-8 h-8 rounded-xl shrink-0" />
-            <span className="tracking-tight text-base font-bold text-foreground">
-              Persona<span className="accent-ink font-normal">Lens</span>
-            </span>
-          </Link>
-
-          <ThemeToggle />
-        </div>
-      </header>
+    <div className="app-shell flex min-h-screen flex-col">
+      <AppHeader mode="result" onLogoClick={handleHome} />
 
       {/* Result Main View */}
-      <main className="flex-1 flex flex-col items-center justify-center px-4 py-10">
+      <main className="flex-1">
         <Suspense
           fallback={
-            <div className="flex flex-col items-center justify-center gap-4 text-xs font-medium text-muted-foreground my-auto py-20">
-              <Activity className="w-6 h-6 text-emerald-500 animate-spin" />
-              <span>진단 결과 리포트를 불러오는 중입니다...</span>
+            <div className="analysis-state my-auto border-0 bg-transparent shadow-none">
+              <div className="flex flex-col items-center gap-3 text-xs text-muted-foreground">
+                <Activity className="h-6 w-6 animate-spin text-emerald-500" />
+                <span>진단 결과 리포트를 불러오는 중입니다...</span>
+              </div>
             </div>
           }
         >
@@ -186,15 +173,7 @@ export default function ResultClient() {
         </Suspense>
       </main>
 
-      {/* Minimal Footer */}
-      <footer className="w-full border-t border-border py-8 text-center text-xs text-muted-foreground">
-        <div className="max-w-5xl mx-auto px-6 flex flex-col items-center justify-between gap-3 sm:flex-row">
-          <p>© 2026 PersonaLens. All rights reserved.</p>
-          <p className="text-[11px] text-muted-foreground">
-            본 서비스는 행동 궤적 분석을 통한 흥미 및 자기 탐색용 서비스이며, 공식 MBTI® 검사와는 무관합니다.
-          </p>
-        </div>
-      </footer>
+      <AppFooter />
     </div>
   );
 }

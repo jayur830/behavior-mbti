@@ -29,8 +29,8 @@ export default function ThemeToggle({ className }: ThemeToggleProps) {
 
   if (!isMounted) {
     return (
-      <div className={`w-14 h-8 rounded-full bg-muted border border-border p-1 flex items-center ${className || ''}`}>
-        <div className="w-6 h-6 rounded-full bg-muted-foreground/30" />
+      <div className={`theme-toggle theme-toggle--placeholder ${className || ''}`} aria-hidden="true">
+        <div />
       </div>
     );
   }
@@ -42,28 +42,19 @@ export default function ThemeToggle({ className }: ThemeToggleProps) {
       aria-checked={isDark}
       aria-label="테마 전환"
       onClick={toggleTheme}
-      className={`
-        relative inline-flex items-center justify-start w-14 h-8 min-h-8 max-h-8 p-1 rounded-full transition-colors duration-300 hover:bg-transparent focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 shrink-0
-        ${isDark ? 'bg-card border border-border' : 'bg-muted border border-border'}
-        ${className || ''}
-      `}
+      className={`theme-toggle ${isDark ? 'theme-toggle--dark' : 'theme-toggle--light'} ${className || ''}`}
     >
       {/* Background Track Icons */}
-      <span className="absolute left-2 text-amber-500 opacity-80 pointer-events-none">
-        <Sun className="w-3.5 h-3.5" />
+      <span className="theme-toggle__track-icon theme-toggle__track-icon--sun" aria-hidden="true">
+        <Sun />
       </span>
-      <span className="absolute right-2 text-emerald-400 opacity-80 pointer-events-none">
-        <Moon className="w-3.5 h-3.5" />
+      <span className="theme-toggle__track-icon theme-toggle__track-icon--moon" aria-hidden="true">
+        <Moon />
       </span>
 
       {/* Sliding Circle Thumb */}
-      <span
-        className={`
-          relative z-10 flex items-center justify-center w-6 h-6 rounded-full shadow-md transition-transform duration-300 ease-in-out
-          ${isDark ? 'translate-x-6 bg-card border border-border text-emerald-400' : 'translate-x-0 bg-white text-amber-500'}
-        `}
-      >
-        {isDark ? <Moon className="w-3.5 h-3.5" /> : <Sun className="w-3.5 h-3.5" />}
+      <span className="theme-toggle__thumb" aria-hidden="true">
+        {isDark ? <Moon /> : <Sun />}
       </span>
     </Button>
   );
