@@ -1,6 +1,6 @@
 'use client';
 
-import { ArrowRight, ChevronRight, Keyboard, ShieldCheck } from 'lucide-react';
+import { ArrowRight, Keyboard, ShieldCheck } from 'lucide-react';
 
 import Button from '@/components/ui/button';
 
@@ -125,84 +125,6 @@ export default function TestIntro({ onStart, onExploreCatalog }: TestIntroProps)
               </div>
             </div>
           </div>
-        </div>
-      </section>
-
-      {/* Catalog Preview Section */}
-      <section className="border-t border-border pt-10">
-        <div className="mb-6 flex items-end justify-between">
-          <div>
-            <div className="text-xs font-bold uppercase tracking-wider text-accent-ink">원하는 검사 선택</div>
-            <h2 className="mt-2 text-2xl font-extrabold tracking-tight text-foreground">
-              짧은 검사로 확인하는 가장 날카로운 내면 분석
-            </h2>
-          </div>
-          <span className="hidden font-mono text-xs font-semibold text-muted-foreground sm:block">01 — 03</span>
-        </div>
-
-        <div className="grid gap-3 md:grid-cols-3">
-          <button
-            onClick={onStart}
-            className="catalog-card rounded-2xl group text-left cursor-pointer hover:border-accent-ink transition-all"
-          >
-            <div className="font-mono text-xs font-extrabold text-accent-ink">01</div>
-            <div className="mt-6 flex items-end justify-between gap-3">
-              <div>
-                <h3 className="text-base font-bold text-foreground group-hover:text-accent-ink transition-colors">
-                  무의식 성향 (MBTI 유형)
-                </h3>
-                <p className="mt-2 text-xs leading-relaxed text-neutral-600 dark:text-neutral-300 font-medium">
-                  첫 직관과 최종 수정된 선택 사이의 내면 갭을 분석합니다.
-                </p>
-              </div>
-              <ChevronRight className="w-4 h-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-1 group-hover:text-accent-ink" />
-            </div>
-            <div className="mt-6 border-t border-border/60 pt-3 text-xs text-neutral-500 dark:text-neutral-400 font-medium">
-              예상 소요 시간 <span className="float-right font-bold text-foreground">약 3~5분</span>
-            </div>
-          </button>
-
-          <button
-            onClick={onExploreCatalog || onStart}
-            className="catalog-card rounded-2xl group text-left cursor-pointer hover:border-accent-ink transition-all"
-          >
-            <div className="font-mono text-xs font-extrabold text-warning">02</div>
-            <div className="mt-6 flex items-end justify-between gap-3">
-              <div>
-                <h3 className="text-base font-bold text-foreground group-hover:text-warning transition-colors">
-                  결정 지연 (망설임 지수)
-                </h3>
-                <p className="mt-2 text-xs leading-relaxed text-neutral-600 dark:text-neutral-300 font-medium">
-                  딜레마 상황에서 커서의 방황과 우유부단 지수를 도출합니다.
-                </p>
-              </div>
-              <ChevronRight className="w-4 h-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-1 group-hover:text-warning" />
-            </div>
-            <div className="mt-6 border-t border-border/60 pt-3 text-xs text-neutral-500 dark:text-neutral-400 font-medium">
-              예상 소요 시간 <span className="float-right font-bold text-foreground">약 2분</span>
-            </div>
-          </button>
-
-          <button
-            onClick={onExploreCatalog || onStart}
-            className="catalog-card rounded-2xl group text-left cursor-pointer hover:border-accent-ink transition-all"
-          >
-            <div className="font-mono text-xs font-extrabold text-neutral-500 dark:text-neutral-400">03</div>
-            <div className="mt-6 flex items-end justify-between gap-3">
-              <div>
-                <h3 className="text-base font-bold text-foreground group-hover:text-foreground transition-colors">
-                  인지 리플렉스 (반응 잠복기)
-                </h3>
-                <p className="mt-2 text-xs leading-relaxed text-neutral-600 dark:text-neutral-300 font-medium">
-                  문항 노출 직후 첫 번째 인터랙션까지의 잠복기를 측정합니다.
-                </p>
-              </div>
-              <ChevronRight className="w-4 h-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-1 group-hover:text-foreground" />
-            </div>
-            <div className="mt-6 border-t border-border/60 pt-3 text-xs text-neutral-500 dark:text-neutral-400 font-medium">
-              예상 소요 시간 <span className="float-right font-bold text-foreground">약 2분</span>
-            </div>
-          </button>
         </div>
       </section>
     </div>
