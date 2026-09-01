@@ -69,80 +69,59 @@ export default function TestIntro({ onStart, onExploreCatalog }: TestIntroProps)
           </div>
         </div>
 
-        {/* Live Cursor Telemetry Preview Visualizer */}
-        <div className="animate-rise [animation-delay:120ms]">
-          <div className="mb-3 flex items-center justify-between text-xs font-semibold text-neutral-600 dark:text-neutral-400">
-            <span>실시간 커서 궤적 시뮬레이션</span>
-            <span className="flex items-center gap-1.5 text-accent-ink font-bold">
-              <span className="pulse-dot" /> 실시간 분석 중
-            </span>
+        {/* 3-Step Behavioral Analysis Engine Overview */}
+        <div className="animate-rise [animation-delay:120ms] flex flex-col gap-3.5">
+          <div className="mb-1 flex items-center justify-between text-xs font-bold text-neutral-600 dark:text-neutral-400">
+            <span>무의식 행동 분석 3단계 프로세스</span>
+            <span className="text-accent-ink font-mono font-bold">ANALYSIS ENGINE</span>
           </div>
 
-          <div className="trace-canvas relative min-h-48 overflow-hidden rounded-2xl border border-border bg-card/80 p-5 shadow-2xl">
-            <div className="scanline" />
-            <div
-              className="absolute inset-0 opacity-25 pointer-events-none"
-              style={{
-                backgroundImage:
-                  'linear-gradient(var(--border) 1px, transparent 1px), linear-gradient(90deg, var(--border) 1px, transparent 1px)',
-                backgroundSize: '30px 30px',
-              }}
-            />
-
-            <svg
-              className="relative h-full min-h-36 w-full"
-              viewBox="0 0 600 180"
-              preserveAspectRatio="none"
-              aria-label="선택지 사이를 이동하는 커서 궤적 시뮬레이션"
-            >
-              <defs>
-                <filter id="preview-glow">
-                  <feGaussianBlur stdDeviation="5" />
-                </filter>
-              </defs>
-              <path
-                d="M22 149 C80 143, 61 73, 130 98 S180 150, 231 84 S276 42, 324 75 S375 131, 410 70 S462 48, 503 95 S550 120, 579 34"
-                fill="none"
-                stroke="var(--accent-ink)"
-                strokeWidth="2.5"
-                strokeDasharray="4 6"
-                opacity="0.9"
-              />
-              <path
-                d="M22 149 C80 143, 61 73, 130 98 S180 150, 231 84 S276 42, 324 75 S375 131, 410 70 S462 48, 503 95 S550 120, 579 34"
-                fill="none"
-                stroke="var(--accent-ink)"
-                strokeWidth="6"
-                opacity="0.3"
-                filter="url(#preview-glow)"
-              />
-              <circle cx="579" cy="34" r="5" fill="var(--accent-ink)" />
-              <circle cx="579" cy="34" r="14" fill="none" stroke="var(--accent-ink)" opacity="0.5" />
-            </svg>
-
-            <span className="absolute bottom-3 left-4 font-mono text-[10px] font-bold text-neutral-400">
-              TRACE_ID // 7F-A9-02
-            </span>
-            <span className="absolute right-4 top-3 font-mono text-[10px] font-extrabold text-accent-ink">
-              실시간 리플레이
-            </span>
-          </div>
-
-          <div className="mt-3 grid grid-cols-3 gap-px rounded-xl overflow-hidden border border-border bg-border">
-            <div className="bg-card p-4">
-              <div className="text-[11px] font-semibold text-neutral-600 dark:text-neutral-400">평균 체류 편차</div>
-              <div className="mt-1 font-mono text-xl font-extrabold text-accent-ink">
-                0.42<span className="text-xs font-normal">σ</span>
+          <div className="rounded-2xl border border-border bg-card/80 p-5 shadow-sm hover:border-accent-ink/60 transition-colors">
+            <div className="flex items-start gap-4">
+              <div className="w-10 h-10 rounded-xl bg-accent-ink/10 border border-accent-ink/25 flex items-center justify-center shrink-0 text-accent-ink font-mono font-extrabold text-sm">
+                01
+              </div>
+              <div>
+                <h3 className="text-sm font-bold text-foreground flex items-center gap-2">
+                  실시간 궤적 & 커서 떨림 추적
+                </h3>
+                <p className="mt-1.5 text-xs text-neutral-600 dark:text-neutral-300 leading-relaxed font-medium">
+                  문항을 읽는 동안 마우스 커서 또는 터치가 이동한 경로와 미세한 흔들림을 0.01초 단위로 정밀하게
+                  기록합니다.
+                </p>
               </div>
             </div>
-            <div className="bg-card p-4">
-              <div className="text-[11px] font-semibold text-neutral-600 dark:text-neutral-400">미세 망설임</div>
-              <div className="mt-1 font-mono text-xl font-extrabold text-warning">12회</div>
+          </div>
+
+          <div className="rounded-2xl border border-border bg-card/80 p-5 shadow-sm hover:border-warning/60 transition-colors">
+            <div className="flex items-start gap-4">
+              <div className="w-10 h-10 rounded-xl bg-warning/10 border border-warning/25 flex items-center justify-center shrink-0 text-warning font-mono font-extrabold text-sm">
+                02
+              </div>
+              <div>
+                <h3 className="text-sm font-bold text-foreground flex items-center gap-2">
+                  선택지 체류 & 망설임 시간 계산
+                </h3>
+                <p className="mt-1.5 text-xs text-neutral-600 dark:text-neutral-300 leading-relaxed font-medium">
+                  특정 보기 위에서 고민하며 머뭇거린 체류 시간(Dwell Time)을 측정해 딜레마와 의사결정 템포를 분석합니다.
+                </p>
+              </div>
             </div>
-            <div className="bg-card p-4">
-              <div className="text-[11px] font-semibold text-neutral-600 dark:text-neutral-400">신호 신뢰도</div>
-              <div className="mt-1 font-mono text-xl font-extrabold text-foreground">
-                A<span className="text-xs font-normal text-muted-foreground">+</span>
+          </div>
+
+          <div className="rounded-2xl border border-border bg-card/80 p-5 shadow-sm hover:border-emerald-500/60 transition-colors">
+            <div className="flex items-start gap-4">
+              <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/25 flex items-center justify-center shrink-0 text-emerald-500 font-mono font-extrabold text-sm">
+                03
+              </div>
+              <div>
+                <h3 className="text-sm font-bold text-foreground flex items-center gap-2">
+                  첫 직관 vs 최종 선택 갭 도출
+                </h3>
+                <p className="mt-1.5 text-xs text-neutral-600 dark:text-neutral-300 leading-relaxed font-medium">
+                  본능적으로 먼저 누른 첫 번째 선택과 생각을 고쳐 바꾼 번복 결과를 비교하여 본능과 페르소나의 차이를
+                  산출합니다.
+                </p>
               </div>
             </div>
           </div>
