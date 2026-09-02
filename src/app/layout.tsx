@@ -60,10 +60,8 @@ export const metadata: Metadata = {
     title: 'PersonaLens | 무의식 행동으로 읽는 나만의 페르소나',
     description: '선택의 순간, 머뭇거림과 망설임의 궤적을 분석하여 당신의 진짜 내면과 페르소나를 도출합니다.',
   },
-  verification: {
-    other: {
-      'naver-site-verification': '57be254f3c46e2d000d67eb616b54d73a181f8da',
-    },
+  other: {
+    'naver-site-verification': '57be254f3c46e2d000d67eb616b54d73a181f8da',
   },
 };
 
@@ -103,6 +101,7 @@ export default function RootLayout({ children }: Readonly<RootLayoutProps>) {
   return (
     <html lang="ko" suppressHydrationWarning className={`${plusJakartaSans.variable} font-sans h-full antialiased`}>
       <head>
+        <meta name="naver-site-verification" content="57be254f3c46e2d000d67eb616b54d73a181f8da" />
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       </head>
       <body className="min-h-full flex flex-col bg-background text-foreground relative overflow-x-hidden transition-colors duration-300">
