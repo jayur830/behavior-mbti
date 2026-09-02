@@ -4,6 +4,7 @@ import { ArrowUpRight } from 'lucide-react';
 import Link from 'next/link';
 import type { MouseEvent } from 'react';
 
+import LogoSvg from '@/assets/logo.svg';
 import ThemeToggle from '@/components/ThemeToggle';
 import Button from '@/components/ui/button';
 
@@ -24,9 +25,7 @@ export default function AppHeader({ mode = 'home', onLogoClick, onCatalogClick }
         className="group flex items-center gap-3"
         aria-label="PersonaLens 홈으로 이동"
       >
-        <span className="brand-mark">
-          <span />
-        </span>
+        <LogoSvg className="h-7 w-7 shrink-0 rounded-lg shadow-sm transition-transform duration-200 group-hover:scale-105" />
         <span className="font-mono text-sm font-bold tracking-[0.18em] text-foreground">
           PERSONA<span className="text-accent-ink font-extrabold">LENS</span>
         </span>
