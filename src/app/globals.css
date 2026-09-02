@@ -10,6 +10,12 @@
   --color-border: var(--border);
   --color-muted: var(--muted);
   --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-strong: var(--accent-strong);
+  --color-accent-ink: var(--accent-ink);
+  --color-ink-soft: var(--ink-soft);
+  --color-danger: var(--danger);
+  --color-warning: var(--warning);
 }
 
 @layer base {

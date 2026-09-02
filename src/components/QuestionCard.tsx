@@ -5,6 +5,7 @@ import { useCallback, useRef } from 'react';
 
 import Badge from '@/components/ui/badge';
 import Button from '@/components/ui/button';
+import Progress from '@/components/ui/progress';
 import { useBehaviorTracker } from '@/hooks/useBehaviorTracker';
 import type { Question, QuestionBehaviorLog } from '@/types';
 
@@ -97,14 +98,14 @@ export default function QuestionCard({
           <div className="text-xs font-bold text-accent-ink">실시간 무의식 성향 검사</div>
           <div className="mt-2.5 flex items-center gap-3">
             <span className="text-xs font-medium text-neutral-600 dark:text-neutral-400">진행률</span>
-            <div className="h-2 w-36 overflow-hidden rounded-full bg-muted">
-              <div
-                className="h-full bg-accent-ink transition-all duration-300 rounded-full"
-                style={{ width: `${progressPercent}%` }}
-              />
-            </div>
+            <Progress
+              value={progressPercent}
+              className="h-2 w-36 bg-neutral-200 dark:bg-neutral-800"
+              indicatorClassName="bg-emerald-600 dark:bg-lime-400"
+              aria-label={`검사 진행률 ${progressPercent}%`}
+            />
             <span className="font-mono text-xs font-extrabold text-foreground">
-              {currentIndex + 1} / {totalQuestions}
+              {currentIndex + 1} / {totalQuestions} ({progressPercent}%)
             </span>
           </div>
         </div>
