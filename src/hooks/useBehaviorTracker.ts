@@ -38,6 +38,10 @@ interface TrackerUiState {
   changeCount: number;
   /** 현재까지 감지된 주 입력 장치 (마우스 / 터치 / 키보드) */
   primaryDevice: InputDevice;
+  /** 마우스 방향 전환/흔들림 감지 횟수 */
+  directionChanges: number;
+  /** 보기 호버 탐색 횟수 */
+  hoverCount: number;
 }
 
 /**
@@ -59,6 +63,8 @@ export function useBehaviorTracker({
     selectedVal: initialValue !== undefined ? initialValue : (existingLog?.finalValue ?? null),
     changeCount: Math.max(0, (existingLog?.selectionHistory?.length || 1) - 1),
     primaryDevice: existingLog?.primaryDevice || 'mouse',
+    directionChanges: existingLog?.directionChanges || 0,
+    hoverCount: existingLog?.hoverLogs?.length || 0,
   }));
 
   if (prevQuestionId !== questionId) {
@@ -67,6 +73,8 @@ export function useBehaviorTracker({
       selectedVal: initialValue !== undefined ? initialValue : (existingLog?.finalValue ?? null),
       changeCount: Math.max(0, (existingLog?.selectionHistory?.length || 1) - 1),
       primaryDevice: existingLog?.primaryDevice || 'mouse',
+      directionChanges: existingLog?.directionChanges || 0,
+      hoverCount: existingLog?.hoverLogs?.length || 0,
     });
   }
 
@@ -150,6 +158,7 @@ export function useBehaviorTracker({
         if (lastPointRef.current.dx !== 0 && dx !== 0) {
           if ((lastPointRef.current.dx > 0 && dx < -0.01) || (lastPointRef.current.dx < 0 && dx > 0.01)) {
             directionChangesRef.current += 1;
+            setUiState((prev) => ({ ...prev, directionChanges: directionChangesRef.current }));
           }
         }
 
@@ -252,11 +261,12 @@ export function useBehaviorTracker({
       inputDevice: device,
     });
 
-    setUiState({
+    setUiState((prev) => ({
+      ...prev,
       selectedVal: val,
       changeCount: Math.max(0, selectionHistoryRef.current.length - 1),
       primaryDevice: device,
-    });
+    }));
   }, []);
 
   // Keyboard navigation
@@ -307,6 +317,7 @@ export function useBehaviorTracker({
         duration: now - currentHoverRef.current.enterTime,
       });
       currentHoverRef.current = null;
+      setUiState((prev) => ({ ...prev, hoverCount: hoverLogsRef.current.length }));
     }
   }, []);
 
@@ -318,29 +329,26 @@ export function useBehaviorTracker({
 
     const firstTapLatency = firstInteractionTimeRef.current ?? totalDwellTime;
     const lastSelection = selectionHistoryRef.current[selectionHistoryRef.current.length - 1];
-    const confirmationDelay = lastSelection ? currentSessionDwell - lastSelection.timestamp : 0;
+    const confirmationDelay = lastSelection ? totalDwellTime - lastSelection.timestamp : 0;
 
     const avgPress =
       touchPressDurationsRef.current.length > 0
-        ? Math.round(touchPressDurationsRef.current.reduce((a, b) => a + b, 0) / touchPressDurationsRef.current.length)
-        : 85;
+        ? touchPressDurationsRef.current.reduce((a, b) => a + b, 0) / touchPressDurationsRef.current.length
+        : 80;
 
     const touchMetrics: TouchMetrics = {
-      firstTapLatency,
-      averagePressDuration: avgPress,
-      confirmationDelay: Math.max(0, confirmationDelay),
-      tapCount: selectionHistoryRef.current.length,
+      tapCount: touchCountRef.current,
+      averagePressDuration: Math.round(avgPress),
+      firstTapLatency: Math.round(firstTapLatency),
+      confirmationDelay: Math.round(confirmationDelay),
     };
 
-    // Determine device accurately (Declarative)
     const detectedDevice: InputDevice =
-      mouseMoveCountRef.current >= 3 || mouseTrajectoryRef.current.length > 3
-        ? 'mouse'
-        : keyStrokeCountRef.current > 0 && touchCountRef.current === 0
-          ? 'keyboard'
-          : touchCountRef.current > 0 && mouseMoveCountRef.current < 3
-            ? 'touch'
-            : 'mouse';
+      keyStrokeCountRef.current > 0 && touchCountRef.current === 0 && mouseMoveCountRef.current < 3
+        ? 'keyboard'
+        : touchCountRef.current > 0 && mouseMoveCountRef.current < 3
+          ? 'touch'
+          : 'mouse';
 
     // Calculate hesitation score (Declarative)
     const baseHesitation = changeCount * 25 + Math.min(40, (totalDwellTime / 1000) * 3);
@@ -380,5 +388,7 @@ export function useBehaviorTracker({
     finalizeLog,
     changeCount: uiState.changeCount,
     primaryDevice: uiState.primaryDevice,
+    directionChanges: uiState.directionChanges,
+    hoverCount: uiState.hoverCount,
   };
 }

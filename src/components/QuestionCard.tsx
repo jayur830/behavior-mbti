@@ -66,7 +66,7 @@ export default function QuestionCard({
     primaryDevice,
     changeCount,
     directionChanges,
-    hoverLogs,
+    hoverCount,
   } = useBehaviorTracker({
     questionId: question.id,
     containerRef,
@@ -238,12 +238,12 @@ export default function QuestionCard({
               <div>
                 <div className="flex justify-between text-neutral-600 dark:text-neutral-400">
                   <span>선택지 탐색</span>
-                  <span className="text-foreground font-bold font-mono">{hoverLogs?.length || 0}회 이벤트</span>
+                  <span className="text-foreground font-bold font-mono">{hoverCount}회 이벤트</span>
                 </div>
                 <div className="mt-1.5 h-1.5 rounded-full bg-muted overflow-hidden">
                   <div
                     className="h-full bg-foreground transition-all"
-                    style={{ width: `${Math.min(100, (hoverLogs?.length || 0) * 20)}%` }}
+                    style={{ width: `${Math.min(100, hoverCount * 20)}%` }}
                   />
                 </div>
               </div>
