@@ -1,18 +1,11 @@
 import './globals.css';
 
 import type { Metadata } from 'next';
-import { Plus_Jakarta_Sans } from 'next/font/google';
 import type { ReactNode } from 'react';
 
 import AmbientCursorBlob from '@/components/AmbientCursorBlob';
 import ReactQueryProvider from '@/components/ReactQueryProvider';
 import ThemeProvider from '@/components/ThemeProvider';
-
-const plusJakartaSans = Plus_Jakarta_Sans({
-  variable: '--font-sans',
-  subsets: ['latin'],
-  weight: ['300', '400', '500', '600', '700', '800'],
-});
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://persona.opentoyapp.kr'),
@@ -99,7 +92,7 @@ export interface RootLayoutProps {
 
 export default function RootLayout({ children }: Readonly<RootLayoutProps>) {
   return (
-    <html lang="ko" suppressHydrationWarning className={`${plusJakartaSans.variable} font-sans h-full antialiased`}>
+    <html lang="ko" suppressHydrationWarning className="font-sans h-full antialiased">
       <head>
         <meta name="naver-site-verification" content="57be254f3c46e2d000d67eb616b54d73a181f8da" />
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
